@@ -1,1 +1,45 @@
+Tarea 1 - Estructuras de datos en GO
+Angela Gutiérrez Vega - A00833965
+Descripción de los Casos de Prueba para Validar las Estructuras de Datos
+
+1. Validación de la Implementación de Stack
+Operaciones probadas:
+Push: Se agregan los valores 10, 20 y 30 al stack.
+Impresión del stack: Se verifica que los valores se hayan insertado correctamente.
+Pop: Se elimina el último elemento (30) y se verifica que sea el esperado.
+Verificación de estado: Se revisa si el stack está vacío.
+
+Casos esperados:
+Después de realizar los Push, la impresión del stack debe mostrar [10, 20, 30].
+Después del Pop, el elemento eliminado debe ser 30 y el stack debe quedar como [10, 20].
+La verificación de vacío debe devolver false.
+
+
+2. Validación de la Implementación de Queue
+Operaciones probadas:
+IsEmpty: Se verifica que la cola esté vacía al inicio.
+Enqueue: Se insertan los valores 1, 2 y 3.
+Impresión de la cola: Se verifica que los valores estén en el orden correcto.
+Dequeue: Se elimina el primer elemento (1) y se verifica el resultado.
+Nueva impresión de la cola: Se revisa que la estructura de datos se haya actualizado correctamente.
+
+Casos esperados:
+La verificación inicial de vacío debe devolver true.
+Después de los Enqueue, la impresión debe mostrar [1, 2, 3].
+Después del Dequeue, el elemento eliminado debe ser 1 y la cola debe quedar como [2, 3].
+
+
+3. Validación de la Implementación de HashTable
+Operaciones probadas:
+Put: Se insertan los pares clave-valor ("uno": 1, "dos": 2, "tres": 3).
+Get: Se busca la clave "dos" y se verifica que devuelva el valor correcto (2).
+Contains: Se verifica si la clave "tres" existe en la tabla.
+Keys: Se obtienen todas las claves almacenadas.
+Remove: Se elimina la clave "dos" y se vuelve a consultar la lista de claves.
+
+Casos esperados:
+La consulta de Get("dos") debe devolver 2 y confirmar su existencia.
+La verificación de Contains("tres") debe devolver true.
+La consulta de Keys() debe devolver ["uno", "dos", "tres"] antes de eliminar "dos".
+Tras eliminar "dos", la consulta de Keys() debe devolver ["uno", "tres"].
 
