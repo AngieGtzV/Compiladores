@@ -121,16 +121,50 @@ var TransTab = TransitionTable{
 			return 3
 		case r == 34: // ['"','"']
 			return 33
+		case r == 37: // ['%','%']
+			return 3
+		case r == 38: // ['&','&']
+			return 3
+		case r == 40: // ['(','(']
+			return 3
+		case r == 41: // [')',')']
+			return 3
+		case r == 42: // ['*','*']
+			return 3
+		case r == 43: // ['+','+']
+			return 3
+		case r == 44: // [',',',']
+			return 3
+		case r == 45: // ['-','-']
+			return 3
+		case r == 46: // ['.','.']
+			return 3
+		case r == 47: // ['/','/']
+			return 3
 		case 48 <= r && r <= 57: // ['0','9']
 			return 34
+		case r == 58: // [':',':']
+			return 3
+		case r == 59: // [';',';']
+			return 3
+		case r == 61: // ['=','=']
+			return 3
 		case r == 63: // ['?','?']
 			return 3
 		case 65 <= r && r <= 90: // ['A','Z']
 			return 35
+		case r == 91: // ['[','[']
+			return 3
+		case r == 93: // [']',']']
+			return 3
 		case r == 95: // ['_','_']
 			return 35
 		case 97 <= r && r <= 122: // ['a','z']
 			return 35
+		case r == 123: // ['{','{']
+			return 3
+		case r == 125: // ['}','}']
+			return 3
 		}
 		return NoState
 	},
@@ -441,16 +475,50 @@ var TransTab = TransitionTable{
 			return 3
 		case r == 34: // ['"','"']
 			return 33
+		case r == 37: // ['%','%']
+			return 3
+		case r == 38: // ['&','&']
+			return 3
+		case r == 40: // ['(','(']
+			return 3
+		case r == 41: // [')',')']
+			return 3
+		case r == 42: // ['*','*']
+			return 3
+		case r == 43: // ['+','+']
+			return 3
+		case r == 44: // [',',',']
+			return 3
+		case r == 45: // ['-','-']
+			return 3
+		case r == 46: // ['.','.']
+			return 3
+		case r == 47: // ['/','/']
+			return 3
 		case 48 <= r && r <= 57: // ['0','9']
 			return 34
+		case r == 58: // [':',':']
+			return 3
+		case r == 59: // [';',';']
+			return 3
+		case r == 61: // ['=','=']
+			return 3
 		case r == 63: // ['?','?']
 			return 3
 		case 65 <= r && r <= 90: // ['A','Z']
 			return 35
+		case r == 91: // ['[','[']
+			return 3
+		case r == 93: // [']',']']
+			return 3
 		case r == 95: // ['_','_']
 			return 35
 		case 97 <= r && r <= 122: // ['a','z']
 			return 35
+		case r == 123: // ['{','{']
+			return 3
+		case r == 125: // ['}','}']
+			return 3
 		}
 		return NoState
 	},
@@ -463,16 +531,50 @@ var TransTab = TransitionTable{
 			return 3
 		case r == 34: // ['"','"']
 			return 33
+		case r == 37: // ['%','%']
+			return 3
+		case r == 38: // ['&','&']
+			return 3
+		case r == 40: // ['(','(']
+			return 3
+		case r == 41: // [')',')']
+			return 3
+		case r == 42: // ['*','*']
+			return 3
+		case r == 43: // ['+','+']
+			return 3
+		case r == 44: // [',',',']
+			return 3
+		case r == 45: // ['-','-']
+			return 3
+		case r == 46: // ['.','.']
+			return 3
+		case r == 47: // ['/','/']
+			return 3
 		case 48 <= r && r <= 57: // ['0','9']
 			return 34
+		case r == 58: // [':',':']
+			return 3
+		case r == 59: // [';',';']
+			return 3
+		case r == 61: // ['=','=']
+			return 3
 		case r == 63: // ['?','?']
 			return 3
 		case 65 <= r && r <= 90: // ['A','Z']
 			return 35
+		case r == 91: // ['[','[']
+			return 3
+		case r == 93: // [']',']']
+			return 3
 		case r == 95: // ['_','_']
 			return 35
 		case 97 <= r && r <= 122: // ['a','z']
 			return 35
+		case r == 123: // ['{','{']
+			return 3
+		case r == 125: // ['}','}']
+			return 3
 		}
 		return NoState
 	},
