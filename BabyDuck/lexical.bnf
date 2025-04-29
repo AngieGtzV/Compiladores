@@ -1,0 +1,217 @@
+/* Lexical Parser */
+!whitespace : '\t' | '\n' | '\r' | ' ' ;
+!lineComment  : '/' '/' { . } '\n' ;
+!blockComment : '/' '*' { . | '*' } '*' '/' ;
+
+_letter : 'A'-'Z' | 'a'-'z' | '_' ;
+_digit : '0'-'9' ;
+_alpha : _letter | _digit ;
+
+string_literal : '"' {_alpha | ' ' | '!' | '?' }'"' ;
+nums : '0' | '1'-'9' {_digit} ;
+
+
+/* keywords */
+program: 'p' 'r' 'o' 'g' 'r' 'a' 'm' ;
+main: 'm' 'a' 'i' 'n' ;
+end: 'e' 'n' 'd' ;
+var: 'v' 'a' 'r' ;
+print: 'p' 'r' 'i' 'n' 't' ;
+while: 'w' 'h' 'i' 'l' 'e';
+do: 'd' 'o' ;
+if : 'i' 'f' ;
+else : 'e' 'l' 's' 'e' ;
+void: 'v' 'o' 'i' 'd' ;
+int: 'i' 'n' 't' ;
+float: 'f' 'l' 'o' 'a' 't' ;
+
+id : _letter {_alpha} ;
+
+/* punctuation */
+plus : '+' ;
+minus : '-' ;
+mul : '*' ;
+div : '/' ;
+
+lt : '<' ;
+gt : '>' ;
+neq : '!' '=' ;
+
+lbrace : '{' ;
+rbrace : '}' ;
+assign : '=' ;
+lparen : '(' ;
+rparen : ')' ;
+lbracket : '[' ;
+rbracket : ']' ;
+comma : ',' ;
+semicolon : ';' ;
+period : '.' ;
+colon : ':' ;
+
+/* Syntactic Parsr */
+
+Programa
+  : program  id semicolon ProgramaP main Body end
+  ;
+
+ProgramaP
+    : Vars FP
+    | FP
+    ;
+
+FP
+    : Funcs FP
+    | empty
+    ;
+
+Vars
+    : var id X colon Type semicolon Y
+    ;
+
+X
+    : comma id X
+    | empty
+    ;
+
+Y
+    : id X colon Type semicolon Y
+    | empty
+    ;
+
+Type
+    : int
+    | float
+    ;
+
+Body
+    : lbrace BodyP rbrace
+    ;
+
+BodyP
+    : empty
+    | Statement BodyP
+    ;
+
+Statement
+    : Assign
+    | Condition
+    | Cycle
+    | FCall
+    | Print
+    ;
+
+Print
+    : print lparen PrintP rparen semicolon
+    ;
+
+PrintP
+    : string_literal PrintPP
+    ;
+
+PrintPP
+    : empty
+    | PrintP
+    ;
+
+Assign
+    : id assign Expresion semicolon
+    ;
+
+Cycle
+    : while lparen Expresion rparen do Body semicolon
+    ;
+
+Condition
+    : if lparen Expresion rparen Body ConditionP
+    ;
+
+ConditionP
+    : empty
+    | else Body
+    ;
+
+Expresion
+    : Exp EP
+    ;
+
+EP
+    : empty
+    | gt Exp
+    | lt Exp
+    | neq Exp
+    ;
+
+Exp
+    : Termino ExpP
+    ;
+
+ExpP
+    : empty
+    | plus Termino ExpP
+    | minus Termino ExpP
+    ;
+
+Termino
+    : Factor TP
+    ;
+
+TP
+    :empty
+    | mul Factor TP
+    | div Factor TP
+    ;
+
+Factor
+    : lparen Expresion rparen
+    | FactorP FactorPP
+    ;
+
+FactorP 
+    : empty
+    | plus
+    | minus
+    ;
+
+FactorPP
+    : id 
+    | CTE
+    ;
+
+CTE
+    : nums
+    | nums period nums
+    ;
+
+Funcs
+    : void id lparen FuncsP rparen lbracket VP Body rbracket semicolon
+    ;
+
+FuncsP
+    : empty
+    | id colon Type W
+    ;
+
+W
+    : empty
+    | comma id colon Type W
+    ;
+
+VP
+    : empty
+    | Vars
+    ;
+
+FCall
+    : id lparen FCallP rparen semicolon
+    ;
+
+FCallP
+    : empty
+    | Expresion Z
+    ;
+
+Z
+    : empty
+    | comma Expresion Z
+    ;
