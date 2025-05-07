@@ -50,10 +50,25 @@ period : '.' ;
 colon : ':' ;
 
 /* Syntactic Parsr */
+<<
+import (
+	"BabyDuck/semantics"
+)
+>>
 
 Programa
   : program  id semicolon ProgramaP main Body end
-  ;
+  <<
+        func() (Attrib, error) {
+            err := semantics.AddFunction($1, "program")
+            if err != nil {
+                return nil, err
+            }
+            semantics.SetCurrentFunction($1) // Cambia el contexto a "program"
+            return nil, nil
+        }()
+    >>
+    ;
 
 ProgramaP
     : Vars FP
@@ -65,23 +80,49 @@ FP
     | empty
     ;
 
-Vars
-    : var id X colon Type semicolon Y
+Vars 
+    : var VarsP
+    ;
+
+VarsP
+    : id X colon Type semicolon Y 
+    <<
+        func() (Attrib, error) {
+            ids := semantics.CollectIDs($0, $1) // Reúne todos los ids de la declaración
+            for _, id := range ids {
+                err := semantics.AddVariable(id, $3)
+                if err != nil {
+                    return nil, err // Detecta variables doblemente declaradas
+                }
+            }
+            return nil, nil
+        }()
+    >>
     ;
 
 X
     : comma id X
+    <<
+        func() (Attrib, error) {
+            return semantics.AppendID($1, $2) // Construye lista de ids
+        }()
+    >>
     | empty
+    <<
+        func() (Attrib, error) {
+            return semantics.EmptyIDList()
+        }()
+    >>
     ;
 
 Y
-    : id X colon Type semicolon Y
+    : VarsP
     | empty
     ;
 
 Type
-    : int
-    | float
+    : int <<0,nil>>
+    | float <<0,nil>>
     ;
 
 Body

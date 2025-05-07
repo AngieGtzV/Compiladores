@@ -2,6 +2,10 @@
 
 package parser
 
+import (
+	"BabyDuck/semantics"
+)
+
 type (
 	ProdTab      [numProductions]ProdTabEntry
 	ProdTabEntry struct {
@@ -28,13 +32,27 @@ var productionsTable = ProdTab{
 		},
 	},
 	ProdTabEntry{
-		String: `Programa : program id semicolon ProgramaP main Body end	<<  >>`,
+		String: `Programa : program id semicolon ProgramaP main Body end	<< func() (Attrib, error) {
+            err := semantics.AddFunction(X[1], "program")
+            if err != nil {
+                return nil, err
+            }
+            semantics.SetCurrentFunction(X[1]) // Cambia el contexto a "program"
+            return nil, nil
+        }() >>`,
 		Id:         "Programa",
 		NTType:     1,
 		Index:      1,
 		NumSymbols: 7,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
-			return X[0], nil
+			return func() (Attrib, error) {
+            err := semantics.AddFunction(X[1], "program")
+            if err != nil {
+                return nil, err
+            }
+            semantics.SetCurrentFunction(X[1]) // Cambia el contexto a "program"
+            return nil, nil
+        }()
 		},
 	},
 	ProdTabEntry{
@@ -78,41 +96,77 @@ var productionsTable = ProdTab{
 		},
 	},
 	ProdTabEntry{
-		String: `Vars : var id X colon Type semicolon Y	<<  >>`,
+		String: `Vars : var VarsP	<<  >>`,
 		Id:         "Vars",
 		NTType:     4,
 		Index:      6,
-		NumSymbols: 7,
+		NumSymbols: 2,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return X[0], nil
 		},
 	},
 	ProdTabEntry{
-		String: `X : comma id X	<<  >>`,
-		Id:         "X",
+		String: `VarsP : id X colon Type semicolon Y	<< func() (Attrib, error) {
+            ids := semantics.CollectIDs(X[0], X[1]) // Reúne todos los ids de la declaración
+            for _, id := range ids {
+                err := semantics.AddVariable(id, X[3])
+                if err != nil {
+                    return nil, err // Detecta variables doblemente declaradas
+                }
+            }
+            return nil, nil
+        }() >>`,
+		Id:         "VarsP",
 		NTType:     5,
 		Index:      7,
+		NumSymbols: 6,
+		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
+			return func() (Attrib, error) {
+            ids := semantics.CollectIDs(X[0], X[1]) // Reúne todos los ids de la declaración
+            for _, id := range ids {
+                err := semantics.AddVariable(id, X[3])
+                if err != nil {
+                    return nil, err // Detecta variables doblemente declaradas
+                }
+            }
+            return nil, nil
+        }()
+		},
+	},
+	ProdTabEntry{
+		String: `X : comma id X	<< func() (Attrib, error) {
+            return semantics.AppendID(X[1], X[2]) // Construye lista de ids
+        }() >>`,
+		Id:         "X",
+		NTType:     6,
+		Index:      8,
 		NumSymbols: 3,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
-			return X[0], nil
+			return func() (Attrib, error) {
+            return semantics.AppendID(X[1], X[2]) // Construye lista de ids
+        }()
 		},
 	},
 	ProdTabEntry{
-		String: `X : empty	<<  >>`,
+		String: `X : empty	<< func() (Attrib, error) {
+            return semantics.EmptyIDList()
+        }() >>`,
 		Id:         "X",
-		NTType:     5,
-		Index:      8,
-		NumSymbols: 0,
-		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
-			return nil, nil
-		},
-	},
-	ProdTabEntry{
-		String: `Y : id X colon Type semicolon Y	<<  >>`,
-		Id:         "Y",
 		NTType:     6,
 		Index:      9,
-		NumSymbols: 6,
+		NumSymbols: 0,
+		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
+			return func() (Attrib, error) {
+            return semantics.EmptyIDList()
+        }()
+		},
+	},
+	ProdTabEntry{
+		String: `Y : VarsP	<<  >>`,
+		Id:         "Y",
+		NTType:     7,
+		Index:      10,
+		NumSymbols: 1,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return X[0], nil
 		},
@@ -120,38 +174,38 @@ var productionsTable = ProdTab{
 	ProdTabEntry{
 		String: `Y : empty	<<  >>`,
 		Id:         "Y",
-		NTType:     6,
-		Index:      10,
+		NTType:     7,
+		Index:      11,
 		NumSymbols: 0,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return nil, nil
 		},
 	},
 	ProdTabEntry{
-		String: `Type : int	<<  >>`,
+		String: `Type : int	<< 0,nil >>`,
 		Id:         "Type",
-		NTType:     7,
-		Index:      11,
-		NumSymbols: 1,
-		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
-			return X[0], nil
-		},
-	},
-	ProdTabEntry{
-		String: `Type : float	<<  >>`,
-		Id:         "Type",
-		NTType:     7,
+		NTType:     8,
 		Index:      12,
 		NumSymbols: 1,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
-			return X[0], nil
+			return 0,nil
+		},
+	},
+	ProdTabEntry{
+		String: `Type : float	<< 0,nil >>`,
+		Id:         "Type",
+		NTType:     8,
+		Index:      13,
+		NumSymbols: 1,
+		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
+			return 0,nil
 		},
 	},
 	ProdTabEntry{
 		String: `Body : lbrace BodyP rbrace	<<  >>`,
 		Id:         "Body",
-		NTType:     8,
-		Index:      13,
+		NTType:     9,
+		Index:      14,
 		NumSymbols: 3,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return X[0], nil
@@ -160,8 +214,8 @@ var productionsTable = ProdTab{
 	ProdTabEntry{
 		String: `BodyP : empty	<<  >>`,
 		Id:         "BodyP",
-		NTType:     9,
-		Index:      14,
+		NTType:     10,
+		Index:      15,
 		NumSymbols: 0,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return nil, nil
@@ -170,8 +224,8 @@ var productionsTable = ProdTab{
 	ProdTabEntry{
 		String: `BodyP : Statement BodyP	<<  >>`,
 		Id:         "BodyP",
-		NTType:     9,
-		Index:      15,
+		NTType:     10,
+		Index:      16,
 		NumSymbols: 2,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return X[0], nil
@@ -180,8 +234,8 @@ var productionsTable = ProdTab{
 	ProdTabEntry{
 		String: `Statement : Assign	<<  >>`,
 		Id:         "Statement",
-		NTType:     10,
-		Index:      16,
+		NTType:     11,
+		Index:      17,
 		NumSymbols: 1,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return X[0], nil
@@ -190,8 +244,8 @@ var productionsTable = ProdTab{
 	ProdTabEntry{
 		String: `Statement : Condition	<<  >>`,
 		Id:         "Statement",
-		NTType:     10,
-		Index:      17,
+		NTType:     11,
+		Index:      18,
 		NumSymbols: 1,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return X[0], nil
@@ -200,8 +254,8 @@ var productionsTable = ProdTab{
 	ProdTabEntry{
 		String: `Statement : Cycle	<<  >>`,
 		Id:         "Statement",
-		NTType:     10,
-		Index:      18,
+		NTType:     11,
+		Index:      19,
 		NumSymbols: 1,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return X[0], nil
@@ -210,8 +264,8 @@ var productionsTable = ProdTab{
 	ProdTabEntry{
 		String: `Statement : FCall	<<  >>`,
 		Id:         "Statement",
-		NTType:     10,
-		Index:      19,
+		NTType:     11,
+		Index:      20,
 		NumSymbols: 1,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return X[0], nil
@@ -220,8 +274,8 @@ var productionsTable = ProdTab{
 	ProdTabEntry{
 		String: `Statement : Print	<<  >>`,
 		Id:         "Statement",
-		NTType:     10,
-		Index:      20,
+		NTType:     11,
+		Index:      21,
 		NumSymbols: 1,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return X[0], nil
@@ -230,8 +284,8 @@ var productionsTable = ProdTab{
 	ProdTabEntry{
 		String: `Print : print lparen PrintP rparen semicolon	<<  >>`,
 		Id:         "Print",
-		NTType:     11,
-		Index:      21,
+		NTType:     12,
+		Index:      22,
 		NumSymbols: 5,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return X[0], nil
@@ -240,8 +294,8 @@ var productionsTable = ProdTab{
 	ProdTabEntry{
 		String: `PrintP : string_literal PrintPP	<<  >>`,
 		Id:         "PrintP",
-		NTType:     12,
-		Index:      22,
+		NTType:     13,
+		Index:      23,
 		NumSymbols: 2,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return X[0], nil
@@ -250,8 +304,8 @@ var productionsTable = ProdTab{
 	ProdTabEntry{
 		String: `PrintPP : empty	<<  >>`,
 		Id:         "PrintPP",
-		NTType:     13,
-		Index:      23,
+		NTType:     14,
+		Index:      24,
 		NumSymbols: 0,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return nil, nil
@@ -260,8 +314,8 @@ var productionsTable = ProdTab{
 	ProdTabEntry{
 		String: `PrintPP : PrintP	<<  >>`,
 		Id:         "PrintPP",
-		NTType:     13,
-		Index:      24,
+		NTType:     14,
+		Index:      25,
 		NumSymbols: 1,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return X[0], nil
@@ -270,8 +324,8 @@ var productionsTable = ProdTab{
 	ProdTabEntry{
 		String: `Assign : id assign Expresion semicolon	<<  >>`,
 		Id:         "Assign",
-		NTType:     14,
-		Index:      25,
+		NTType:     15,
+		Index:      26,
 		NumSymbols: 4,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return X[0], nil
@@ -280,8 +334,8 @@ var productionsTable = ProdTab{
 	ProdTabEntry{
 		String: `Cycle : while lparen Expresion rparen do Body semicolon	<<  >>`,
 		Id:         "Cycle",
-		NTType:     15,
-		Index:      26,
+		NTType:     16,
+		Index:      27,
 		NumSymbols: 7,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return X[0], nil
@@ -290,8 +344,8 @@ var productionsTable = ProdTab{
 	ProdTabEntry{
 		String: `Condition : if lparen Expresion rparen Body ConditionP	<<  >>`,
 		Id:         "Condition",
-		NTType:     16,
-		Index:      27,
+		NTType:     17,
+		Index:      28,
 		NumSymbols: 6,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return X[0], nil
@@ -300,8 +354,8 @@ var productionsTable = ProdTab{
 	ProdTabEntry{
 		String: `ConditionP : empty	<<  >>`,
 		Id:         "ConditionP",
-		NTType:     17,
-		Index:      28,
+		NTType:     18,
+		Index:      29,
 		NumSymbols: 0,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return nil, nil
@@ -310,16 +364,6 @@ var productionsTable = ProdTab{
 	ProdTabEntry{
 		String: `ConditionP : else Body	<<  >>`,
 		Id:         "ConditionP",
-		NTType:     17,
-		Index:      29,
-		NumSymbols: 2,
-		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
-			return X[0], nil
-		},
-	},
-	ProdTabEntry{
-		String: `Expresion : Exp EP	<<  >>`,
-		Id:         "Expresion",
 		NTType:     18,
 		Index:      30,
 		NumSymbols: 2,
@@ -328,10 +372,20 @@ var productionsTable = ProdTab{
 		},
 	},
 	ProdTabEntry{
-		String: `EP : empty	<<  >>`,
-		Id:         "EP",
+		String: `Expresion : Exp EP	<<  >>`,
+		Id:         "Expresion",
 		NTType:     19,
 		Index:      31,
+		NumSymbols: 2,
+		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
+			return X[0], nil
+		},
+	},
+	ProdTabEntry{
+		String: `EP : empty	<<  >>`,
+		Id:         "EP",
+		NTType:     20,
+		Index:      32,
 		NumSymbols: 0,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return nil, nil
@@ -340,8 +394,8 @@ var productionsTable = ProdTab{
 	ProdTabEntry{
 		String: `EP : gt Exp	<<  >>`,
 		Id:         "EP",
-		NTType:     19,
-		Index:      32,
+		NTType:     20,
+		Index:      33,
 		NumSymbols: 2,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return X[0], nil
@@ -350,8 +404,8 @@ var productionsTable = ProdTab{
 	ProdTabEntry{
 		String: `EP : lt Exp	<<  >>`,
 		Id:         "EP",
-		NTType:     19,
-		Index:      33,
+		NTType:     20,
+		Index:      34,
 		NumSymbols: 2,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return X[0], nil
@@ -360,16 +414,6 @@ var productionsTable = ProdTab{
 	ProdTabEntry{
 		String: `EP : neq Exp	<<  >>`,
 		Id:         "EP",
-		NTType:     19,
-		Index:      34,
-		NumSymbols: 2,
-		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
-			return X[0], nil
-		},
-	},
-	ProdTabEntry{
-		String: `Exp : Termino ExpP	<<  >>`,
-		Id:         "Exp",
 		NTType:     20,
 		Index:      35,
 		NumSymbols: 2,
@@ -378,10 +422,20 @@ var productionsTable = ProdTab{
 		},
 	},
 	ProdTabEntry{
-		String: `ExpP : empty	<<  >>`,
-		Id:         "ExpP",
+		String: `Exp : Termino ExpP	<<  >>`,
+		Id:         "Exp",
 		NTType:     21,
 		Index:      36,
+		NumSymbols: 2,
+		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
+			return X[0], nil
+		},
+	},
+	ProdTabEntry{
+		String: `ExpP : empty	<<  >>`,
+		Id:         "ExpP",
+		NTType:     22,
+		Index:      37,
 		NumSymbols: 0,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return nil, nil
@@ -390,8 +444,8 @@ var productionsTable = ProdTab{
 	ProdTabEntry{
 		String: `ExpP : plus Termino ExpP	<<  >>`,
 		Id:         "ExpP",
-		NTType:     21,
-		Index:      37,
+		NTType:     22,
+		Index:      38,
 		NumSymbols: 3,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return X[0], nil
@@ -400,8 +454,8 @@ var productionsTable = ProdTab{
 	ProdTabEntry{
 		String: `ExpP : minus Termino ExpP	<<  >>`,
 		Id:         "ExpP",
-		NTType:     21,
-		Index:      38,
+		NTType:     22,
+		Index:      39,
 		NumSymbols: 3,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return X[0], nil
@@ -410,8 +464,8 @@ var productionsTable = ProdTab{
 	ProdTabEntry{
 		String: `Termino : Factor TP	<<  >>`,
 		Id:         "Termino",
-		NTType:     22,
-		Index:      39,
+		NTType:     23,
+		Index:      40,
 		NumSymbols: 2,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return X[0], nil
@@ -420,8 +474,8 @@ var productionsTable = ProdTab{
 	ProdTabEntry{
 		String: `TP : empty	<<  >>`,
 		Id:         "TP",
-		NTType:     23,
-		Index:      40,
+		NTType:     24,
+		Index:      41,
 		NumSymbols: 0,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return nil, nil
@@ -430,8 +484,8 @@ var productionsTable = ProdTab{
 	ProdTabEntry{
 		String: `TP : mul Factor TP	<<  >>`,
 		Id:         "TP",
-		NTType:     23,
-		Index:      41,
+		NTType:     24,
+		Index:      42,
 		NumSymbols: 3,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return X[0], nil
@@ -440,16 +494,6 @@ var productionsTable = ProdTab{
 	ProdTabEntry{
 		String: `TP : div Factor TP	<<  >>`,
 		Id:         "TP",
-		NTType:     23,
-		Index:      42,
-		NumSymbols: 3,
-		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
-			return X[0], nil
-		},
-	},
-	ProdTabEntry{
-		String: `Factor : lparen Expresion rparen	<<  >>`,
-		Id:         "Factor",
 		NTType:     24,
 		Index:      43,
 		NumSymbols: 3,
@@ -458,10 +502,20 @@ var productionsTable = ProdTab{
 		},
 	},
 	ProdTabEntry{
+		String: `Factor : lparen Expresion rparen	<<  >>`,
+		Id:         "Factor",
+		NTType:     25,
+		Index:      44,
+		NumSymbols: 3,
+		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
+			return X[0], nil
+		},
+	},
+	ProdTabEntry{
 		String: `Factor : FactorP FactorPP	<<  >>`,
 		Id:         "Factor",
-		NTType:     24,
-		Index:      44,
+		NTType:     25,
+		Index:      45,
 		NumSymbols: 2,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return X[0], nil
@@ -470,8 +524,8 @@ var productionsTable = ProdTab{
 	ProdTabEntry{
 		String: `FactorP : empty	<<  >>`,
 		Id:         "FactorP",
-		NTType:     25,
-		Index:      45,
+		NTType:     26,
+		Index:      46,
 		NumSymbols: 0,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return nil, nil
@@ -480,8 +534,8 @@ var productionsTable = ProdTab{
 	ProdTabEntry{
 		String: `FactorP : plus	<<  >>`,
 		Id:         "FactorP",
-		NTType:     25,
-		Index:      46,
+		NTType:     26,
+		Index:      47,
 		NumSymbols: 1,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return X[0], nil
@@ -490,16 +544,6 @@ var productionsTable = ProdTab{
 	ProdTabEntry{
 		String: `FactorP : minus	<<  >>`,
 		Id:         "FactorP",
-		NTType:     25,
-		Index:      47,
-		NumSymbols: 1,
-		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
-			return X[0], nil
-		},
-	},
-	ProdTabEntry{
-		String: `FactorPP : id	<<  >>`,
-		Id:         "FactorPP",
 		NTType:     26,
 		Index:      48,
 		NumSymbols: 1,
@@ -508,9 +552,9 @@ var productionsTable = ProdTab{
 		},
 	},
 	ProdTabEntry{
-		String: `FactorPP : CTE	<<  >>`,
+		String: `FactorPP : id	<<  >>`,
 		Id:         "FactorPP",
-		NTType:     26,
+		NTType:     27,
 		Index:      49,
 		NumSymbols: 1,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
@@ -518,8 +562,8 @@ var productionsTable = ProdTab{
 		},
 	},
 	ProdTabEntry{
-		String: `CTE : nums	<<  >>`,
-		Id:         "CTE",
+		String: `FactorPP : CTE	<<  >>`,
+		Id:         "FactorPP",
 		NTType:     27,
 		Index:      50,
 		NumSymbols: 1,
@@ -528,10 +572,20 @@ var productionsTable = ProdTab{
 		},
 	},
 	ProdTabEntry{
+		String: `CTE : nums	<<  >>`,
+		Id:         "CTE",
+		NTType:     28,
+		Index:      51,
+		NumSymbols: 1,
+		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
+			return X[0], nil
+		},
+	},
+	ProdTabEntry{
 		String: `CTE : nums period nums	<<  >>`,
 		Id:         "CTE",
-		NTType:     27,
-		Index:      51,
+		NTType:     28,
+		Index:      52,
 		NumSymbols: 3,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return X[0], nil
@@ -540,8 +594,8 @@ var productionsTable = ProdTab{
 	ProdTabEntry{
 		String: `Funcs : void id lparen FuncsP rparen lbracket VP Body rbracket semicolon	<<  >>`,
 		Id:         "Funcs",
-		NTType:     28,
-		Index:      52,
+		NTType:     29,
+		Index:      53,
 		NumSymbols: 10,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return X[0], nil
@@ -550,8 +604,8 @@ var productionsTable = ProdTab{
 	ProdTabEntry{
 		String: `FuncsP : empty	<<  >>`,
 		Id:         "FuncsP",
-		NTType:     29,
-		Index:      53,
+		NTType:     30,
+		Index:      54,
 		NumSymbols: 0,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return nil, nil
@@ -560,8 +614,8 @@ var productionsTable = ProdTab{
 	ProdTabEntry{
 		String: `FuncsP : id colon Type W	<<  >>`,
 		Id:         "FuncsP",
-		NTType:     29,
-		Index:      54,
+		NTType:     30,
+		Index:      55,
 		NumSymbols: 4,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return X[0], nil
@@ -570,8 +624,8 @@ var productionsTable = ProdTab{
 	ProdTabEntry{
 		String: `W : empty	<<  >>`,
 		Id:         "W",
-		NTType:     30,
-		Index:      55,
+		NTType:     31,
+		Index:      56,
 		NumSymbols: 0,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return nil, nil
@@ -580,8 +634,8 @@ var productionsTable = ProdTab{
 	ProdTabEntry{
 		String: `W : comma id colon Type W	<<  >>`,
 		Id:         "W",
-		NTType:     30,
-		Index:      56,
+		NTType:     31,
+		Index:      57,
 		NumSymbols: 5,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return X[0], nil
@@ -590,8 +644,8 @@ var productionsTable = ProdTab{
 	ProdTabEntry{
 		String: `VP : empty	<<  >>`,
 		Id:         "VP",
-		NTType:     31,
-		Index:      57,
+		NTType:     32,
+		Index:      58,
 		NumSymbols: 0,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return nil, nil
@@ -600,8 +654,8 @@ var productionsTable = ProdTab{
 	ProdTabEntry{
 		String: `VP : Vars	<<  >>`,
 		Id:         "VP",
-		NTType:     31,
-		Index:      58,
+		NTType:     32,
+		Index:      59,
 		NumSymbols: 1,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return X[0], nil
@@ -610,8 +664,8 @@ var productionsTable = ProdTab{
 	ProdTabEntry{
 		String: `FCall : id lparen FCallP rparen semicolon	<<  >>`,
 		Id:         "FCall",
-		NTType:     32,
-		Index:      59,
+		NTType:     33,
+		Index:      60,
 		NumSymbols: 5,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return X[0], nil
@@ -620,8 +674,8 @@ var productionsTable = ProdTab{
 	ProdTabEntry{
 		String: `FCallP : empty	<<  >>`,
 		Id:         "FCallP",
-		NTType:     33,
-		Index:      60,
+		NTType:     34,
+		Index:      61,
 		NumSymbols: 0,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return nil, nil
@@ -630,8 +684,8 @@ var productionsTable = ProdTab{
 	ProdTabEntry{
 		String: `FCallP : Expresion Z	<<  >>`,
 		Id:         "FCallP",
-		NTType:     33,
-		Index:      61,
+		NTType:     34,
+		Index:      62,
 		NumSymbols: 2,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return X[0], nil
@@ -640,8 +694,8 @@ var productionsTable = ProdTab{
 	ProdTabEntry{
 		String: `Z : empty	<<  >>`,
 		Id:         "Z",
-		NTType:     34,
-		Index:      62,
+		NTType:     35,
+		Index:      63,
 		NumSymbols: 0,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return nil, nil
@@ -650,8 +704,8 @@ var productionsTable = ProdTab{
 	ProdTabEntry{
 		String: `Z : comma Expresion Z	<<  >>`,
 		Id:         "Z",
-		NTType:     34,
-		Index:      63,
+		NTType:     35,
+		Index:      64,
 		NumSymbols: 3,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return X[0], nil
