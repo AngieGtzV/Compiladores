@@ -23,6 +23,7 @@ type FunctionInfo struct {
 var (
 	functionDirectory = make(map[string]*FunctionInfo)
 	currentFunction   = ""
+	tempParams        []VarInfo
 )
 
 // ------------------- FUNCIONES PARA FUNCIONES -------------------
@@ -40,6 +41,7 @@ func AddFunction(nameAttrib Attrib, returnType string) error {
 		Params:     []VarInfo{},
 		Vars:       make(map[string]VarInfo),
 	}
+	tempParams = []VarInfo{}
 	return nil
 }
 
@@ -83,6 +85,7 @@ func AddParameter(nameAttrib Attrib, paramType string) error {
 	param := VarInfo{Type: paramType, Scope: "param"}
 	f.Params = append(f.Params, param)
 	f.Vars[name] = param
+	tempParams = append(tempParams, param)
 	return nil
 }
 
@@ -106,7 +109,12 @@ func LookupVariable(nameAttrib Attrib) (VarInfo, error) {
 
 // ------------------- COMPATIBILIDAD DE TIPOS -------------------
 
-func TypeCompatible(expected, actual string) bool {
+func TypeCompatible(expectedAttrib, actualAttrib Attrib) bool {
+	expected, ok1 := expectedAttrib.(string)
+	actual, ok2 := actualAttrib.(string)
+	if !ok1 || !ok2 {
+		return false
+	}
 	return expected == actual
 }
 
@@ -192,6 +200,35 @@ func AppendArg(argType Attrib, rest Attrib) (Attrib, error) {
 		args = append(args, r...)
 	}
 	return args, nil
+}
+
+// Construir lista de parámetros desde WP
+func BuildParamList(id Attrib, typeAttrib Attrib, rest Attrib) (Attrib, error) {
+	typ, ok := typeAttrib.(string)
+	if !ok {
+		return nil, errors.New("BuildParamList: typeAttrib no es string")
+	}
+
+	params := []VarInfo{{Type: typ, Scope: "param"}}
+
+	if r, ok := rest.([]VarInfo); ok {
+		params = append(params, r...)
+	}
+
+	return params, nil
+}
+
+// Agregar más parámetros a la lista
+func AppendParamList(newParam Attrib, rest Attrib) (Attrib, error) {
+	param, ok := newParam.(VarInfo)
+	if !ok {
+		return nil, errors.New("AppendParamList: param no es VarInfo")
+	}
+	params := []VarInfo{param}
+	if r, ok := rest.([]VarInfo); ok {
+		params = append(params, r...)
+	}
+	return params, nil
 }
 
 // ------------------- DEBUG: IMPRIMIR DIRECTORIOS -------------------

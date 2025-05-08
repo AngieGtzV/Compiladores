@@ -322,13 +322,31 @@ var productionsTable = ProdTab{
 		},
 	},
 	ProdTabEntry{
-		String: `Assign : id assign Expresion semicolon	<<  >>`,
+		String: `Assign : id assign Expresion semicolon	<< func() (Attrib, error) {
+            varInfo, err := semantics.LookupVariable(X[0])
+            if err != nil {
+                return nil, err
+            }
+            if !semantics.TypeCompatible(varInfo.Type, X[2]) {
+                return nil, err
+            }
+            return nil, nil
+        }() >>`,
 		Id:         "Assign",
 		NTType:     15,
 		Index:      26,
 		NumSymbols: 4,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
-			return X[0], nil
+			return func() (Attrib, error) {
+            varInfo, err := semantics.LookupVariable(X[0])
+            if err != nil {
+                return nil, err
+            }
+            if !semantics.TypeCompatible(varInfo.Type, X[2]) {
+                return nil, err
+            }
+            return nil, nil
+        }()
 		},
 	},
 	ProdTabEntry{
@@ -592,60 +610,134 @@ var productionsTable = ProdTab{
 		},
 	},
 	ProdTabEntry{
-		String: `Funcs : void id lparen FuncsP rparen lbracket VP Body rbracket semicolon	<<  >>`,
+		String: `Funcs : void id lparen FuncsP rparen lbracket VP Body rbracket semicolon	<< func() (Attrib, error) {
+            err := semantics.AddFunction(X[2], "void")
+            if err != nil {
+                return nil, err
+            }
+            semantics.SetCurrentFunction(X[2]) // Cambia el contexto a la función
+            return nil, nil
+        }() >>`,
 		Id:         "Funcs",
 		NTType:     29,
 		Index:      53,
 		NumSymbols: 10,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
-			return X[0], nil
+			return func() (Attrib, error) {
+            err := semantics.AddFunction(X[2], "void")
+            if err != nil {
+                return nil, err
+            }
+            semantics.SetCurrentFunction(X[2]) // Cambia el contexto a la función
+            return nil, nil
+        }()
 		},
 	},
 	ProdTabEntry{
-		String: `FuncsP : empty	<<  >>`,
+		String: `FuncsP : empty	<< func() (Attrib, error) {
+        return nil, nil // no hay parámetros
+        }() >>`,
 		Id:         "FuncsP",
 		NTType:     30,
 		Index:      54,
 		NumSymbols: 0,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
-			return nil, nil
+			return func() (Attrib, error) {
+        return nil, nil // no hay parámetros
+        }()
 		},
 	},
 	ProdTabEntry{
-		String: `FuncsP : id colon Type W	<<  >>`,
+		String: `FuncsP : WP	<< func() (Attrib, error) {
+            return nil, nil // parámetros ya se agregan en WP
+        }() >>`,
 		Id:         "FuncsP",
 		NTType:     30,
 		Index:      55,
-		NumSymbols: 4,
+		NumSymbols: 1,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
-			return X[0], nil
+			return func() (Attrib, error) {
+            return nil, nil // parámetros ya se agregan en WP
+        }()
 		},
 	},
 	ProdTabEntry{
-		String: `W : empty	<<  >>`,
+		String: `W : empty	<< func() (Attrib, error) {
+        return nil, nil
+      }() >>`,
 		Id:         "W",
 		NTType:     31,
 		Index:      56,
 		NumSymbols: 0,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
-			return nil, nil
+			return func() (Attrib, error) {
+        return nil, nil
+      }()
 		},
 	},
 	ProdTabEntry{
-		String: `W : comma id colon Type W	<<  >>`,
+		String: `W : comma WP	<< func() (Attrib, error) {
+            return nil, nil // ya agregados en WP
+        }() >>`,
 		Id:         "W",
 		NTType:     31,
 		Index:      57,
-		NumSymbols: 5,
+		NumSymbols: 2,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
-			return X[0], nil
+			return func() (Attrib, error) {
+            return nil, nil // ya agregados en WP
+        }()
+		},
+	},
+	ProdTabEntry{
+		String: `WP : id colon Type W	<< func() (Attrib, error) {
+            varName, ok := X[0].(string)
+            if !ok {
+                return nil, nil
+            }
+
+            varType, ok := X[2].(string)
+            if !ok {
+                return nil, nil
+            }
+
+            err := semantics.AddParameter(varName, varType)
+            if err != nil {
+                return nil, err
+            }
+
+            return nil, nil
+        }() >>`,
+		Id:         "WP",
+		NTType:     32,
+		Index:      58,
+		NumSymbols: 4,
+		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
+			return func() (Attrib, error) {
+            varName, ok := X[0].(string)
+            if !ok {
+                return nil, nil
+            }
+
+            varType, ok := X[2].(string)
+            if !ok {
+                return nil, nil
+            }
+
+            err := semantics.AddParameter(varName, varType)
+            if err != nil {
+                return nil, err
+            }
+
+            return nil, nil
+        }()
 		},
 	},
 	ProdTabEntry{
 		String: `VP : empty	<<  >>`,
 		Id:         "VP",
-		NTType:     32,
-		Index:      58,
+		NTType:     33,
+		Index:      59,
 		NumSymbols: 0,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return nil, nil
@@ -654,61 +746,89 @@ var productionsTable = ProdTab{
 	ProdTabEntry{
 		String: `VP : Vars	<<  >>`,
 		Id:         "VP",
-		NTType:     32,
-		Index:      59,
+		NTType:     33,
+		Index:      60,
 		NumSymbols: 1,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return X[0], nil
 		},
 	},
 	ProdTabEntry{
-		String: `FCall : id lparen FCallP rparen semicolon	<<  >>`,
+		String: `FCall : id lparen FCallP rparen semicolon	<< func() (Attrib, error) {
+            err := semantics.ValidateFunctionCall(X[0], X[2])
+            if err != nil {
+                return nil, err
+            }
+            return nil, nil
+        }() >>`,
 		Id:         "FCall",
-		NTType:     33,
-		Index:      60,
-		NumSymbols: 5,
-		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
-			return X[0], nil
-		},
-	},
-	ProdTabEntry{
-		String: `FCallP : empty	<<  >>`,
-		Id:         "FCallP",
 		NTType:     34,
 		Index:      61,
+		NumSymbols: 5,
+		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
+			return func() (Attrib, error) {
+            err := semantics.ValidateFunctionCall(X[0], X[2])
+            if err != nil {
+                return nil, err
+            }
+            return nil, nil
+        }()
+		},
+	},
+	ProdTabEntry{
+		String: `FCallP : empty	<< func() (Attrib, error) {
+            return semantics.EmptyArgList()
+        }() >>`,
+		Id:         "FCallP",
+		NTType:     35,
+		Index:      62,
 		NumSymbols: 0,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
-			return nil, nil
+			return func() (Attrib, error) {
+            return semantics.EmptyArgList()
+        }()
 		},
 	},
 	ProdTabEntry{
-		String: `FCallP : Expresion Z	<<  >>`,
+		String: `FCallP : Expresion Z	<< func() (Attrib, error) {
+            return semantics.BuildArgList(X[0], X[1])
+        }() >>`,
 		Id:         "FCallP",
-		NTType:     34,
-		Index:      62,
-		NumSymbols: 2,
-		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
-			return X[0], nil
-		},
-	},
-	ProdTabEntry{
-		String: `Z : empty	<<  >>`,
-		Id:         "Z",
 		NTType:     35,
 		Index:      63,
-		NumSymbols: 0,
+		NumSymbols: 2,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
-			return nil, nil
+			return func() (Attrib, error) {
+            return semantics.BuildArgList(X[0], X[1])
+        }()
 		},
 	},
 	ProdTabEntry{
-		String: `Z : comma Expresion Z	<<  >>`,
+		String: `Z : empty	<< func() (Attrib, error) {
+            return semantics.EmptyArgList()
+        }() >>`,
 		Id:         "Z",
-		NTType:     35,
+		NTType:     36,
 		Index:      64,
+		NumSymbols: 0,
+		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
+			return func() (Attrib, error) {
+            return semantics.EmptyArgList()
+        }()
+		},
+	},
+	ProdTabEntry{
+		String: `Z : comma Expresion Z	<< func() (Attrib, error) {
+            return semantics.AppendArg(X[1], X[2])
+        }() >>`,
+		Id:         "Z",
+		NTType:     36,
+		Index:      65,
 		NumSymbols: 3,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
-			return X[0], nil
+			return func() (Attrib, error) {
+            return semantics.AppendArg(X[1], X[2])
+        }()
 		},
 	},
 }

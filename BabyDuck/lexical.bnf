@@ -157,6 +157,18 @@ PrintPP
 
 Assign
     : id assign Expresion semicolon
+    <<
+        func() (Attrib, error) {
+            varInfo, err := semantics.LookupVariable($0)
+            if err != nil {
+                return nil, err
+            }
+            if !semantics.TypeCompatible(varInfo.Type, $2) {
+                return nil, err
+            }
+            return nil, nil
+        }()
+    >>
     ;
 
 Cycle
@@ -226,16 +238,70 @@ CTE
 
 Funcs
     : void id lparen FuncsP rparen lbracket VP Body rbracket semicolon
+    <<
+        func() (Attrib, error) {
+            err := semantics.AddFunction($2, "void")
+            if err != nil {
+                return nil, err
+            }
+            semantics.SetCurrentFunction($2) // Cambia el contexto a la función
+            return nil, nil
+        }()
+  >>
     ;
 
 FuncsP
     : empty
-    | id colon Type W
+    <<
+      func() (Attrib, error) {
+        return nil, nil // no hay parámetros
+        }()
+    >>
+    | WP
+    <<
+        func() (Attrib, error) {
+            return nil, nil // parámetros ya se agregan en WP
+        }()
+        >>
     ;
 
 W
     : empty
-    | comma id colon Type W
+    <<
+      func() (Attrib, error) {
+        return nil, nil
+      }()
+    >>
+    | comma WP
+    <<
+        func() (Attrib, error) {
+            return nil, nil // ya agregados en WP
+        }()
+        >>
+    ;
+
+WP
+    : id colon Type W
+    <<
+        func() (Attrib, error) {
+            varName, ok := $0.(string)
+            if !ok {
+                return nil, nil
+            }
+
+            varType, ok := $2.(string)
+            if !ok {
+                return nil, nil
+            }
+
+            err := semantics.AddParameter(varName, varType)
+            if err != nil {
+                return nil, err
+            }
+
+            return nil, nil
+        }()
+        >>
     ;
 
 VP
@@ -245,14 +311,43 @@ VP
 
 FCall
     : id lparen FCallP rparen semicolon
+     <<
+        func() (Attrib, error) {
+            err := semantics.ValidateFunctionCall($0, $2)
+            if err != nil {
+                return nil, err
+            }
+            return nil, nil
+        }()
+  >>
     ;
 
 FCallP
     : empty
+    <<
+        func() (Attrib, error) {
+            return semantics.EmptyArgList()
+        }()
+    >>
     | Expresion Z
+    <<
+        func() (Attrib, error) {
+            return semantics.BuildArgList($0, $1)
+        }()
+    >>
     ;
 
 Z
     : empty
+    <<
+        func() (Attrib, error) {
+            return semantics.EmptyArgList()
+        }()
+    >>
     | comma Expresion Z
+    <<
+        func() (Attrib, error) {
+            return semantics.AppendArg($1, $2)
+        }()
+    >>
     ;
