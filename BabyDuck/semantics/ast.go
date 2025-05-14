@@ -3,6 +3,7 @@ package semantics
 import (
 	"errors"
 	"fmt"
+	"strings"
 )
 
 // Attrib es el tipo genérico usado por el parser
@@ -28,39 +29,27 @@ var (
 
 // ------------------- FUNCIONES PARA FUNCIONES -------------------
 
-func AddFunction(nameAttrib Attrib, returnType string) error {
-	name, ok := nameAttrib.(string)
-	if !ok {
-		return errors.New("AddFunction: nameAttrib no es un string")
-	}
+func AddFunction(name string, returnType string) error {
 	if _, exists := functionDirectory[name]; exists {
 		return fmt.Errorf("funcion '%s' ya declarada", name)
 	}
 	functionDirectory[name] = &FunctionInfo{
 		ReturnType: returnType,
-		Params:     []VarInfo{},
+		Params:     tempParams,
 		Vars:       make(map[string]VarInfo),
 	}
 	tempParams = []VarInfo{}
 	return nil
 }
 
-func SetCurrentFunction(nameAttrib Attrib) error {
-	name, ok := nameAttrib.(string)
-	if !ok {
-		return errors.New("SetCurrentFunction: nameAttrib no es un string")
-	}
+func SetCurrentFunction(name string) error {
 	currentFunction = name
 	return nil
 }
 
 // ------------------- FUNCIONES PARA VARIABLES -------------------
 
-func AddVariable(nameAttrib Attrib, typeAttrib Attrib) error {
-	name, ok := nameAttrib.(string)
-	if !ok {
-		return errors.New("AddVariable: nameAttrib no es un string")
-	}
+func AddVariable(name string, typeAttrib Attrib) error {
 	varType, ok := typeAttrib.(string)
 	if !ok {
 		return errors.New("AddVariable: typeAttrib no es un string")
@@ -73,11 +62,7 @@ func AddVariable(nameAttrib Attrib, typeAttrib Attrib) error {
 	return nil
 }
 
-func AddParameter(nameAttrib Attrib, paramType string) error {
-	name, ok := nameAttrib.(string)
-	if !ok {
-		return errors.New("AddParameter: nameAttrib no es un string")
-	}
+func AddParameter(name string, paramType string) error {
 	f := functionDirectory[currentFunction]
 	if _, exists := f.Vars[name]; exists {
 		return fmt.Errorf("parametro '%s' ya declarado", name)
@@ -89,11 +74,7 @@ func AddParameter(nameAttrib Attrib, paramType string) error {
 	return nil
 }
 
-func LookupVariable(nameAttrib Attrib) (VarInfo, error) {
-	name, ok := nameAttrib.(string)
-	if !ok {
-		return VarInfo{}, errors.New("LookupVariable: nameAttrib no es un string")
-	}
+func LookupVariable(name string) (VarInfo, error) {
 	if f, ok := functionDirectory[currentFunction]; ok {
 		if v, ok := f.Vars[name]; ok {
 			return v, nil
@@ -105,6 +86,24 @@ func LookupVariable(nameAttrib Attrib) (VarInfo, error) {
 		}
 	}
 	return VarInfo{}, fmt.Errorf("variable '%s' no declarada", name)
+}
+
+// ------------------- EXPRESIONES -------------------
+func GetLiteralType(value string) string {
+	if strings.Contains(value, ".") {
+		return "float"
+	}
+	return "int"
+}
+
+func ArithmeticResultType(leftType, rightType string) (string, error) {
+	if leftType == "float" || rightType == "float" {
+		return "float", nil
+	}
+	if leftType == "int" && rightType == "int" {
+		return "int", nil
+	}
+	return "", fmt.Errorf("tipos incompatibles '%s' y '%s'", leftType, rightType)
 }
 
 // ------------------- COMPATIBILIDAD DE TIPOS -------------------
@@ -120,11 +119,7 @@ func TypeCompatible(expectedAttrib, actualAttrib Attrib) bool {
 
 // ------------------- LLAMADAS A FUNCIONES -------------------
 
-func ValidateFunctionCall(nameAttrib Attrib, argsAttrib Attrib) error {
-	name, ok := nameAttrib.(string)
-	if !ok {
-		return errors.New("ValidateFunctionCall: nameAttrib no es un string")
-	}
+func ValidateFunctionCall(name string, argsAttrib Attrib) error {
 	args, ok := argsAttrib.([]string)
 	if !ok {
 		return errors.New("ValidateFunctionCall: argsAttrib no es []string")
@@ -146,26 +141,22 @@ func ValidateFunctionCall(nameAttrib Attrib, argsAttrib Attrib) error {
 
 // ------------------- LISTAS AUXILIARES -------------------
 
-func CollectIDs(id Attrib, moreIDs Attrib) []string {
-	ids := []string{}
-	if str, ok := id.(string); ok {
-		ids = append(ids, str)
-	}
+func CollectIDs(id string, moreIDs Attrib) ([]string, error) {
+	ids := []string{id}
 	if rest, ok := moreIDs.([]string); ok {
 		ids = append(ids, rest...)
+		return ids, nil
 	}
-	return ids
+	return nil, errors.New("CollectIDs: moreIDs no es []string")
 }
 
-func AppendID(id Attrib, rest Attrib) (Attrib, error) {
-	ids := []string{}
-	if s, ok := id.(string); ok {
-		ids = append(ids, s)
-	}
+func AppendID(id string, rest Attrib) (Attrib, error) {
+	ids := []string{id}
 	if r, ok := rest.([]string); ok {
 		ids = append(ids, r...)
+		return ids, nil
 	}
-	return ids, nil
+	return nil, errors.New("AppendID: rest no es []string")
 }
 
 func EmptyIDList() (Attrib, error) {
@@ -203,7 +194,7 @@ func AppendArg(argType Attrib, rest Attrib) (Attrib, error) {
 }
 
 // Construir lista de parámetros desde WP
-func BuildParamList(id Attrib, typeAttrib Attrib, rest Attrib) (Attrib, error) {
+func BuildParamList(id string, typeAttrib Attrib, rest Attrib) (Attrib, error) {
 	typ, ok := typeAttrib.(string)
 	if !ok {
 		return nil, errors.New("BuildParamList: typeAttrib no es string")

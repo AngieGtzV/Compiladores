@@ -4,6 +4,8 @@ package parser
 
 import (
 	"BabyDuck/semantics"
+    "fmt"
+	"BabyDuck/token"
 )
 
 type (
@@ -33,11 +35,20 @@ var productionsTable = ProdTab{
 	},
 	ProdTabEntry{
 		String: `Programa : program id semicolon ProgramaP main Body end	<< func() (Attrib, error) {
-            err := semantics.AddFunction(X[1], "program")
+            tok, ok := X[1].(*token.Token)
+            if !ok {
+                return nil, fmt.Errorf("esperaba *token.Token en X[1], obtuve %T", X[1])
+            }
+            name := string(tok.Lit)
+
+            err := semantics.AddFunction(name, "program")
             if err != nil {
                 return nil, err
             }
-            semantics.SetCurrentFunction(X[1]) // Cambia el contexto a "program"
+            err = semantics.SetCurrentFunction(name)
+            if err != nil {
+                return nil, err
+            }
             return nil, nil
         }() >>`,
 		Id:         "Programa",
@@ -46,11 +57,20 @@ var productionsTable = ProdTab{
 		NumSymbols: 7,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return func() (Attrib, error) {
-            err := semantics.AddFunction(X[1], "program")
+            tok, ok := X[1].(*token.Token)
+            if !ok {
+                return nil, fmt.Errorf("esperaba *token.Token en X[1], obtuve %T", X[1])
+            }
+            name := string(tok.Lit)
+
+            err := semantics.AddFunction(name, "program")
             if err != nil {
                 return nil, err
             }
-            semantics.SetCurrentFunction(X[1]) // Cambia el contexto a "program"
+            err = semantics.SetCurrentFunction(name)
+            if err != nil {
+                return nil, err
+            }
             return nil, nil
         }()
 		},
@@ -107,11 +127,21 @@ var productionsTable = ProdTab{
 	},
 	ProdTabEntry{
 		String: `VarsP : id X colon Type semicolon Y	<< func() (Attrib, error) {
-            ids := semantics.CollectIDs(X[0], X[1]) // Reúne todos los ids de la declaración
-            for _, id := range ids {
-                err := semantics.AddVariable(id, X[3])
-                if err != nil {
-                    return nil, err // Detecta variables doblemente declaradas
+            idTok, ok := X[0].(*token.Token)
+            if !ok {
+                return nil, fmt.Errorf("varsP: se esperaba *token.Token en X[0], obtuve %T", X[0])
+            }
+            idList, err := semantics.CollectIDs(string(idTok.Lit), X[1])
+            if err != nil {
+                return nil, err
+            }
+            typeStr, ok := X[3].(string)
+            if !ok {
+                return nil, fmt.Errorf("varsP: se esperaba string en X[3], obtuve %T", X[3])
+            }
+            for _, id := range idList {
+                if err := semantics.AddVariable(id, typeStr); err != nil {
+                    return nil, err
                 }
             }
             return nil, nil
@@ -122,11 +152,21 @@ var productionsTable = ProdTab{
 		NumSymbols: 6,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return func() (Attrib, error) {
-            ids := semantics.CollectIDs(X[0], X[1]) // Reúne todos los ids de la declaración
-            for _, id := range ids {
-                err := semantics.AddVariable(id, X[3])
-                if err != nil {
-                    return nil, err // Detecta variables doblemente declaradas
+            idTok, ok := X[0].(*token.Token)
+            if !ok {
+                return nil, fmt.Errorf("varsP: se esperaba *token.Token en X[0], obtuve %T", X[0])
+            }
+            idList, err := semantics.CollectIDs(string(idTok.Lit), X[1])
+            if err != nil {
+                return nil, err
+            }
+            typeStr, ok := X[3].(string)
+            if !ok {
+                return nil, fmt.Errorf("varsP: se esperaba string en X[3], obtuve %T", X[3])
+            }
+            for _, id := range idList {
+                if err := semantics.AddVariable(id, typeStr); err != nil {
+                    return nil, err
                 }
             }
             return nil, nil
@@ -135,16 +175,24 @@ var productionsTable = ProdTab{
 	},
 	ProdTabEntry{
 		String: `X : comma id X	<< func() (Attrib, error) {
-            return semantics.AppendID(X[1], X[2]) // Construye lista de ids
-        }() >>`,
+        idTok, ok := X[1].(*token.Token)
+        if !ok {
+            return nil, fmt.Errorf("x: se esperaba *token.Token en X[1], obtuve %T", X[1])
+        }
+        return semantics.AppendID(string(idTok.Lit), X[2])
+    }() >>`,
 		Id:         "X",
 		NTType:     6,
 		Index:      8,
 		NumSymbols: 3,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return func() (Attrib, error) {
-            return semantics.AppendID(X[1], X[2]) // Construye lista de ids
-        }()
+        idTok, ok := X[1].(*token.Token)
+        if !ok {
+            return nil, fmt.Errorf("x: se esperaba *token.Token en X[1], obtuve %T", X[1])
+        }
+        return semantics.AppendID(string(idTok.Lit), X[2])
+    }()
 		},
 	},
 	ProdTabEntry{
@@ -182,23 +230,31 @@ var productionsTable = ProdTab{
 		},
 	},
 	ProdTabEntry{
-		String: `Type : int	<< 0,nil >>`,
+		String: `Type : int	<< func() (Attrib, error) {
+            return "int", nil
+        }() >>`,
 		Id:         "Type",
 		NTType:     8,
 		Index:      12,
 		NumSymbols: 1,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
-			return 0,nil
+			return func() (Attrib, error) {
+            return "int", nil
+        }()
 		},
 	},
 	ProdTabEntry{
-		String: `Type : float	<< 0,nil >>`,
+		String: `Type : float	<< func() (Attrib, error) {
+            return "float", nil
+        }() >>`,
 		Id:         "Type",
 		NTType:     8,
 		Index:      13,
 		NumSymbols: 1,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
-			return 0,nil
+			return func() (Attrib, error) {
+            return "float", nil
+        }()
 		},
 	},
 	ProdTabEntry{
@@ -323,12 +379,16 @@ var productionsTable = ProdTab{
 	},
 	ProdTabEntry{
 		String: `Assign : id assign Expresion semicolon	<< func() (Attrib, error) {
-            varInfo, err := semantics.LookupVariable(X[0])
+            idTok, ok := X[0].(*token.Token)
+            if !ok {
+                return nil, fmt.Errorf("assign: se esperaba *token.Token en X[0], obtuve %T", X[0])
+            }
+            varInfo, err := semantics.LookupVariable(string(idTok.Lit))
             if err != nil {
                 return nil, err
             }
             if !semantics.TypeCompatible(varInfo.Type, X[2]) {
-                return nil, err
+                return nil, fmt.Errorf("assign: tipos incompatibles en la asignación")
             }
             return nil, nil
         }() >>`,
@@ -338,12 +398,16 @@ var productionsTable = ProdTab{
 		NumSymbols: 4,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return func() (Attrib, error) {
-            varInfo, err := semantics.LookupVariable(X[0])
+            idTok, ok := X[0].(*token.Token)
+            if !ok {
+                return nil, fmt.Errorf("assign: se esperaba *token.Token en X[0], obtuve %T", X[0])
+            }
+            varInfo, err := semantics.LookupVariable(string(idTok.Lit))
             if err != nil {
                 return nil, err
             }
             if !semantics.TypeCompatible(varInfo.Type, X[2]) {
-                return nil, err
+                return nil, fmt.Errorf("assign: tipos incompatibles en la asignación")
             }
             return nil, nil
         }()
@@ -390,232 +454,423 @@ var productionsTable = ProdTab{
 		},
 	},
 	ProdTabEntry{
-		String: `Expresion : Exp EP	<<  >>`,
+		String: `Expresion : Exp EP	<< func() (Attrib, error) {
+            if X[1] == nil {
+                return X[0], nil
+            }
+            leftType, ok1 := X[0].(string)
+            rightType, ok2 := X[1].(string)
+            if !ok1 || !ok2 {
+                return nil, fmt.Errorf("expresion: tipos inválidos")
+            }
+            if !semantics.TypeCompatible(leftType, rightType) {
+                return nil, fmt.Errorf("expresion: tipos incompatibles '%s' y '%s'", leftType, rightType)
+            }
+            return "int", nil // resultado de una comparación
+        }() >>`,
 		Id:         "Expresion",
 		NTType:     19,
 		Index:      31,
 		NumSymbols: 2,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
-			return X[0], nil
+			return func() (Attrib, error) {
+            if X[1] == nil {
+                return X[0], nil
+            }
+            leftType, ok1 := X[0].(string)
+            rightType, ok2 := X[1].(string)
+            if !ok1 || !ok2 {
+                return nil, fmt.Errorf("expresion: tipos inválidos")
+            }
+            if !semantics.TypeCompatible(leftType, rightType) {
+                return nil, fmt.Errorf("expresion: tipos incompatibles '%s' y '%s'", leftType, rightType)
+            }
+            return "int", nil // resultado de una comparación
+        }()
 		},
 	},
 	ProdTabEntry{
-		String: `EP : empty	<<  >>`,
+		String: `EP : empty	<< func() (Attrib, error) {
+            return nil, nil
+        }() >>`,
 		Id:         "EP",
 		NTType:     20,
 		Index:      32,
 		NumSymbols: 0,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
-			return nil, nil
+			return func() (Attrib, error) {
+            return nil, nil
+        }()
 		},
 	},
 	ProdTabEntry{
-		String: `EP : gt Exp	<<  >>`,
+		String: `EP : gt Exp	<< func() (Attrib, error) {
+            return X[1], nil
+        }() >>`,
 		Id:         "EP",
 		NTType:     20,
 		Index:      33,
 		NumSymbols: 2,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
-			return X[0], nil
+			return func() (Attrib, error) {
+            return X[1], nil
+        }()
 		},
 	},
 	ProdTabEntry{
-		String: `EP : lt Exp	<<  >>`,
+		String: `EP : lt Exp	<< func() (Attrib, error) {
+            return X[1], nil
+        }() >>`,
 		Id:         "EP",
 		NTType:     20,
 		Index:      34,
 		NumSymbols: 2,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
-			return X[0], nil
+			return func() (Attrib, error) {
+            return X[1], nil
+        }()
 		},
 	},
 	ProdTabEntry{
-		String: `EP : neq Exp	<<  >>`,
+		String: `EP : neq Exp	<< func() (Attrib, error) {
+            return X[1], nil
+        }() >>`,
 		Id:         "EP",
 		NTType:     20,
 		Index:      35,
 		NumSymbols: 2,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
-			return X[0], nil
+			return func() (Attrib, error) {
+            return X[1], nil
+        }()
 		},
 	},
 	ProdTabEntry{
-		String: `Exp : Termino ExpP	<<  >>`,
+		String: `Exp : Termino ExpP	<< func() (Attrib, error) {
+            if X[1] == nil {
+                return X[0], nil
+            }
+            return semantics.ArithmeticResultType(X[0].(string), X[1].(string))
+        }() >>`,
 		Id:         "Exp",
 		NTType:     21,
 		Index:      36,
 		NumSymbols: 2,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
-			return X[0], nil
+			return func() (Attrib, error) {
+            if X[1] == nil {
+                return X[0], nil
+            }
+            return semantics.ArithmeticResultType(X[0].(string), X[1].(string))
+        }()
 		},
 	},
 	ProdTabEntry{
-		String: `ExpP : empty	<<  >>`,
+		String: `ExpP : empty	<< func() (Attrib, error) {
+            return nil, nil
+        }() >>`,
 		Id:         "ExpP",
 		NTType:     22,
 		Index:      37,
 		NumSymbols: 0,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
-			return nil, nil
+			return func() (Attrib, error) {
+            return nil, nil
+        }()
 		},
 	},
 	ProdTabEntry{
-		String: `ExpP : plus Termino ExpP	<<  >>`,
+		String: `ExpP : plus Termino ExpP	<< func() (Attrib, error) {
+            if X[2] == nil {
+                return X[1], nil
+            }
+            return semantics.ArithmeticResultType(X[1].(string), X[2].(string))
+        }() >>`,
 		Id:         "ExpP",
 		NTType:     22,
 		Index:      38,
 		NumSymbols: 3,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
-			return X[0], nil
+			return func() (Attrib, error) {
+            if X[2] == nil {
+                return X[1], nil
+            }
+            return semantics.ArithmeticResultType(X[1].(string), X[2].(string))
+        }()
 		},
 	},
 	ProdTabEntry{
-		String: `ExpP : minus Termino ExpP	<<  >>`,
+		String: `ExpP : minus Termino ExpP	<< func() (Attrib, error) {
+            if X[2] == nil {
+                return X[1], nil
+            }
+            return semantics.ArithmeticResultType(X[1].(string), X[2].(string))
+        }() >>`,
 		Id:         "ExpP",
 		NTType:     22,
 		Index:      39,
 		NumSymbols: 3,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
-			return X[0], nil
+			return func() (Attrib, error) {
+            if X[2] == nil {
+                return X[1], nil
+            }
+            return semantics.ArithmeticResultType(X[1].(string), X[2].(string))
+        }()
 		},
 	},
 	ProdTabEntry{
-		String: `Termino : Factor TP	<<  >>`,
+		String: `Termino : Factor TP	<< func() (Attrib, error) {
+            if X[1] == nil {
+                return X[0], nil
+            }
+            return semantics.ArithmeticResultType(X[0].(string), X[1].(string))
+        }() >>`,
 		Id:         "Termino",
 		NTType:     23,
 		Index:      40,
 		NumSymbols: 2,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
-			return X[0], nil
+			return func() (Attrib, error) {
+            if X[1] == nil {
+                return X[0], nil
+            }
+            return semantics.ArithmeticResultType(X[0].(string), X[1].(string))
+        }()
 		},
 	},
 	ProdTabEntry{
-		String: `TP : empty	<<  >>`,
+		String: `TP : empty	<< func() (Attrib, error) {
+            return nil, nil
+        }() >>`,
 		Id:         "TP",
 		NTType:     24,
 		Index:      41,
 		NumSymbols: 0,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
-			return nil, nil
+			return func() (Attrib, error) {
+            return nil, nil
+        }()
 		},
 	},
 	ProdTabEntry{
-		String: `TP : mul Factor TP	<<  >>`,
+		String: `TP : mul Factor TP	<< func() (Attrib, error) {
+            if X[2] == nil {
+                return X[1], nil
+            }
+            return semantics.ArithmeticResultType(X[1].(string), X[2].(string))
+        }() >>`,
 		Id:         "TP",
 		NTType:     24,
 		Index:      42,
 		NumSymbols: 3,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
-			return X[0], nil
+			return func() (Attrib, error) {
+            if X[2] == nil {
+                return X[1], nil
+            }
+            return semantics.ArithmeticResultType(X[1].(string), X[2].(string))
+        }()
 		},
 	},
 	ProdTabEntry{
-		String: `TP : div Factor TP	<<  >>`,
+		String: `TP : div Factor TP	<< func() (Attrib, error) {
+            if X[2] == nil {
+                return X[1], nil
+            }
+            return semantics.ArithmeticResultType(X[1].(string), X[2].(string))
+        }() >>`,
 		Id:         "TP",
 		NTType:     24,
 		Index:      43,
 		NumSymbols: 3,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
-			return X[0], nil
+			return func() (Attrib, error) {
+            if X[2] == nil {
+                return X[1], nil
+            }
+            return semantics.ArithmeticResultType(X[1].(string), X[2].(string))
+        }()
 		},
 	},
 	ProdTabEntry{
-		String: `Factor : lparen Expresion rparen	<<  >>`,
+		String: `Factor : lparen Expresion rparen	<< func() (Attrib, error) {
+            return X[1], nil
+        }() >>`,
 		Id:         "Factor",
 		NTType:     25,
 		Index:      44,
 		NumSymbols: 3,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
-			return X[0], nil
+			return func() (Attrib, error) {
+            return X[1], nil
+        }()
 		},
 	},
 	ProdTabEntry{
-		String: `Factor : FactorP FactorPP	<<  >>`,
+		String: `Factor : FactorP FactorPP	<< func() (Attrib, error) {
+            // Puedes ignorar el signo para efectos de tipo
+            return X[1], nil
+        }() >>`,
 		Id:         "Factor",
 		NTType:     25,
 		Index:      45,
 		NumSymbols: 2,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
-			return X[0], nil
+			return func() (Attrib, error) {
+            // Puedes ignorar el signo para efectos de tipo
+            return X[1], nil
+        }()
 		},
 	},
 	ProdTabEntry{
-		String: `FactorP : empty	<<  >>`,
+		String: `FactorP : empty	<< func() (Attrib, error) {
+            return nil, nil
+        }() >>`,
 		Id:         "FactorP",
 		NTType:     26,
 		Index:      46,
 		NumSymbols: 0,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
-			return nil, nil
+			return func() (Attrib, error) {
+            return nil, nil
+        }()
 		},
 	},
 	ProdTabEntry{
-		String: `FactorP : plus	<<  >>`,
+		String: `FactorP : plus	<< func() (Attrib, error) {
+            return nil, nil // signo no cambia tipo
+        }() >>`,
 		Id:         "FactorP",
 		NTType:     26,
 		Index:      47,
 		NumSymbols: 1,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
-			return X[0], nil
+			return func() (Attrib, error) {
+            return nil, nil // signo no cambia tipo
+        }()
 		},
 	},
 	ProdTabEntry{
-		String: `FactorP : minus	<<  >>`,
+		String: `FactorP : minus	<< func() (Attrib, error) {
+            return nil, nil // signo no cambia tipo
+        }() >>`,
 		Id:         "FactorP",
 		NTType:     26,
 		Index:      48,
 		NumSymbols: 1,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
-			return X[0], nil
+			return func() (Attrib, error) {
+            return nil, nil // signo no cambia tipo
+        }()
 		},
 	},
 	ProdTabEntry{
-		String: `FactorPP : id	<<  >>`,
+		String: `FactorPP : id	<< func() (Attrib, error) {
+            name, ok := X[0].(string)
+            if !ok {
+                return nil, fmt.Errorf("FactorPP: id no es string")
+            }
+            v, err := semantics.LookupVariable(name)
+            if err != nil {
+                return nil, err
+            }
+            return v.Type, nil
+        }() >>`,
 		Id:         "FactorPP",
 		NTType:     27,
 		Index:      49,
 		NumSymbols: 1,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
-			return X[0], nil
+			return func() (Attrib, error) {
+            name, ok := X[0].(string)
+            if !ok {
+                return nil, fmt.Errorf("FactorPP: id no es string")
+            }
+            v, err := semantics.LookupVariable(name)
+            if err != nil {
+                return nil, err
+            }
+            return v.Type, nil
+        }()
 		},
 	},
 	ProdTabEntry{
-		String: `FactorPP : CTE	<<  >>`,
+		String: `FactorPP : CTE	<< func() (Attrib, error) {
+            return X[0], nil // ya es el tipo ("int" o "float")
+        }() >>`,
 		Id:         "FactorPP",
 		NTType:     27,
 		Index:      50,
 		NumSymbols: 1,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
-			return X[0], nil
+			return func() (Attrib, error) {
+            return X[0], nil // ya es el tipo ("int" o "float")
+        }()
 		},
 	},
 	ProdTabEntry{
-		String: `CTE : nums	<<  >>`,
+		String: `CTE : nums	<< func() (Attrib, error) {
+            tok, ok := X[0].(*token.Token)
+            if !ok {
+                return nil, fmt.Errorf("cte inválida (entero)")
+            }
+            lit := string(tok.Lit)
+            return semantics.GetLiteralType(lit), nil
+        }() >>`,
 		Id:         "CTE",
 		NTType:     28,
 		Index:      51,
 		NumSymbols: 1,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
-			return X[0], nil
+			return func() (Attrib, error) {
+            tok, ok := X[0].(*token.Token)
+            if !ok {
+                return nil, fmt.Errorf("cte inválida (entero)")
+            }
+            lit := string(tok.Lit)
+            return semantics.GetLiteralType(lit), nil
+        }()
 		},
 	},
 	ProdTabEntry{
-		String: `CTE : nums period nums	<<  >>`,
+		String: `CTE : nums period nums	<< func() (Attrib, error) {
+            intTok, ok1 := X[0].(*token.Token)
+            fracTok, ok2 := X[2].(*token.Token)
+            if !ok1 || !ok2 {
+                return nil, fmt.Errorf("cte inválida (flotante)")
+            }
+            full := string(intTok.Lit) + "." + string(fracTok.Lit)
+            return semantics.GetLiteralType(full), nil
+        }() >>`,
 		Id:         "CTE",
 		NTType:     28,
 		Index:      52,
 		NumSymbols: 3,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
-			return X[0], nil
+			return func() (Attrib, error) {
+            intTok, ok1 := X[0].(*token.Token)
+            fracTok, ok2 := X[2].(*token.Token)
+            if !ok1 || !ok2 {
+                return nil, fmt.Errorf("cte inválida (flotante)")
+            }
+            full := string(intTok.Lit) + "." + string(fracTok.Lit)
+            return semantics.GetLiteralType(full), nil
+        }()
 		},
 	},
 	ProdTabEntry{
 		String: `Funcs : void id lparen FuncsP rparen lbracket VP Body rbracket semicolon	<< func() (Attrib, error) {
-            err := semantics.AddFunction(X[2], "void")
+            tok, ok := X[1].(*token.Token)
+            if !ok {
+                return nil, fmt.Errorf("esperaba *token.Token en X[1], obtuve %T", X[1])
+            }
+            name := string(tok.Lit)
+            err := semantics.AddFunction(name, "void")
             if err != nil {
                 return nil, err
             }
-            semantics.SetCurrentFunction(X[2]) // Cambia el contexto a la función
+            semantics.SetCurrentFunction(name) // Cambia el contexto a la función
             return nil, nil
         }() >>`,
 		Id:         "Funcs",
@@ -624,11 +879,16 @@ var productionsTable = ProdTab{
 		NumSymbols: 10,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return func() (Attrib, error) {
-            err := semantics.AddFunction(X[2], "void")
+            tok, ok := X[1].(*token.Token)
+            if !ok {
+                return nil, fmt.Errorf("esperaba *token.Token en X[1], obtuve %T", X[1])
+            }
+            name := string(tok.Lit)
+            err := semantics.AddFunction(name, "void")
             if err != nil {
                 return nil, err
             }
-            semantics.SetCurrentFunction(X[2]) // Cambia el contexto a la función
+            semantics.SetCurrentFunction(name) // Cambia el contexto a la función
             return nil, nil
         }()
 		},
@@ -691,46 +951,32 @@ var productionsTable = ProdTab{
 	},
 	ProdTabEntry{
 		String: `WP : id colon Type W	<< func() (Attrib, error) {
-            varName, ok := X[0].(string)
-            if !ok {
-                return nil, nil
-            }
-
-            varType, ok := X[2].(string)
-            if !ok {
-                return nil, nil
-            }
-
-            err := semantics.AddParameter(varName, varType)
-            if err != nil {
-                return nil, err
-            }
-
-            return nil, nil
-        }() >>`,
+        idTok, ok := X[0].(*token.Token)
+        if !ok {
+            return nil, fmt.Errorf("wP: se esperaba *token.Token en X[0], obtuve %T", X[0])
+        }
+        typeStr, ok := X[2].(string)
+        if !ok {
+            return nil, fmt.Errorf("wP: se esperaba string en X[2], obtuve %T", X[2])
+        }
+        return semantics.AddParameter(string(idTok.Lit), typeStr), nil
+    }() >>`,
 		Id:         "WP",
 		NTType:     32,
 		Index:      58,
 		NumSymbols: 4,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return func() (Attrib, error) {
-            varName, ok := X[0].(string)
-            if !ok {
-                return nil, nil
-            }
-
-            varType, ok := X[2].(string)
-            if !ok {
-                return nil, nil
-            }
-
-            err := semantics.AddParameter(varName, varType)
-            if err != nil {
-                return nil, err
-            }
-
-            return nil, nil
-        }()
+        idTok, ok := X[0].(*token.Token)
+        if !ok {
+            return nil, fmt.Errorf("wP: se esperaba *token.Token en X[0], obtuve %T", X[0])
+        }
+        typeStr, ok := X[2].(string)
+        if !ok {
+            return nil, fmt.Errorf("wP: se esperaba string en X[2], obtuve %T", X[2])
+        }
+        return semantics.AddParameter(string(idTok.Lit), typeStr), nil
+    }()
 		},
 	},
 	ProdTabEntry{
@@ -755,11 +1001,11 @@ var productionsTable = ProdTab{
 	},
 	ProdTabEntry{
 		String: `FCall : id lparen FCallP rparen semicolon	<< func() (Attrib, error) {
-            err := semantics.ValidateFunctionCall(X[0], X[2])
-            if err != nil {
-                return nil, err
+            idTok, ok := X[0].(*token.Token)
+            if !ok {
+                return nil, fmt.Errorf("fCall: se esperaba *token.Token en X[0], obtuve %T", X[0])
             }
-            return nil, nil
+            return semantics.ValidateFunctionCall(string(idTok.Lit), X[2]), nil
         }() >>`,
 		Id:         "FCall",
 		NTType:     34,
@@ -767,11 +1013,11 @@ var productionsTable = ProdTab{
 		NumSymbols: 5,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return func() (Attrib, error) {
-            err := semantics.ValidateFunctionCall(X[0], X[2])
-            if err != nil {
-                return nil, err
+            idTok, ok := X[0].(*token.Token)
+            if !ok {
+                return nil, fmt.Errorf("fCall: se esperaba *token.Token en X[0], obtuve %T", X[0])
             }
-            return nil, nil
+            return semantics.ValidateFunctionCall(string(idTok.Lit), X[2]), nil
         }()
 		},
 	},
