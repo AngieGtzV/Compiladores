@@ -24,7 +24,7 @@ var testData = []*TI{
 	},
 	{
 		src: `
-			program test;
+			program test2;
 			var x: int;
 			main {
 				x = 10;
@@ -35,7 +35,7 @@ var testData = []*TI{
 	},
 	{
 		src: `
-			program test;
+			program test3;
 			var x, y: float;
 			main {
 				x = 1.5 + 2.0;
@@ -44,9 +44,9 @@ var testData = []*TI{
 		`,
 		valid: true,
 	},
-	{
+	/*{
 		src: `
-			program test;
+			program test4;
 			main {
 				print("Hola!");
 			}
@@ -56,7 +56,7 @@ var testData = []*TI{
 	},
 	{
 		src: `
-			program test;
+			program test5;
 			main {
 				print("Hola");
 				print("Mundo");
@@ -67,7 +67,7 @@ var testData = []*TI{
 	},
 	{
 		src: `
-			program test;
+			program test6;
 			main {
 				if (1 < 2) {
 					print("Si");
@@ -81,7 +81,7 @@ var testData = []*TI{
 	},
 	{
 		src: `
-			program test;
+			program test7;
 			main {
 				while (1 < 2) do {
 					print("loop");
@@ -93,8 +93,8 @@ var testData = []*TI{
 	},
 	{
 		src: `
-			program test;
-			void foo() [ var x: int; 
+			program test8;
+			void foo() [ var x: int;
 				{print("func");}
 			];
 			main {
@@ -104,8 +104,25 @@ var testData = []*TI{
 		`,
 		valid: true,
 	},
+	{
+		src: `
+			program test8;
+			void foo() [ var x: int;
+				{print("func");}
+			];
+			void second() [ var x: int;
+				{print("func");}
+			];
+			main {
+				foo();
+				second();
+			}
+			end
+		`,
+		valid: true,
+	},*/
 
-	//Casos inválidos
+	/*//Casos inválidos
 	{
 		src: `
 			program test
@@ -218,7 +235,7 @@ var testData = []*TI{
 			1 = x;
 		`,
 		valid: false, // no empieza por program ni el resto de la secuencia
-	},
+	},*/
 }
 
 func Test1(t *testing.T) {

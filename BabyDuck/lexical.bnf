@@ -50,10 +50,36 @@ period : '.' ;
 colon : ':' ;
 
 /* Syntactic Parsr */
+<<
+import (
+	"BabyDuck/semantics"
+    "fmt"
+	"BabyDuck/token"
+)
+>>
 
 Programa
   : program  id semicolon ProgramaP main Body end
-  ;
+  <<
+        func() (Attrib, error) {
+            tok, ok := X[1].(*token.Token)
+            if !ok {
+                return nil, fmt.Errorf("esperaba *token.Token en X[1], obtuve %T", X[1])
+            }
+            name := string(tok.Lit)
+
+            err := semantics.AddFunction(name, "program")
+            if err != nil {
+                return nil, err
+            }
+            err = semantics.SetCurrentFunction(name)
+            if err != nil {
+                return nil, err
+            }
+            return nil, nil
+        }()
+    >>
+    ;
 
 ProgramaP
     : Vars FP
@@ -65,23 +91,73 @@ FP
     | empty
     ;
 
-Vars
-    : var id X colon Type semicolon Y
+Vars 
+    : var VarsP
+    ;
+
+VarsP
+    : id X colon Type semicolon Y 
+     <<
+        func() (Attrib, error) {
+            idTok, ok := X[0].(*token.Token)
+            if !ok {
+                return nil, fmt.Errorf("varsP: se esperaba *token.Token en X[0], obtuve %T", X[0])
+            }
+            idList, err := semantics.CollectIDs(string(idTok.Lit), X[1])
+            if err != nil {
+                return nil, err
+            }
+            typeStr, ok := X[3].(string)
+            if !ok {
+                return nil, fmt.Errorf("varsP: se esperaba string en X[3], obtuve %T", X[3])
+            }
+            for _, id := range idList {
+                if err := semantics.AddVariable(id, typeStr); err != nil {
+                    return nil, err
+                }
+            }
+            return nil, nil
+        }()
+    >>
     ;
 
 X
     : comma id X
+    <<
+    func() (Attrib, error) {
+        idTok, ok := X[1].(*token.Token)
+        if !ok {
+            return nil, fmt.Errorf("x: se esperaba *token.Token en X[1], obtuve %T", X[1])
+        }
+        return semantics.AppendID(string(idTok.Lit), X[2])
+    }()
+  >>
     | empty
+    <<
+        func() (Attrib, error) {
+            return semantics.EmptyIDList()
+        }()
+    >>
     ;
 
 Y
-    : id X colon Type semicolon Y
+    : VarsP
     | empty
     ;
 
 Type
     : int
-    | float
+    <<
+        func() (Attrib, error) {
+            return "int", nil
+        }()
+    >>
+    | float 
+    <<
+        func() (Attrib, error) {
+            return "float", nil
+        }()
+    >>
     ;
 
 Body
@@ -116,6 +192,22 @@ PrintPP
 
 Assign
     : id assign Expresion semicolon
+    <<
+        func() (Attrib, error) {
+            idTok, ok := X[0].(*token.Token)
+            if !ok {
+                return nil, fmt.Errorf("assign: se esperaba *token.Token en X[0], obtuve %T", X[0])
+            }
+            varInfo, err := semantics.LookupVariable(string(idTok.Lit))
+            if err != nil {
+                return nil, err
+            }
+            if !semantics.TypeCompatible(varInfo.Type, X[2]) {
+                return nil, fmt.Errorf("assign: tipos incompatibles en la asignación")
+            }
+            return nil, nil
+        }()
+    >>
     ;
 
 Cycle
@@ -133,68 +225,279 @@ ConditionP
 
 Expresion
     : Exp EP
+    <<
+        func() (Attrib, error) {
+            if $1 == nil {
+                return $0, nil
+            }
+            leftType, ok1 := $0.(string)
+            rightType, ok2 := $1.(string)
+            if !ok1 || !ok2 {
+                return nil, fmt.Errorf("expresion: tipos inválidos")
+            }
+            if !semantics.TypeCompatible(leftType, rightType) {
+                return nil, fmt.Errorf("expresion: tipos incompatibles '%s' y '%s'", leftType, rightType)
+            }
+            return "int", nil // resultado de una comparación
+        }()
+    >>
     ;
 
 EP
     : empty
+    <<
+        func() (Attrib, error) {
+            return nil, nil
+        }()
+    >>
     | gt Exp
+    <<
+        func() (Attrib, error) {
+            return $1, nil
+        }()
+    >>
     | lt Exp
+    <<
+        func() (Attrib, error) {
+            return $1, nil
+        }()
+    >>
     | neq Exp
+    <<
+        func() (Attrib, error) {
+            return $1, nil
+        }()
+    >>
     ;
 
 Exp
     : Termino ExpP
+    <<
+        func() (Attrib, error) {
+            if $1 == nil {
+                return $0, nil
+            }
+            return semantics.ArithmeticResultType($0.(string), $1.(string))
+        }()
+    >>
     ;
 
 ExpP
     : empty
+    <<
+        func() (Attrib, error) {
+            return nil, nil
+        }()
+    >>
     | plus Termino ExpP
+    <<
+        func() (Attrib, error) {
+            if $2 == nil {
+                return $1, nil
+            }
+            return semantics.ArithmeticResultType($1.(string), $2.(string))
+        }()
+    >>
     | minus Termino ExpP
+    <<
+        func() (Attrib, error) {
+            if $2 == nil {
+                return $1, nil
+            }
+            return semantics.ArithmeticResultType($1.(string), $2.(string))
+        }()
+    >>
     ;
 
 Termino
     : Factor TP
+    <<
+        func() (Attrib, error) {
+            if $1 == nil {
+                return $0, nil
+            }
+            return semantics.ArithmeticResultType($0.(string), $1.(string))
+        }()
+    >>
     ;
 
 TP
     :empty
+    <<
+        func() (Attrib, error) {
+            return nil, nil
+        }()
+    >>
     | mul Factor TP
+    <<
+        func() (Attrib, error) {
+            if $2 == nil {
+                return $1, nil
+            }
+            return semantics.ArithmeticResultType($1.(string), $2.(string))
+        }()
+    >>
     | div Factor TP
+    <<
+        func() (Attrib, error) {
+            if $2 == nil {
+                return $1, nil
+            }
+            return semantics.ArithmeticResultType($1.(string), $2.(string))
+        }()
+    >>
     ;
 
 Factor
     : lparen Expresion rparen
+    <<
+        func() (Attrib, error) {
+            return $1, nil
+        }()
+    >>
     | FactorP FactorPP
+    <<
+        func() (Attrib, error) {
+            // Puedes ignorar el signo para efectos de tipo
+            return $1, nil
+        }()
+    >>
     ;
 
 FactorP 
     : empty
+    <<
+        func() (Attrib, error) {
+            return nil, nil
+        }()
+    >>
     | plus
+    <<
+        func() (Attrib, error) {
+            return nil, nil // signo no cambia tipo
+        }()
+    >>
     | minus
+    <<
+        func() (Attrib, error) {
+            return nil, nil // signo no cambia tipo
+        }()
+    >>
     ;
 
 FactorPP
     : id 
+    <<
+        func() (Attrib, error) {
+            name, ok := $0.(string)
+            if !ok {
+                return nil, fmt.Errorf("FactorPP: id no es string")
+            }
+            v, err := semantics.LookupVariable(name)
+            if err != nil {
+                return nil, err
+            }
+            return v.Type, nil
+        }()
+    >>
     | CTE
+     <<
+        func() (Attrib, error) {
+            return $0, nil // ya es el tipo ("int" o "float")
+        }()
+    >>
     ;
 
 CTE
     : nums
+    <<
+        func() (Attrib, error) {
+            tok, ok := $0.(*token.Token)
+            if !ok {
+                return nil, fmt.Errorf("cte inválida (entero)")
+            }
+            lit := string(tok.Lit)
+            return semantics.GetLiteralType(lit), nil
+        }()
+    >>
     | nums period nums
+    <<
+        func() (Attrib, error) {
+            intTok, ok1 := $0.(*token.Token)
+            fracTok, ok2 := $2.(*token.Token)
+            if !ok1 || !ok2 {
+                return nil, fmt.Errorf("cte inválida (flotante)")
+            }
+            full := string(intTok.Lit) + "." + string(fracTok.Lit)
+            return semantics.GetLiteralType(full), nil
+        }()
+    >>
     ;
 
 Funcs
     : void id lparen FuncsP rparen lbracket VP Body rbracket semicolon
+    <<
+        func() (Attrib, error) {
+            tok, ok := X[1].(*token.Token)
+            if !ok {
+                return nil, fmt.Errorf("esperaba *token.Token en X[1], obtuve %T", X[1])
+            }
+            name := string(tok.Lit)
+            err := semantics.AddFunction(name, "void")
+            if err != nil {
+                return nil, err
+            }
+            semantics.SetCurrentFunction(name) // Cambia el contexto a la función
+            return nil, nil
+        }()
+  >>
     ;
 
 FuncsP
     : empty
-    | id colon Type W
+    <<
+      func() (Attrib, error) {
+        return nil, nil // no hay parámetros
+        }()
+    >>
+    | WP
+    <<
+        func() (Attrib, error) {
+            return nil, nil // parámetros ya se agregan en WP
+        }()
+        >>
     ;
 
 W
     : empty
-    | comma id colon Type W
+    <<
+      func() (Attrib, error) {
+        return nil, nil
+      }()
+    >>
+    | comma WP
+    <<
+        func() (Attrib, error) {
+            return nil, nil // ya agregados en WP
+        }()
+        >>
+    ;
+
+WP
+    : id colon Type W
+    <<
+    func() (Attrib, error) {
+        idTok, ok := X[0].(*token.Token)
+        if !ok {
+            return nil, fmt.Errorf("wP: se esperaba *token.Token en X[0], obtuve %T", X[0])
+        }
+        typeStr, ok := X[2].(string)
+        if !ok {
+            return nil, fmt.Errorf("wP: se esperaba string en X[2], obtuve %T", X[2])
+        }
+        return semantics.AddParameter(string(idTok.Lit), typeStr), nil
+    }()
+  >>
     ;
 
 VP
@@ -204,14 +507,43 @@ VP
 
 FCall
     : id lparen FCallP rparen semicolon
+     <<
+        func() (Attrib, error) {
+            idTok, ok := X[0].(*token.Token)
+            if !ok {
+                return nil, fmt.Errorf("fCall: se esperaba *token.Token en X[0], obtuve %T", X[0])
+            }
+            return semantics.ValidateFunctionCall(string(idTok.Lit), X[2]), nil
+        }()
+    >>
     ;
 
 FCallP
     : empty
+    <<
+        func() (Attrib, error) {
+            return semantics.EmptyArgList()
+        }()
+    >>
     | Expresion Z
+    <<
+        func() (Attrib, error) {
+            return semantics.BuildArgList($0, $1)
+        }()
+    >>
     ;
 
 Z
     : empty
+    <<
+        func() (Attrib, error) {
+            return semantics.EmptyArgList()
+        }()
+    >>
     | comma Expresion Z
+    <<
+        func() (Attrib, error) {
+            return semantics.AppendArg($1, $2)
+        }()
+    >>
     ;
