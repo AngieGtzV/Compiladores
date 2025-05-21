@@ -241,16 +241,129 @@ Assign
     ;
 
 Cycle
-    : while lparen Expresion rparen do Body semicolon
+    : CycleStart do Body semicolon
+    <<
+        func() (Attrib, error) {
+            if len(semantics.JumpStack) < 2 {
+                return nil, fmt.Errorf("Cycle: JumpStack no tiene suficientes elementos")
+            }
+
+            end := len(semantics.Quadruples)
+            falseJump, err := semantics.PopJump()
+            if err != nil {
+                return nil, fmt.Errorf("cycle: error al hacer PopJump (falseJump): %v", err)
+            }
+            ret, err := semantics.PopJump()
+            if err != nil {
+                return nil, fmt.Errorf("cycle: error al hacer PopJump (ret): %v", err)
+            }
+
+            semantics.AddQuadruple(8, -1, -1, ret)
+
+            semantics.Quadruples[falseJump].Result = end
+
+            return nil, nil
+        }()
+    >>
+    ;
+
+CycleStart
+    : while lparen Expresion rparen
+    <<
+        func() (Attrib, error) {
+            pos := len(semantics.Quadruples)
+            semantics.PushJump(pos)
+
+            if len(semantics.TypeStack) == 0 {
+                return nil, fmt.Errorf("cycleStart: pila de tipos vacía")
+            }
+
+            condType := semantics.PopType()
+            if condType != "bool" {
+                return nil, fmt.Errorf("expresión de while no es booleana (tipo fue '%s')", condType)
+            }
+
+            cond := semantics.PopOperand()
+
+            // 9 : GotoF (salto si condición es falsa)
+            quad := semantics.Quadruple{
+                Op:   9,
+                Left: cond.Addr,
+                Right: -1,
+                Result:  -1, // lo rellenaremos en Cycle
+            }
+            semantics.Quadruples = append(semantics.Quadruples, quad)
+
+            semantics.PushJump(len(semantics.Quadruples) - 1)
+
+            return nil, nil
+        }()
+    >>
     ;
 
 Condition
-    : if lparen Expresion rparen Body ConditionP
+    : ConditionStart Body ConditionP semicolon
+    ;
+
+ConditionStart
+    : if lparen Expresion rparen
+    <<
+        func() (Attrib, error) {
+            fmt.Println("DEBUG ConditionStart")
+
+            topType := semantics.PopType()
+            if topType != "bool" {
+                return nil, fmt.Errorf("condición de 'if' no es booleana (tipo fue '%s')", topType)
+            }
+
+            condResult := semantics.PopOperand()
+
+            // 9 : GOTOF 
+            semantics.AddQuadruple(9, condResult.Addr, -1, -1)
+            semantics.PushJump(len(semantics.Quadruples) - 1)
+
+            return nil, nil
+        }()
+    >>
     ;
 
 ConditionP
     : empty
+    <<
+        func() (Attrib, error) {
+            fmt.Println("DEBUG ConditionP (sin else)")
+
+            falseJump, err := semantics.PopJump()
+            if err != nil {
+                return nil, err
+            }
+
+            semantics.Quadruples[falseJump].Result = len(semantics.Quadruples)
+            return nil, nil
+        }()
+    >>
     | else Body
+    <<
+        func() (Attrib, error) {
+            fmt.Println("DEBUG ConditionP (con else)")
+
+            // 8 : GOTO que saltará después del else
+            semantics.AddQuadruple(8, -1, -1, -1)
+            endJump := len(semantics.Quadruples) - 1
+
+            // 8 : GOTOF del if (al inicio del else)
+            falseJump, err := semantics.PopJump()
+            if err != nil {
+                return nil, err
+            }
+            semantics.Quadruples[falseJump].Result = falseJump + 1
+
+            // 8 : GOTO (al final del else)
+            semantics.Quadruples[endJump].Result = len(semantics.Quadruples)
+
+            return nil, nil
+        }()
+    >>
     ;
 
 Expresion

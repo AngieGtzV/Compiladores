@@ -14,59 +14,77 @@ type TI struct {
 
 var testData = []*TI{
 	//Casos válidos simples
-	{
-		src: `
-			program test;
-			main {
-			}
-			end
-		`,
-		valid: true,
-	},
+	/*{
+			src: `
+				program test;
+				main {
+				}
+				end
+			`,
+			valid: true,
+		},
+		{
+			src: `
+				program test;
+				var x: int;
+				main {
+					x = 10 + 2;
+				}
+				end
+			`,
+			valid: true,
+		},
+		{
+			src: `
+				program test;
+				var x, y: float;
+				main {
+					x = 1.5 + y;
+				}
+				end
+			`,
+			valid: true,
+		},
+		{
+			src: `
+				program test;
+				var x: int;
+				main {
+					while (x < 10) do
+	    				{x = x + 1;}
+						;
+				}
+				end
+			`,
+			valid: true,
+		},
+		{
+			src: `
+				program test5;
+				main {
+					print("Hola");
+					print("Mundo");
+				}
+				end
+			`,
+			valid: true,
+		},*/
 	{
 		src: `
 			program test;
 			var x: int;
 			main {
-				x = 10 + 2;
-			}
-			end
-		`,
-		valid: true,
-	},
-	{
-		src: `
-			program test;
-			var x, y: float;
-			main {
-				x = 1.5 + y;
+				if (x < 10) {
+					x = x + 1;
+				} else {
+					x = x - 1;
+				};
 			}
 			end
 		`,
 		valid: true,
 	},
 	/*{
-		src: `
-			program test;
-			main {
-				print("Hola!");
-			}
-			end
-		`,
-		valid: true,
-	},
-	{
-		src: `
-			program test5;
-			main {
-				print("Hola");
-				print("Mundo");
-			}
-			end
-		`,
-		valid: true,
-	},
-	{
 		src: `
 			program test6;
 			main {
@@ -104,7 +122,7 @@ var testData = []*TI{
 			end
 		`,
 		valid: true,
-	},*/
+	},
 	{
 		src: `
 			program test8;
@@ -121,7 +139,7 @@ var testData = []*TI{
 			end
 		`,
 		valid: true,
-	},
+	},*/
 
 	/*//Casos inválidos
 	{

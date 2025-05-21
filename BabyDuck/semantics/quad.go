@@ -12,6 +12,7 @@ var (
 	OperatorStack     []int
 	TypeStack         []string
 	Quadruples        []Quadruple
+	JumpStack         []int
 )
 
 type Quadruple struct {
@@ -86,6 +87,19 @@ func PopOperator() int {
 	op := OperatorStack[len(OperatorStack)-1]
 	OperatorStack = OperatorStack[:len(OperatorStack)-1]
 	return op
+}
+
+func PushJump(pos int) {
+	JumpStack = append(JumpStack, pos)
+}
+
+func PopJump() (int, error) {
+	if len(JumpStack) == 0 {
+		return -1, fmt.Errorf("JumpStack vacío")
+	}
+	top := JumpStack[len(JumpStack)-1]
+	JumpStack = JumpStack[:len(JumpStack)-1]
+	return top, nil
 }
 
 // ------------------- DIRECCIONES VIRTUALES -------------------
