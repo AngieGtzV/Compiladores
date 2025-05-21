@@ -2,7 +2,7 @@
 
 package parser
 
-const numNTSymbols = 37
+const numNTSymbols = 39
 
 type (
 	gotoTable [numStates]gotoRow
@@ -13,6 +13,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S0
 		-1, // S'
 		1,  // Programa
+		2,  // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -52,6 +54,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S1
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -91,9 +95,11 @@ var gotoTab = gotoTable{
 	gotoRow{ // S2
 		-1, // S'
 		-1, // Programa
-		-1, // ProgramaP
-		-1, // FP
-		-1, // Vars
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
+		4,  // ProgramaP
+		6,  // FP
+		5,  // Vars
 		-1, // VarsP
 		-1, // X
 		-1, // Y
@@ -118,7 +124,7 @@ var gotoTab = gotoTable{
 		-1, // FactorP
 		-1, // FactorPP
 		-1, // CTE
-		-1, // Funcs
+		7,  // Funcs
 		-1, // FuncsP
 		-1, // W
 		-1, // WP
@@ -130,6 +136,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S3
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -169,9 +177,11 @@ var gotoTab = gotoTable{
 	gotoRow{ // S4
 		-1, // S'
 		-1, // Programa
-		5,  // ProgramaP
-		7,  // FP
-		6,  // Vars
+		-1, // ProgramaHeader
+		11, // ProgramaMain
+		-1, // ProgramaP
+		-1, // FP
+		-1, // Vars
 		-1, // VarsP
 		-1, // X
 		-1, // Y
@@ -196,7 +206,7 @@ var gotoTab = gotoTable{
 		-1, // FactorP
 		-1, // FactorPP
 		-1, // CTE
-		8,  // Funcs
+		-1, // Funcs
 		-1, // FuncsP
 		-1, // W
 		-1, // WP
@@ -208,123 +218,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S5
 		-1, // S'
 		-1, // Programa
-		-1, // ProgramaP
-		-1, // FP
-		-1, // Vars
-		-1, // VarsP
-		-1, // X
-		-1, // Y
-		-1, // Type
-		-1, // Body
-		-1, // BodyP
-		-1, // Statement
-		-1, // Print
-		-1, // PrintP
-		-1, // PrintPP
-		-1, // Assign
-		-1, // Cycle
-		-1, // Condition
-		-1, // ConditionP
-		-1, // Expresion
-		-1, // EP
-		-1, // Exp
-		-1, // ExpP
-		-1, // Termino
-		-1, // TP
-		-1, // Factor
-		-1, // FactorP
-		-1, // FactorPP
-		-1, // CTE
-		-1, // Funcs
-		-1, // FuncsP
-		-1, // W
-		-1, // WP
-		-1, // VP
-		-1, // FCall
-		-1, // FCallP
-		-1, // Z
-	},
-	gotoRow{ // S6
-		-1, // S'
-		-1, // Programa
-		-1, // ProgramaP
-		12, // FP
-		-1, // Vars
-		-1, // VarsP
-		-1, // X
-		-1, // Y
-		-1, // Type
-		-1, // Body
-		-1, // BodyP
-		-1, // Statement
-		-1, // Print
-		-1, // PrintP
-		-1, // PrintPP
-		-1, // Assign
-		-1, // Cycle
-		-1, // Condition
-		-1, // ConditionP
-		-1, // Expresion
-		-1, // EP
-		-1, // Exp
-		-1, // ExpP
-		-1, // Termino
-		-1, // TP
-		-1, // Factor
-		-1, // FactorP
-		-1, // FactorPP
-		-1, // CTE
-		8,  // Funcs
-		-1, // FuncsP
-		-1, // W
-		-1, // WP
-		-1, // VP
-		-1, // FCall
-		-1, // FCallP
-		-1, // Z
-	},
-	gotoRow{ // S7
-		-1, // S'
-		-1, // Programa
-		-1, // ProgramaP
-		-1, // FP
-		-1, // Vars
-		-1, // VarsP
-		-1, // X
-		-1, // Y
-		-1, // Type
-		-1, // Body
-		-1, // BodyP
-		-1, // Statement
-		-1, // Print
-		-1, // PrintP
-		-1, // PrintPP
-		-1, // Assign
-		-1, // Cycle
-		-1, // Condition
-		-1, // ConditionP
-		-1, // Expresion
-		-1, // EP
-		-1, // Exp
-		-1, // ExpP
-		-1, // Termino
-		-1, // TP
-		-1, // Factor
-		-1, // FactorP
-		-1, // FactorPP
-		-1, // CTE
-		-1, // Funcs
-		-1, // FuncsP
-		-1, // W
-		-1, // WP
-		-1, // VP
-		-1, // FCall
-		-1, // FCallP
-		-1, // Z
-	},
-	gotoRow{ // S8
-		-1, // S'
-		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		13, // FP
 		-1, // Vars
@@ -352,7 +247,130 @@ var gotoTab = gotoTable{
 		-1, // FactorP
 		-1, // FactorPP
 		-1, // CTE
-		8,  // Funcs
+		7,  // Funcs
+		-1, // FuncsP
+		-1, // W
+		-1, // WP
+		-1, // VP
+		-1, // FCall
+		-1, // FCallP
+		-1, // Z
+	},
+	gotoRow{ // S6
+		-1, // S'
+		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
+		-1, // ProgramaP
+		-1, // FP
+		-1, // Vars
+		-1, // VarsP
+		-1, // X
+		-1, // Y
+		-1, // Type
+		-1, // Body
+		-1, // BodyP
+		-1, // Statement
+		-1, // Print
+		-1, // PrintP
+		-1, // PrintPP
+		-1, // Assign
+		-1, // Cycle
+		-1, // Condition
+		-1, // ConditionP
+		-1, // Expresion
+		-1, // EP
+		-1, // Exp
+		-1, // ExpP
+		-1, // Termino
+		-1, // TP
+		-1, // Factor
+		-1, // FactorP
+		-1, // FactorPP
+		-1, // CTE
+		-1, // Funcs
+		-1, // FuncsP
+		-1, // W
+		-1, // WP
+		-1, // VP
+		-1, // FCall
+		-1, // FCallP
+		-1, // Z
+	},
+	gotoRow{ // S7
+		-1, // S'
+		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
+		-1, // ProgramaP
+		14, // FP
+		-1, // Vars
+		-1, // VarsP
+		-1, // X
+		-1, // Y
+		-1, // Type
+		-1, // Body
+		-1, // BodyP
+		-1, // Statement
+		-1, // Print
+		-1, // PrintP
+		-1, // PrintPP
+		-1, // Assign
+		-1, // Cycle
+		-1, // Condition
+		-1, // ConditionP
+		-1, // Expresion
+		-1, // EP
+		-1, // Exp
+		-1, // ExpP
+		-1, // Termino
+		-1, // TP
+		-1, // Factor
+		-1, // FactorP
+		-1, // FactorPP
+		-1, // CTE
+		7,  // Funcs
+		-1, // FuncsP
+		-1, // W
+		-1, // WP
+		-1, // VP
+		-1, // FCall
+		-1, // FCallP
+		-1, // Z
+	},
+	gotoRow{ // S8
+		-1, // S'
+		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
+		-1, // ProgramaP
+		-1, // FP
+		-1, // Vars
+		16, // VarsP
+		-1, // X
+		-1, // Y
+		-1, // Type
+		-1, // Body
+		-1, // BodyP
+		-1, // Statement
+		-1, // Print
+		-1, // PrintP
+		-1, // PrintPP
+		-1, // Assign
+		-1, // Cycle
+		-1, // Condition
+		-1, // ConditionP
+		-1, // Expresion
+		-1, // EP
+		-1, // Exp
+		-1, // ExpP
+		-1, // Termino
+		-1, // TP
+		-1, // Factor
+		-1, // FactorP
+		-1, // FactorPP
+		-1, // CTE
+		-1, // Funcs
 		-1, // FuncsP
 		-1, // W
 		-1, // WP
@@ -364,10 +382,12 @@ var gotoTab = gotoTable{
 	gotoRow{ // S9
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
-		15, // VarsP
+		-1, // VarsP
 		-1, // X
 		-1, // Y
 		-1, // Type
@@ -403,6 +423,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S10
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -442,45 +464,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S11
 		-1, // S'
 		-1, // Programa
-		-1, // ProgramaP
-		-1, // FP
-		-1, // Vars
-		-1, // VarsP
-		-1, // X
-		-1, // Y
-		-1, // Type
-		17, // Body
-		-1, // BodyP
-		-1, // Statement
-		-1, // Print
-		-1, // PrintP
-		-1, // PrintPP
-		-1, // Assign
-		-1, // Cycle
-		-1, // Condition
-		-1, // ConditionP
-		-1, // Expresion
-		-1, // EP
-		-1, // Exp
-		-1, // ExpP
-		-1, // Termino
-		-1, // TP
-		-1, // Factor
-		-1, // FactorP
-		-1, // FactorPP
-		-1, // CTE
-		-1, // Funcs
-		-1, // FuncsP
-		-1, // W
-		-1, // WP
-		-1, // VP
-		-1, // FCall
-		-1, // FCallP
-		-1, // Z
-	},
-	gotoRow{ // S12
-		-1, // S'
-		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -517,9 +502,52 @@ var gotoTab = gotoTable{
 		-1, // FCallP
 		-1, // Z
 	},
+	gotoRow{ // S12
+		-1, // S'
+		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
+		-1, // ProgramaP
+		-1, // FP
+		-1, // Vars
+		-1, // VarsP
+		-1, // X
+		-1, // Y
+		-1, // Type
+		20, // Body
+		-1, // BodyP
+		-1, // Statement
+		-1, // Print
+		-1, // PrintP
+		-1, // PrintPP
+		-1, // Assign
+		-1, // Cycle
+		-1, // Condition
+		-1, // ConditionP
+		-1, // Expresion
+		-1, // EP
+		-1, // Exp
+		-1, // ExpP
+		-1, // Termino
+		-1, // TP
+		-1, // Factor
+		-1, // FactorP
+		-1, // FactorPP
+		-1, // CTE
+		-1, // Funcs
+		-1, // FuncsP
+		-1, // W
+		-1, // WP
+		-1, // VP
+		-1, // FCall
+		-1, // FCallP
+		-1, // Z
+	},
 	gotoRow{ // S13
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -559,45 +587,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S14
 		-1, // S'
 		-1, // Programa
-		-1, // ProgramaP
-		-1, // FP
-		-1, // Vars
-		-1, // VarsP
-		19, // X
-		-1, // Y
-		-1, // Type
-		-1, // Body
-		-1, // BodyP
-		-1, // Statement
-		-1, // Print
-		-1, // PrintP
-		-1, // PrintPP
-		-1, // Assign
-		-1, // Cycle
-		-1, // Condition
-		-1, // ConditionP
-		-1, // Expresion
-		-1, // EP
-		-1, // Exp
-		-1, // ExpP
-		-1, // Termino
-		-1, // TP
-		-1, // Factor
-		-1, // FactorP
-		-1, // FactorPP
-		-1, // CTE
-		-1, // Funcs
-		-1, // FuncsP
-		-1, // W
-		-1, // WP
-		-1, // VP
-		-1, // FCall
-		-1, // FCallP
-		-1, // Z
-	},
-	gotoRow{ // S15
-		-1, // S'
-		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -634,9 +625,52 @@ var gotoTab = gotoTable{
 		-1, // FCallP
 		-1, // Z
 	},
+	gotoRow{ // S15
+		-1, // S'
+		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
+		-1, // ProgramaP
+		-1, // FP
+		-1, // Vars
+		-1, // VarsP
+		22, // X
+		-1, // Y
+		-1, // Type
+		-1, // Body
+		-1, // BodyP
+		-1, // Statement
+		-1, // Print
+		-1, // PrintP
+		-1, // PrintPP
+		-1, // Assign
+		-1, // Cycle
+		-1, // Condition
+		-1, // ConditionP
+		-1, // Expresion
+		-1, // EP
+		-1, // Exp
+		-1, // ExpP
+		-1, // Termino
+		-1, // TP
+		-1, // Factor
+		-1, // FactorP
+		-1, // FactorPP
+		-1, // CTE
+		-1, // Funcs
+		-1, // FuncsP
+		-1, // W
+		-1, // WP
+		-1, // VP
+		-1, // FCall
+		-1, // FCallP
+		-1, // Z
+	},
 	gotoRow{ // S16
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -676,6 +710,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S17
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -715,6 +751,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S18
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -723,14 +761,14 @@ var gotoTab = gotoTable{
 		-1, // Y
 		-1, // Type
 		-1, // Body
-		24, // BodyP
-		25, // Statement
-		30, // Print
+		-1, // BodyP
+		-1, // Statement
+		-1, // Print
 		-1, // PrintP
 		-1, // PrintPP
-		26, // Assign
-		28, // Cycle
-		27, // Condition
+		-1, // Assign
+		-1, // Cycle
+		-1, // Condition
 		-1, // ConditionP
 		-1, // Expresion
 		-1, // EP
@@ -747,13 +785,15 @@ var gotoTab = gotoTable{
 		-1, // W
 		-1, // WP
 		-1, // VP
-		29, // FCall
+		-1, // FCall
 		-1, // FCallP
 		-1, // Z
 	},
 	gotoRow{ // S19
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -793,6 +833,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S20
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -832,6 +874,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S21
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -840,14 +884,14 @@ var gotoTab = gotoTable{
 		-1, // Y
 		-1, // Type
 		-1, // Body
-		-1, // BodyP
-		-1, // Statement
-		-1, // Print
+		26, // BodyP
+		27, // Statement
+		32, // Print
 		-1, // PrintP
 		-1, // PrintPP
-		-1, // Assign
-		-1, // Cycle
-		-1, // Condition
+		28, // Assign
+		30, // Cycle
+		29, // Condition
 		-1, // ConditionP
 		-1, // Expresion
 		-1, // EP
@@ -860,17 +904,19 @@ var gotoTab = gotoTable{
 		-1, // FactorPP
 		-1, // CTE
 		-1, // Funcs
-		37, // FuncsP
+		-1, // FuncsP
 		-1, // W
-		38, // WP
+		-1, // WP
 		-1, // VP
-		-1, // FCall
+		31, // FCall
 		-1, // FCallP
 		-1, // Z
 	},
 	gotoRow{ // S22
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -910,6 +956,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S23
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -949,6 +997,49 @@ var gotoTab = gotoTable{
 	gotoRow{ // S24
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
+		-1, // ProgramaP
+		-1, // FP
+		-1, // Vars
+		-1, // VarsP
+		-1, // X
+		-1, // Y
+		-1, // Type
+		-1, // Body
+		-1, // BodyP
+		-1, // Statement
+		-1, // Print
+		-1, // PrintP
+		-1, // PrintPP
+		-1, // Assign
+		-1, // Cycle
+		-1, // Condition
+		-1, // ConditionP
+		-1, // Expresion
+		-1, // EP
+		-1, // Exp
+		-1, // ExpP
+		-1, // Termino
+		-1, // TP
+		-1, // Factor
+		-1, // FactorP
+		-1, // FactorPP
+		-1, // CTE
+		-1, // Funcs
+		39, // FuncsP
+		-1, // W
+		40, // WP
+		-1, // VP
+		-1, // FCall
+		-1, // FCallP
+		-1, // Z
+	},
+	gotoRow{ // S25
+		-1, // S'
+		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -985,48 +1076,11 @@ var gotoTab = gotoTable{
 		-1, // FCallP
 		-1, // Z
 	},
-	gotoRow{ // S25
-		-1, // S'
-		-1, // Programa
-		-1, // ProgramaP
-		-1, // FP
-		-1, // Vars
-		-1, // VarsP
-		-1, // X
-		-1, // Y
-		-1, // Type
-		-1, // Body
-		42, // BodyP
-		25, // Statement
-		30, // Print
-		-1, // PrintP
-		-1, // PrintPP
-		26, // Assign
-		28, // Cycle
-		27, // Condition
-		-1, // ConditionP
-		-1, // Expresion
-		-1, // EP
-		-1, // Exp
-		-1, // ExpP
-		-1, // Termino
-		-1, // TP
-		-1, // Factor
-		-1, // FactorP
-		-1, // FactorPP
-		-1, // CTE
-		-1, // Funcs
-		-1, // FuncsP
-		-1, // W
-		-1, // WP
-		-1, // VP
-		29, // FCall
-		-1, // FCallP
-		-1, // Z
-	},
 	gotoRow{ // S26
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -1066,6 +1120,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S27
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -1074,14 +1130,14 @@ var gotoTab = gotoTable{
 		-1, // Y
 		-1, // Type
 		-1, // Body
-		-1, // BodyP
-		-1, // Statement
-		-1, // Print
+		44, // BodyP
+		27, // Statement
+		32, // Print
 		-1, // PrintP
 		-1, // PrintPP
-		-1, // Assign
-		-1, // Cycle
-		-1, // Condition
+		28, // Assign
+		30, // Cycle
+		29, // Condition
 		-1, // ConditionP
 		-1, // Expresion
 		-1, // EP
@@ -1098,13 +1154,15 @@ var gotoTab = gotoTable{
 		-1, // W
 		-1, // WP
 		-1, // VP
-		-1, // FCall
+		31, // FCall
 		-1, // FCallP
 		-1, // Z
 	},
 	gotoRow{ // S28
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -1144,6 +1202,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S29
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -1183,6 +1243,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S30
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -1222,6 +1284,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S31
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -1261,6 +1325,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S32
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -1300,6 +1366,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S33
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -1339,13 +1407,15 @@ var gotoTab = gotoTable{
 	gotoRow{ // S34
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
 		-1, // VarsP
 		-1, // X
 		-1, // Y
-		46, // Type
+		-1, // Type
 		-1, // Body
 		-1, // BodyP
 		-1, // Statement
@@ -1378,11 +1448,13 @@ var gotoTab = gotoTable{
 	gotoRow{ // S35
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
 		-1, // VarsP
-		49, // X
+		-1, // X
 		-1, // Y
 		-1, // Type
 		-1, // Body
@@ -1417,13 +1489,15 @@ var gotoTab = gotoTable{
 	gotoRow{ // S36
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
 		-1, // VarsP
 		-1, // X
 		-1, // Y
-		-1, // Type
+		48, // Type
 		-1, // Body
 		-1, // BodyP
 		-1, // Statement
@@ -1456,11 +1530,13 @@ var gotoTab = gotoTable{
 	gotoRow{ // S37
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
 		-1, // VarsP
-		-1, // X
+		51, // X
 		-1, // Y
 		-1, // Type
 		-1, // Body
@@ -1495,6 +1571,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S38
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -1534,6 +1612,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S39
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -1551,14 +1631,14 @@ var gotoTab = gotoTable{
 		-1, // Cycle
 		-1, // Condition
 		-1, // ConditionP
-		53, // Expresion
+		-1, // Expresion
 		-1, // EP
-		54, // Exp
+		-1, // Exp
 		-1, // ExpP
-		55, // Termino
+		-1, // Termino
 		-1, // TP
-		58, // Factor
-		59, // FactorP
+		-1, // Factor
+		-1, // FactorP
 		-1, // FactorPP
 		-1, // CTE
 		-1, // Funcs
@@ -1567,12 +1647,14 @@ var gotoTab = gotoTable{
 		-1, // WP
 		-1, // VP
 		-1, // FCall
-		60, // FCallP
+		-1, // FCallP
 		-1, // Z
 	},
 	gotoRow{ // S40
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -1590,14 +1672,14 @@ var gotoTab = gotoTable{
 		-1, // Cycle
 		-1, // Condition
 		-1, // ConditionP
-		62, // Expresion
+		-1, // Expresion
 		-1, // EP
-		63, // Exp
+		-1, // Exp
 		-1, // ExpP
-		64, // Termino
+		-1, // Termino
 		-1, // TP
-		65, // Factor
-		66, // FactorP
+		-1, // Factor
+		-1, // FactorP
 		-1, // FactorPP
 		-1, // CTE
 		-1, // Funcs
@@ -1612,6 +1694,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S41
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -1629,14 +1713,14 @@ var gotoTab = gotoTable{
 		-1, // Cycle
 		-1, // Condition
 		-1, // ConditionP
-		-1, // Expresion
+		55, // Expresion
 		-1, // EP
-		-1, // Exp
+		56, // Exp
 		-1, // ExpP
-		-1, // Termino
+		57, // Termino
 		-1, // TP
-		-1, // Factor
-		-1, // FactorP
+		60, // Factor
+		61, // FactorP
 		-1, // FactorPP
 		-1, // CTE
 		-1, // Funcs
@@ -1645,12 +1729,14 @@ var gotoTab = gotoTable{
 		-1, // WP
 		-1, // VP
 		-1, // FCall
-		-1, // FCallP
+		62, // FCallP
 		-1, // Z
 	},
 	gotoRow{ // S42
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -1668,14 +1754,14 @@ var gotoTab = gotoTable{
 		-1, // Cycle
 		-1, // Condition
 		-1, // ConditionP
-		-1, // Expresion
+		64, // Expresion
 		-1, // EP
-		-1, // Exp
+		65, // Exp
 		-1, // ExpP
-		-1, // Termino
+		66, // Termino
 		-1, // TP
-		-1, // Factor
-		-1, // FactorP
+		67, // Factor
+		68, // FactorP
 		-1, // FactorPP
 		-1, // CTE
 		-1, // Funcs
@@ -1690,6 +1776,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S43
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -1701,7 +1789,7 @@ var gotoTab = gotoTable{
 		-1, // BodyP
 		-1, // Statement
 		-1, // Print
-		67, // PrintP
+		-1, // PrintP
 		-1, // PrintPP
 		-1, // Assign
 		-1, // Cycle
@@ -1729,6 +1817,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S44
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -1746,14 +1836,14 @@ var gotoTab = gotoTable{
 		-1, // Cycle
 		-1, // Condition
 		-1, // ConditionP
-		70, // Expresion
+		-1, // Expresion
 		-1, // EP
-		71, // Exp
+		-1, // Exp
 		-1, // ExpP
-		72, // Termino
+		-1, // Termino
 		-1, // TP
-		73, // Factor
-		74, // FactorP
+		-1, // Factor
+		-1, // FactorP
 		-1, // FactorPP
 		-1, // CTE
 		-1, // Funcs
@@ -1768,6 +1858,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S45
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -1779,20 +1871,20 @@ var gotoTab = gotoTable{
 		-1, // BodyP
 		-1, // Statement
 		-1, // Print
-		-1, // PrintP
+		69, // PrintP
 		-1, // PrintPP
 		-1, // Assign
 		-1, // Cycle
 		-1, // Condition
 		-1, // ConditionP
-		75, // Expresion
+		-1, // Expresion
 		-1, // EP
-		71, // Exp
+		-1, // Exp
 		-1, // ExpP
-		72, // Termino
+		-1, // Termino
 		-1, // TP
-		73, // Factor
-		74, // FactorP
+		-1, // Factor
+		-1, // FactorP
 		-1, // FactorPP
 		-1, // CTE
 		-1, // Funcs
@@ -1807,6 +1899,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S46
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -1824,14 +1918,14 @@ var gotoTab = gotoTable{
 		-1, // Cycle
 		-1, // Condition
 		-1, // ConditionP
-		-1, // Expresion
+		72, // Expresion
 		-1, // EP
-		-1, // Exp
+		73, // Exp
 		-1, // ExpP
-		-1, // Termino
+		74, // Termino
 		-1, // TP
-		-1, // Factor
-		-1, // FactorP
+		75, // Factor
+		76, // FactorP
 		-1, // FactorPP
 		-1, // CTE
 		-1, // Funcs
@@ -1846,6 +1940,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S47
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -1863,14 +1959,14 @@ var gotoTab = gotoTable{
 		-1, // Cycle
 		-1, // Condition
 		-1, // ConditionP
-		-1, // Expresion
+		77, // Expresion
 		-1, // EP
-		-1, // Exp
+		73, // Exp
 		-1, // ExpP
-		-1, // Termino
+		74, // Termino
 		-1, // TP
-		-1, // Factor
-		-1, // FactorP
+		75, // Factor
+		76, // FactorP
 		-1, // FactorPP
 		-1, // CTE
 		-1, // Funcs
@@ -1885,6 +1981,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S48
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -1924,6 +2022,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S49
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -1963,13 +2063,15 @@ var gotoTab = gotoTable{
 	gotoRow{ // S50
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
 		-1, // VarsP
 		-1, // X
 		-1, // Y
-		77, // Type
+		-1, // Type
 		-1, // Body
 		-1, // BodyP
 		-1, // Statement
@@ -2002,6 +2104,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S51
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -2041,13 +2145,15 @@ var gotoTab = gotoTable{
 	gotoRow{ // S52
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
 		-1, // VarsP
 		-1, // X
 		-1, // Y
-		-1, // Type
+		79, // Type
 		-1, // Body
 		-1, // BodyP
 		-1, // Statement
@@ -2058,14 +2164,14 @@ var gotoTab = gotoTable{
 		-1, // Cycle
 		-1, // Condition
 		-1, // ConditionP
-		81, // Expresion
+		-1, // Expresion
 		-1, // EP
-		71, // Exp
+		-1, // Exp
 		-1, // ExpP
-		72, // Termino
+		-1, // Termino
 		-1, // TP
-		73, // Factor
-		74, // FactorP
+		-1, // Factor
+		-1, // FactorP
 		-1, // FactorPP
 		-1, // CTE
 		-1, // Funcs
@@ -2080,6 +2186,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S53
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -2114,11 +2222,13 @@ var gotoTab = gotoTable{
 		-1, // VP
 		-1, // FCall
 		-1, // FCallP
-		83, // Z
+		-1, // Z
 	},
 	gotoRow{ // S54
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -2136,14 +2246,14 @@ var gotoTab = gotoTable{
 		-1, // Cycle
 		-1, // Condition
 		-1, // ConditionP
-		-1, // Expresion
-		84, // EP
-		-1, // Exp
+		83, // Expresion
+		-1, // EP
+		73, // Exp
 		-1, // ExpP
-		-1, // Termino
+		74, // Termino
 		-1, // TP
-		-1, // Factor
-		-1, // FactorP
+		75, // Factor
+		76, // FactorP
 		-1, // FactorPP
 		-1, // CTE
 		-1, // Funcs
@@ -2158,6 +2268,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S55
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -2178,7 +2290,7 @@ var gotoTab = gotoTable{
 		-1, // Expresion
 		-1, // EP
 		-1, // Exp
-		88, // ExpP
+		-1, // ExpP
 		-1, // Termino
 		-1, // TP
 		-1, // Factor
@@ -2192,11 +2304,13 @@ var gotoTab = gotoTable{
 		-1, // VP
 		-1, // FCall
 		-1, // FCallP
-		-1, // Z
+		85, // Z
 	},
 	gotoRow{ // S56
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -2215,7 +2329,7 @@ var gotoTab = gotoTable{
 		-1, // Condition
 		-1, // ConditionP
 		-1, // Expresion
-		-1, // EP
+		86, // EP
 		-1, // Exp
 		-1, // ExpP
 		-1, // Termino
@@ -2236,6 +2350,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S57
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -2256,7 +2372,7 @@ var gotoTab = gotoTable{
 		-1, // Expresion
 		-1, // EP
 		-1, // Exp
-		-1, // ExpP
+		90, // ExpP
 		-1, // Termino
 		-1, // TP
 		-1, // Factor
@@ -2275,6 +2391,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S58
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -2297,7 +2415,7 @@ var gotoTab = gotoTable{
 		-1, // Exp
 		-1, // ExpP
 		-1, // Termino
-		91, // TP
+		-1, // TP
 		-1, // Factor
 		-1, // FactorP
 		-1, // FactorPP
@@ -2314,6 +2432,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S59
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -2339,8 +2459,8 @@ var gotoTab = gotoTable{
 		-1, // TP
 		-1, // Factor
 		-1, // FactorP
-		95, // FactorPP
-		96, // CTE
+		-1, // FactorPP
+		-1, // CTE
 		-1, // Funcs
 		-1, // FuncsP
 		-1, // W
@@ -2353,6 +2473,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S60
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -2375,7 +2497,7 @@ var gotoTab = gotoTable{
 		-1, // Exp
 		-1, // ExpP
 		-1, // Termino
-		-1, // TP
+		93, // TP
 		-1, // Factor
 		-1, // FactorP
 		-1, // FactorPP
@@ -2392,6 +2514,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S61
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -2409,16 +2533,16 @@ var gotoTab = gotoTable{
 		-1, // Cycle
 		-1, // Condition
 		-1, // ConditionP
-		99, // Expresion
+		-1, // Expresion
 		-1, // EP
-		71, // Exp
+		-1, // Exp
 		-1, // ExpP
-		72, // Termino
+		-1, // Termino
 		-1, // TP
-		73, // Factor
-		74, // FactorP
-		-1, // FactorPP
-		-1, // CTE
+		-1, // Factor
+		-1, // FactorP
+		97, // FactorPP
+		98, // CTE
 		-1, // Funcs
 		-1, // FuncsP
 		-1, // W
@@ -2431,6 +2555,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S62
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -2470,6 +2596,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S63
 		-1,  // S'
 		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
 		-1,  // ProgramaP
 		-1,  // FP
 		-1,  // Vars
@@ -2487,14 +2615,14 @@ var gotoTab = gotoTable{
 		-1,  // Cycle
 		-1,  // Condition
 		-1,  // ConditionP
-		-1,  // Expresion
-		101, // EP
-		-1,  // Exp
+		101, // Expresion
+		-1,  // EP
+		73,  // Exp
 		-1,  // ExpP
-		-1,  // Termino
+		74,  // Termino
 		-1,  // TP
-		-1,  // Factor
-		-1,  // FactorP
+		75,  // Factor
+		76,  // FactorP
 		-1,  // FactorPP
 		-1,  // CTE
 		-1,  // Funcs
@@ -2507,47 +2635,51 @@ var gotoTab = gotoTable{
 		-1,  // Z
 	},
 	gotoRow{ // S64
-		-1,  // S'
-		-1,  // Programa
-		-1,  // ProgramaP
-		-1,  // FP
-		-1,  // Vars
-		-1,  // VarsP
-		-1,  // X
-		-1,  // Y
-		-1,  // Type
-		-1,  // Body
-		-1,  // BodyP
-		-1,  // Statement
-		-1,  // Print
-		-1,  // PrintP
-		-1,  // PrintPP
-		-1,  // Assign
-		-1,  // Cycle
-		-1,  // Condition
-		-1,  // ConditionP
-		-1,  // Expresion
-		-1,  // EP
-		-1,  // Exp
-		105, // ExpP
-		-1,  // Termino
-		-1,  // TP
-		-1,  // Factor
-		-1,  // FactorP
-		-1,  // FactorPP
-		-1,  // CTE
-		-1,  // Funcs
-		-1,  // FuncsP
-		-1,  // W
-		-1,  // WP
-		-1,  // VP
-		-1,  // FCall
-		-1,  // FCallP
-		-1,  // Z
+		-1, // S'
+		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
+		-1, // ProgramaP
+		-1, // FP
+		-1, // Vars
+		-1, // VarsP
+		-1, // X
+		-1, // Y
+		-1, // Type
+		-1, // Body
+		-1, // BodyP
+		-1, // Statement
+		-1, // Print
+		-1, // PrintP
+		-1, // PrintPP
+		-1, // Assign
+		-1, // Cycle
+		-1, // Condition
+		-1, // ConditionP
+		-1, // Expresion
+		-1, // EP
+		-1, // Exp
+		-1, // ExpP
+		-1, // Termino
+		-1, // TP
+		-1, // Factor
+		-1, // FactorP
+		-1, // FactorPP
+		-1, // CTE
+		-1, // Funcs
+		-1, // FuncsP
+		-1, // W
+		-1, // WP
+		-1, // VP
+		-1, // FCall
+		-1, // FCallP
+		-1, // Z
 	},
 	gotoRow{ // S65
 		-1,  // S'
 		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
 		-1,  // ProgramaP
 		-1,  // FP
 		-1,  // Vars
@@ -2566,11 +2698,11 @@ var gotoTab = gotoTable{
 		-1,  // Condition
 		-1,  // ConditionP
 		-1,  // Expresion
-		-1,  // EP
+		103, // EP
 		-1,  // Exp
 		-1,  // ExpP
 		-1,  // Termino
-		108, // TP
+		-1,  // TP
 		-1,  // Factor
 		-1,  // FactorP
 		-1,  // FactorPP
@@ -2587,6 +2719,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S66
 		-1,  // S'
 		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
 		-1,  // ProgramaP
 		-1,  // FP
 		-1,  // Vars
@@ -2607,13 +2741,13 @@ var gotoTab = gotoTable{
 		-1,  // Expresion
 		-1,  // EP
 		-1,  // Exp
-		-1,  // ExpP
+		107, // ExpP
 		-1,  // Termino
 		-1,  // TP
 		-1,  // Factor
 		-1,  // FactorP
-		112, // FactorPP
-		113, // CTE
+		-1,  // FactorPP
+		-1,  // CTE
 		-1,  // Funcs
 		-1,  // FuncsP
 		-1,  // W
@@ -2624,47 +2758,10 @@ var gotoTab = gotoTable{
 		-1,  // Z
 	},
 	gotoRow{ // S67
-		-1, // S'
-		-1, // Programa
-		-1, // ProgramaP
-		-1, // FP
-		-1, // Vars
-		-1, // VarsP
-		-1, // X
-		-1, // Y
-		-1, // Type
-		-1, // Body
-		-1, // BodyP
-		-1, // Statement
-		-1, // Print
-		-1, // PrintP
-		-1, // PrintPP
-		-1, // Assign
-		-1, // Cycle
-		-1, // Condition
-		-1, // ConditionP
-		-1, // Expresion
-		-1, // EP
-		-1, // Exp
-		-1, // ExpP
-		-1, // Termino
-		-1, // TP
-		-1, // Factor
-		-1, // FactorP
-		-1, // FactorPP
-		-1, // CTE
-		-1, // Funcs
-		-1, // FuncsP
-		-1, // W
-		-1, // WP
-		-1, // VP
-		-1, // FCall
-		-1, // FCallP
-		-1, // Z
-	},
-	gotoRow{ // S68
 		-1,  // S'
 		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
 		-1,  // ProgramaP
 		-1,  // FP
 		-1,  // Vars
@@ -2676,8 +2773,49 @@ var gotoTab = gotoTable{
 		-1,  // BodyP
 		-1,  // Statement
 		-1,  // Print
-		116, // PrintP
-		117, // PrintPP
+		-1,  // PrintP
+		-1,  // PrintPP
+		-1,  // Assign
+		-1,  // Cycle
+		-1,  // Condition
+		-1,  // ConditionP
+		-1,  // Expresion
+		-1,  // EP
+		-1,  // Exp
+		-1,  // ExpP
+		-1,  // Termino
+		110, // TP
+		-1,  // Factor
+		-1,  // FactorP
+		-1,  // FactorPP
+		-1,  // CTE
+		-1,  // Funcs
+		-1,  // FuncsP
+		-1,  // W
+		-1,  // WP
+		-1,  // VP
+		-1,  // FCall
+		-1,  // FCallP
+		-1,  // Z
+	},
+	gotoRow{ // S68
+		-1,  // S'
+		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
+		-1,  // ProgramaP
+		-1,  // FP
+		-1,  // Vars
+		-1,  // VarsP
+		-1,  // X
+		-1,  // Y
+		-1,  // Type
+		-1,  // Body
+		-1,  // BodyP
+		-1,  // Statement
+		-1,  // Print
+		-1,  // PrintP
+		-1,  // PrintPP
 		-1,  // Assign
 		-1,  // Cycle
 		-1,  // Condition
@@ -2690,8 +2828,8 @@ var gotoTab = gotoTable{
 		-1,  // TP
 		-1,  // Factor
 		-1,  // FactorP
-		-1,  // FactorPP
-		-1,  // CTE
+		114, // FactorPP
+		115, // CTE
 		-1,  // Funcs
 		-1,  // FuncsP
 		-1,  // W
@@ -2702,47 +2840,10 @@ var gotoTab = gotoTable{
 		-1,  // Z
 	},
 	gotoRow{ // S69
-		-1,  // S'
-		-1,  // Programa
-		-1,  // ProgramaP
-		-1,  // FP
-		-1,  // Vars
-		-1,  // VarsP
-		-1,  // X
-		-1,  // Y
-		-1,  // Type
-		-1,  // Body
-		-1,  // BodyP
-		-1,  // Statement
-		-1,  // Print
-		-1,  // PrintP
-		-1,  // PrintPP
-		-1,  // Assign
-		-1,  // Cycle
-		-1,  // Condition
-		-1,  // ConditionP
-		118, // Expresion
-		-1,  // EP
-		71,  // Exp
-		-1,  // ExpP
-		72,  // Termino
-		-1,  // TP
-		73,  // Factor
-		74,  // FactorP
-		-1,  // FactorPP
-		-1,  // CTE
-		-1,  // Funcs
-		-1,  // FuncsP
-		-1,  // W
-		-1,  // WP
-		-1,  // VP
-		-1,  // FCall
-		-1,  // FCallP
-		-1,  // Z
-	},
-	gotoRow{ // S70
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -2779,9 +2880,52 @@ var gotoTab = gotoTable{
 		-1, // FCallP
 		-1, // Z
 	},
+	gotoRow{ // S70
+		-1,  // S'
+		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
+		-1,  // ProgramaP
+		-1,  // FP
+		-1,  // Vars
+		-1,  // VarsP
+		-1,  // X
+		-1,  // Y
+		-1,  // Type
+		-1,  // Body
+		-1,  // BodyP
+		-1,  // Statement
+		-1,  // Print
+		-1,  // PrintP
+		119, // PrintPP
+		-1,  // Assign
+		-1,  // Cycle
+		-1,  // Condition
+		-1,  // ConditionP
+		-1,  // Expresion
+		-1,  // EP
+		-1,  // Exp
+		-1,  // ExpP
+		-1,  // Termino
+		-1,  // TP
+		-1,  // Factor
+		-1,  // FactorP
+		-1,  // FactorPP
+		-1,  // CTE
+		-1,  // Funcs
+		-1,  // FuncsP
+		-1,  // W
+		-1,  // WP
+		-1,  // VP
+		-1,  // FCall
+		-1,  // FCallP
+		-1,  // Z
+	},
 	gotoRow{ // S71
 		-1,  // S'
 		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
 		-1,  // ProgramaP
 		-1,  // FP
 		-1,  // Vars
@@ -2799,14 +2943,14 @@ var gotoTab = gotoTable{
 		-1,  // Cycle
 		-1,  // Condition
 		-1,  // ConditionP
-		-1,  // Expresion
-		120, // EP
-		-1,  // Exp
+		120, // Expresion
+		-1,  // EP
+		73,  // Exp
 		-1,  // ExpP
-		-1,  // Termino
+		74,  // Termino
 		-1,  // TP
-		-1,  // Factor
-		-1,  // FactorP
+		75,  // Factor
+		76,  // FactorP
 		-1,  // FactorPP
 		-1,  // CTE
 		-1,  // Funcs
@@ -2819,47 +2963,51 @@ var gotoTab = gotoTable{
 		-1,  // Z
 	},
 	gotoRow{ // S72
-		-1,  // S'
-		-1,  // Programa
-		-1,  // ProgramaP
-		-1,  // FP
-		-1,  // Vars
-		-1,  // VarsP
-		-1,  // X
-		-1,  // Y
-		-1,  // Type
-		-1,  // Body
-		-1,  // BodyP
-		-1,  // Statement
-		-1,  // Print
-		-1,  // PrintP
-		-1,  // PrintPP
-		-1,  // Assign
-		-1,  // Cycle
-		-1,  // Condition
-		-1,  // ConditionP
-		-1,  // Expresion
-		-1,  // EP
-		-1,  // Exp
-		124, // ExpP
-		-1,  // Termino
-		-1,  // TP
-		-1,  // Factor
-		-1,  // FactorP
-		-1,  // FactorPP
-		-1,  // CTE
-		-1,  // Funcs
-		-1,  // FuncsP
-		-1,  // W
-		-1,  // WP
-		-1,  // VP
-		-1,  // FCall
-		-1,  // FCallP
-		-1,  // Z
+		-1, // S'
+		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
+		-1, // ProgramaP
+		-1, // FP
+		-1, // Vars
+		-1, // VarsP
+		-1, // X
+		-1, // Y
+		-1, // Type
+		-1, // Body
+		-1, // BodyP
+		-1, // Statement
+		-1, // Print
+		-1, // PrintP
+		-1, // PrintPP
+		-1, // Assign
+		-1, // Cycle
+		-1, // Condition
+		-1, // ConditionP
+		-1, // Expresion
+		-1, // EP
+		-1, // Exp
+		-1, // ExpP
+		-1, // Termino
+		-1, // TP
+		-1, // Factor
+		-1, // FactorP
+		-1, // FactorPP
+		-1, // CTE
+		-1, // Funcs
+		-1, // FuncsP
+		-1, // W
+		-1, // WP
+		-1, // VP
+		-1, // FCall
+		-1, // FCallP
+		-1, // Z
 	},
 	gotoRow{ // S73
 		-1,  // S'
 		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
 		-1,  // ProgramaP
 		-1,  // FP
 		-1,  // Vars
@@ -2878,11 +3026,11 @@ var gotoTab = gotoTable{
 		-1,  // Condition
 		-1,  // ConditionP
 		-1,  // Expresion
-		-1,  // EP
+		122, // EP
 		-1,  // Exp
 		-1,  // ExpP
 		-1,  // Termino
-		127, // TP
+		-1,  // TP
 		-1,  // Factor
 		-1,  // FactorP
 		-1,  // FactorPP
@@ -2899,6 +3047,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S74
 		-1,  // S'
 		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
 		-1,  // ProgramaP
 		-1,  // FP
 		-1,  // Vars
@@ -2919,13 +3069,13 @@ var gotoTab = gotoTable{
 		-1,  // Expresion
 		-1,  // EP
 		-1,  // Exp
-		-1,  // ExpP
+		126, // ExpP
 		-1,  // Termino
 		-1,  // TP
 		-1,  // Factor
 		-1,  // FactorP
-		131, // FactorPP
-		132, // CTE
+		-1,  // FactorPP
+		-1,  // CTE
 		-1,  // Funcs
 		-1,  // FuncsP
 		-1,  // W
@@ -2936,53 +3086,57 @@ var gotoTab = gotoTable{
 		-1,  // Z
 	},
 	gotoRow{ // S75
-		-1, // S'
-		-1, // Programa
-		-1, // ProgramaP
-		-1, // FP
-		-1, // Vars
-		-1, // VarsP
-		-1, // X
-		-1, // Y
-		-1, // Type
-		-1, // Body
-		-1, // BodyP
-		-1, // Statement
-		-1, // Print
-		-1, // PrintP
-		-1, // PrintPP
-		-1, // Assign
-		-1, // Cycle
-		-1, // Condition
-		-1, // ConditionP
-		-1, // Expresion
-		-1, // EP
-		-1, // Exp
-		-1, // ExpP
-		-1, // Termino
-		-1, // TP
-		-1, // Factor
-		-1, // FactorP
-		-1, // FactorPP
-		-1, // CTE
-		-1, // Funcs
-		-1, // FuncsP
-		-1, // W
-		-1, // WP
-		-1, // VP
-		-1, // FCall
-		-1, // FCallP
-		-1, // Z
+		-1,  // S'
+		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
+		-1,  // ProgramaP
+		-1,  // FP
+		-1,  // Vars
+		-1,  // VarsP
+		-1,  // X
+		-1,  // Y
+		-1,  // Type
+		-1,  // Body
+		-1,  // BodyP
+		-1,  // Statement
+		-1,  // Print
+		-1,  // PrintP
+		-1,  // PrintPP
+		-1,  // Assign
+		-1,  // Cycle
+		-1,  // Condition
+		-1,  // ConditionP
+		-1,  // Expresion
+		-1,  // EP
+		-1,  // Exp
+		-1,  // ExpP
+		-1,  // Termino
+		129, // TP
+		-1,  // Factor
+		-1,  // FactorP
+		-1,  // FactorPP
+		-1,  // CTE
+		-1,  // Funcs
+		-1,  // FuncsP
+		-1,  // W
+		-1,  // WP
+		-1,  // VP
+		-1,  // FCall
+		-1,  // FCallP
+		-1,  // Z
 	},
 	gotoRow{ // S76
 		-1,  // S'
 		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
 		-1,  // ProgramaP
 		-1,  // FP
 		-1,  // Vars
-		135, // VarsP
+		-1,  // VarsP
 		-1,  // X
-		136, // Y
+		-1,  // Y
 		-1,  // Type
 		-1,  // Body
 		-1,  // BodyP
@@ -3002,8 +3156,8 @@ var gotoTab = gotoTable{
 		-1,  // TP
 		-1,  // Factor
 		-1,  // FactorP
-		-1,  // FactorPP
-		-1,  // CTE
+		133, // FactorPP
+		134, // CTE
 		-1,  // Funcs
 		-1,  // FuncsP
 		-1,  // W
@@ -3014,8 +3168,92 @@ var gotoTab = gotoTable{
 		-1,  // Z
 	},
 	gotoRow{ // S77
+		-1, // S'
+		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
+		-1, // ProgramaP
+		-1, // FP
+		-1, // Vars
+		-1, // VarsP
+		-1, // X
+		-1, // Y
+		-1, // Type
+		-1, // Body
+		-1, // BodyP
+		-1, // Statement
+		-1, // Print
+		-1, // PrintP
+		-1, // PrintPP
+		-1, // Assign
+		-1, // Cycle
+		-1, // Condition
+		-1, // ConditionP
+		-1, // Expresion
+		-1, // EP
+		-1, // Exp
+		-1, // ExpP
+		-1, // Termino
+		-1, // TP
+		-1, // Factor
+		-1, // FactorP
+		-1, // FactorPP
+		-1, // CTE
+		-1, // Funcs
+		-1, // FuncsP
+		-1, // W
+		-1, // WP
+		-1, // VP
+		-1, // FCall
+		-1, // FCallP
+		-1, // Z
+	},
+	gotoRow{ // S78
 		-1,  // S'
 		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
+		-1,  // ProgramaP
+		-1,  // FP
+		-1,  // Vars
+		137, // VarsP
+		-1,  // X
+		138, // Y
+		-1,  // Type
+		-1,  // Body
+		-1,  // BodyP
+		-1,  // Statement
+		-1,  // Print
+		-1,  // PrintP
+		-1,  // PrintPP
+		-1,  // Assign
+		-1,  // Cycle
+		-1,  // Condition
+		-1,  // ConditionP
+		-1,  // Expresion
+		-1,  // EP
+		-1,  // Exp
+		-1,  // ExpP
+		-1,  // Termino
+		-1,  // TP
+		-1,  // Factor
+		-1,  // FactorP
+		-1,  // FactorPP
+		-1,  // CTE
+		-1,  // Funcs
+		-1,  // FuncsP
+		-1,  // W
+		-1,  // WP
+		-1,  // VP
+		-1,  // FCall
+		-1,  // FCallP
+		-1,  // Z
+	},
+	gotoRow{ // S79
+		-1,  // S'
+		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
 		-1,  // ProgramaP
 		-1,  // FP
 		-1,  // Vars
@@ -3045,133 +3283,59 @@ var gotoTab = gotoTable{
 		-1,  // CTE
 		-1,  // Funcs
 		-1,  // FuncsP
-		138, // W
+		140, // W
 		-1,  // WP
 		-1,  // VP
 		-1,  // FCall
 		-1,  // FCallP
 		-1,  // Z
 	},
-	gotoRow{ // S78
-		-1, // S'
-		-1, // Programa
-		-1, // ProgramaP
-		-1, // FP
-		-1, // Vars
-		-1, // VarsP
-		-1, // X
-		-1, // Y
-		-1, // Type
-		-1, // Body
-		-1, // BodyP
-		-1, // Statement
-		-1, // Print
-		-1, // PrintP
-		-1, // PrintPP
-		-1, // Assign
-		-1, // Cycle
-		-1, // Condition
-		-1, // ConditionP
-		-1, // Expresion
-		-1, // EP
-		-1, // Exp
-		-1, // ExpP
-		-1, // Termino
-		-1, // TP
-		-1, // Factor
-		-1, // FactorP
-		-1, // FactorPP
-		-1, // CTE
-		-1, // Funcs
-		-1, // FuncsP
-		-1, // W
-		-1, // WP
-		-1, // VP
-		-1, // FCall
-		-1, // FCallP
-		-1, // Z
-	},
-	gotoRow{ // S79
-		-1, // S'
-		-1, // Programa
-		-1, // ProgramaP
-		-1, // FP
-		-1, // Vars
-		-1, // VarsP
-		-1, // X
-		-1, // Y
-		-1, // Type
-		-1, // Body
-		-1, // BodyP
-		-1, // Statement
-		-1, // Print
-		-1, // PrintP
-		-1, // PrintPP
-		-1, // Assign
-		-1, // Cycle
-		-1, // Condition
-		-1, // ConditionP
-		-1, // Expresion
-		-1, // EP
-		-1, // Exp
-		-1, // ExpP
-		-1, // Termino
-		-1, // TP
-		-1, // Factor
-		-1, // FactorP
-		-1, // FactorPP
-		-1, // CTE
-		-1, // Funcs
-		-1, // FuncsP
-		-1, // W
-		-1, // WP
-		-1, // VP
-		-1, // FCall
-		-1, // FCallP
-		-1, // Z
-	},
 	gotoRow{ // S80
-		-1,  // S'
-		-1,  // Programa
-		-1,  // ProgramaP
-		-1,  // FP
-		139, // Vars
-		-1,  // VarsP
-		-1,  // X
-		-1,  // Y
-		-1,  // Type
-		-1,  // Body
-		-1,  // BodyP
-		-1,  // Statement
-		-1,  // Print
-		-1,  // PrintP
-		-1,  // PrintPP
-		-1,  // Assign
-		-1,  // Cycle
-		-1,  // Condition
-		-1,  // ConditionP
-		-1,  // Expresion
-		-1,  // EP
-		-1,  // Exp
-		-1,  // ExpP
-		-1,  // Termino
-		-1,  // TP
-		-1,  // Factor
-		-1,  // FactorP
-		-1,  // FactorPP
-		-1,  // CTE
-		-1,  // Funcs
-		-1,  // FuncsP
-		-1,  // W
-		-1,  // WP
-		141, // VP
-		-1,  // FCall
-		-1,  // FCallP
-		-1,  // Z
+		-1, // S'
+		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
+		-1, // ProgramaP
+		-1, // FP
+		-1, // Vars
+		-1, // VarsP
+		-1, // X
+		-1, // Y
+		-1, // Type
+		-1, // Body
+		-1, // BodyP
+		-1, // Statement
+		-1, // Print
+		-1, // PrintP
+		-1, // PrintPP
+		-1, // Assign
+		-1, // Cycle
+		-1, // Condition
+		-1, // ConditionP
+		-1, // Expresion
+		-1, // EP
+		-1, // Exp
+		-1, // ExpP
+		-1, // Termino
+		-1, // TP
+		-1, // Factor
+		-1, // FactorP
+		-1, // FactorPP
+		-1, // CTE
+		-1, // Funcs
+		-1, // FuncsP
+		-1, // W
+		-1, // WP
+		-1, // VP
+		-1, // FCall
+		-1, // FCallP
+		-1, // Z
 	},
 	gotoRow{ // S81
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -3211,9 +3375,11 @@ var gotoTab = gotoTable{
 	gotoRow{ // S82
 		-1,  // S'
 		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
 		-1,  // ProgramaP
 		-1,  // FP
-		-1,  // Vars
+		141, // Vars
 		-1,  // VarsP
 		-1,  // X
 		-1,  // Y
@@ -3228,21 +3394,21 @@ var gotoTab = gotoTable{
 		-1,  // Cycle
 		-1,  // Condition
 		-1,  // ConditionP
-		143, // Expresion
+		-1,  // Expresion
 		-1,  // EP
-		54,  // Exp
+		-1,  // Exp
 		-1,  // ExpP
-		55,  // Termino
+		-1,  // Termino
 		-1,  // TP
-		58,  // Factor
-		59,  // FactorP
+		-1,  // Factor
+		-1,  // FactorP
 		-1,  // FactorPP
 		-1,  // CTE
 		-1,  // Funcs
 		-1,  // FuncsP
 		-1,  // W
 		-1,  // WP
-		-1,  // VP
+		143, // VP
 		-1,  // FCall
 		-1,  // FCallP
 		-1,  // Z
@@ -3250,6 +3416,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S83
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -3287,8 +3455,51 @@ var gotoTab = gotoTable{
 		-1, // Z
 	},
 	gotoRow{ // S84
+		-1,  // S'
+		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
+		-1,  // ProgramaP
+		-1,  // FP
+		-1,  // Vars
+		-1,  // VarsP
+		-1,  // X
+		-1,  // Y
+		-1,  // Type
+		-1,  // Body
+		-1,  // BodyP
+		-1,  // Statement
+		-1,  // Print
+		-1,  // PrintP
+		-1,  // PrintPP
+		-1,  // Assign
+		-1,  // Cycle
+		-1,  // Condition
+		-1,  // ConditionP
+		145, // Expresion
+		-1,  // EP
+		56,  // Exp
+		-1,  // ExpP
+		57,  // Termino
+		-1,  // TP
+		60,  // Factor
+		61,  // FactorP
+		-1,  // FactorPP
+		-1,  // CTE
+		-1,  // Funcs
+		-1,  // FuncsP
+		-1,  // W
+		-1,  // WP
+		-1,  // VP
+		-1,  // FCall
+		-1,  // FCallP
+		-1,  // Z
+	},
+	gotoRow{ // S85
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -3325,87 +3536,52 @@ var gotoTab = gotoTable{
 		-1, // FCallP
 		-1, // Z
 	},
-	gotoRow{ // S85
-		-1,  // S'
-		-1,  // Programa
-		-1,  // ProgramaP
-		-1,  // FP
-		-1,  // Vars
-		-1,  // VarsP
-		-1,  // X
-		-1,  // Y
-		-1,  // Type
-		-1,  // Body
-		-1,  // BodyP
-		-1,  // Statement
-		-1,  // Print
-		-1,  // PrintP
-		-1,  // PrintPP
-		-1,  // Assign
-		-1,  // Cycle
-		-1,  // Condition
-		-1,  // ConditionP
-		-1,  // Expresion
-		-1,  // EP
-		145, // Exp
-		-1,  // ExpP
-		146, // Termino
-		-1,  // TP
-		147, // Factor
-		148, // FactorP
-		-1,  // FactorPP
-		-1,  // CTE
-		-1,  // Funcs
-		-1,  // FuncsP
-		-1,  // W
-		-1,  // WP
-		-1,  // VP
-		-1,  // FCall
-		-1,  // FCallP
-		-1,  // Z
-	},
 	gotoRow{ // S86
-		-1,  // S'
-		-1,  // Programa
-		-1,  // ProgramaP
-		-1,  // FP
-		-1,  // Vars
-		-1,  // VarsP
-		-1,  // X
-		-1,  // Y
-		-1,  // Type
-		-1,  // Body
-		-1,  // BodyP
-		-1,  // Statement
-		-1,  // Print
-		-1,  // PrintP
-		-1,  // PrintPP
-		-1,  // Assign
-		-1,  // Cycle
-		-1,  // Condition
-		-1,  // ConditionP
-		-1,  // Expresion
-		-1,  // EP
-		149, // Exp
-		-1,  // ExpP
-		146, // Termino
-		-1,  // TP
-		147, // Factor
-		148, // FactorP
-		-1,  // FactorPP
-		-1,  // CTE
-		-1,  // Funcs
-		-1,  // FuncsP
-		-1,  // W
-		-1,  // WP
-		-1,  // VP
-		-1,  // FCall
-		-1,  // FCallP
-		-1,  // Z
+		-1, // S'
+		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
+		-1, // ProgramaP
+		-1, // FP
+		-1, // Vars
+		-1, // VarsP
+		-1, // X
+		-1, // Y
+		-1, // Type
+		-1, // Body
+		-1, // BodyP
+		-1, // Statement
+		-1, // Print
+		-1, // PrintP
+		-1, // PrintPP
+		-1, // Assign
+		-1, // Cycle
+		-1, // Condition
+		-1, // ConditionP
+		-1, // Expresion
+		-1, // EP
+		-1, // Exp
+		-1, // ExpP
+		-1, // Termino
+		-1, // TP
+		-1, // Factor
+		-1, // FactorP
+		-1, // FactorPP
+		-1, // CTE
+		-1, // Funcs
+		-1, // FuncsP
+		-1, // W
+		-1, // WP
+		-1, // VP
+		-1, // FCall
+		-1, // FCallP
+		-1, // Z
 	},
 	gotoRow{ // S87
 		-1,  // S'
 		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
 		-1,  // ProgramaP
 		-1,  // FP
 		-1,  // Vars
@@ -3425,12 +3601,12 @@ var gotoTab = gotoTable{
 		-1,  // ConditionP
 		-1,  // Expresion
 		-1,  // EP
-		150, // Exp
+		147, // Exp
 		-1,  // ExpP
-		146, // Termino
+		148, // Termino
 		-1,  // TP
-		147, // Factor
-		148, // FactorP
+		149, // Factor
+		150, // FactorP
 		-1,  // FactorPP
 		-1,  // CTE
 		-1,  // Funcs
@@ -3443,47 +3619,10 @@ var gotoTab = gotoTable{
 		-1,  // Z
 	},
 	gotoRow{ // S88
-		-1, // S'
-		-1, // Programa
-		-1, // ProgramaP
-		-1, // FP
-		-1, // Vars
-		-1, // VarsP
-		-1, // X
-		-1, // Y
-		-1, // Type
-		-1, // Body
-		-1, // BodyP
-		-1, // Statement
-		-1, // Print
-		-1, // PrintP
-		-1, // PrintPP
-		-1, // Assign
-		-1, // Cycle
-		-1, // Condition
-		-1, // ConditionP
-		-1, // Expresion
-		-1, // EP
-		-1, // Exp
-		-1, // ExpP
-		-1, // Termino
-		-1, // TP
-		-1, // Factor
-		-1, // FactorP
-		-1, // FactorPP
-		-1, // CTE
-		-1, // Funcs
-		-1, // FuncsP
-		-1, // W
-		-1, // WP
-		-1, // VP
-		-1, // FCall
-		-1, // FCallP
-		-1, // Z
-	},
-	gotoRow{ // S89
 		-1,  // S'
 		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
 		-1,  // ProgramaP
 		-1,  // FP
 		-1,  // Vars
@@ -3503,12 +3642,53 @@ var gotoTab = gotoTable{
 		-1,  // ConditionP
 		-1,  // Expresion
 		-1,  // EP
-		-1,  // Exp
+		151, // Exp
 		-1,  // ExpP
-		151, // Termino
+		148, // Termino
 		-1,  // TP
-		58,  // Factor
-		59,  // FactorP
+		149, // Factor
+		150, // FactorP
+		-1,  // FactorPP
+		-1,  // CTE
+		-1,  // Funcs
+		-1,  // FuncsP
+		-1,  // W
+		-1,  // WP
+		-1,  // VP
+		-1,  // FCall
+		-1,  // FCallP
+		-1,  // Z
+	},
+	gotoRow{ // S89
+		-1,  // S'
+		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
+		-1,  // ProgramaP
+		-1,  // FP
+		-1,  // Vars
+		-1,  // VarsP
+		-1,  // X
+		-1,  // Y
+		-1,  // Type
+		-1,  // Body
+		-1,  // BodyP
+		-1,  // Statement
+		-1,  // Print
+		-1,  // PrintP
+		-1,  // PrintPP
+		-1,  // Assign
+		-1,  // Cycle
+		-1,  // Condition
+		-1,  // ConditionP
+		-1,  // Expresion
+		-1,  // EP
+		152, // Exp
+		-1,  // ExpP
+		148, // Termino
+		-1,  // TP
+		149, // Factor
+		150, // FactorP
 		-1,  // FactorPP
 		-1,  // CTE
 		-1,  // Funcs
@@ -3521,47 +3701,10 @@ var gotoTab = gotoTable{
 		-1,  // Z
 	},
 	gotoRow{ // S90
-		-1,  // S'
-		-1,  // Programa
-		-1,  // ProgramaP
-		-1,  // FP
-		-1,  // Vars
-		-1,  // VarsP
-		-1,  // X
-		-1,  // Y
-		-1,  // Type
-		-1,  // Body
-		-1,  // BodyP
-		-1,  // Statement
-		-1,  // Print
-		-1,  // PrintP
-		-1,  // PrintPP
-		-1,  // Assign
-		-1,  // Cycle
-		-1,  // Condition
-		-1,  // ConditionP
-		-1,  // Expresion
-		-1,  // EP
-		-1,  // Exp
-		-1,  // ExpP
-		152, // Termino
-		-1,  // TP
-		58,  // Factor
-		59,  // FactorP
-		-1,  // FactorPP
-		-1,  // CTE
-		-1,  // Funcs
-		-1,  // FuncsP
-		-1,  // W
-		-1,  // WP
-		-1,  // VP
-		-1,  // FCall
-		-1,  // FCallP
-		-1,  // Z
-	},
-	gotoRow{ // S91
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -3598,9 +3741,11 @@ var gotoTab = gotoTable{
 		-1, // FCallP
 		-1, // Z
 	},
-	gotoRow{ // S92
+	gotoRow{ // S91
 		-1,  // S'
 		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
 		-1,  // ProgramaP
 		-1,  // FP
 		-1,  // Vars
@@ -3622,10 +3767,51 @@ var gotoTab = gotoTable{
 		-1,  // EP
 		-1,  // Exp
 		-1,  // ExpP
-		-1,  // Termino
+		153, // Termino
 		-1,  // TP
-		153, // Factor
-		59,  // FactorP
+		60,  // Factor
+		61,  // FactorP
+		-1,  // FactorPP
+		-1,  // CTE
+		-1,  // Funcs
+		-1,  // FuncsP
+		-1,  // W
+		-1,  // WP
+		-1,  // VP
+		-1,  // FCall
+		-1,  // FCallP
+		-1,  // Z
+	},
+	gotoRow{ // S92
+		-1,  // S'
+		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
+		-1,  // ProgramaP
+		-1,  // FP
+		-1,  // Vars
+		-1,  // VarsP
+		-1,  // X
+		-1,  // Y
+		-1,  // Type
+		-1,  // Body
+		-1,  // BodyP
+		-1,  // Statement
+		-1,  // Print
+		-1,  // PrintP
+		-1,  // PrintPP
+		-1,  // Assign
+		-1,  // Cycle
+		-1,  // Condition
+		-1,  // ConditionP
+		-1,  // Expresion
+		-1,  // EP
+		-1,  // Exp
+		-1,  // ExpP
+		154, // Termino
+		-1,  // TP
+		60,  // Factor
+		61,  // FactorP
 		-1,  // FactorPP
 		-1,  // CTE
 		-1,  // Funcs
@@ -3638,8 +3824,51 @@ var gotoTab = gotoTable{
 		-1,  // Z
 	},
 	gotoRow{ // S93
+		-1, // S'
+		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
+		-1, // ProgramaP
+		-1, // FP
+		-1, // Vars
+		-1, // VarsP
+		-1, // X
+		-1, // Y
+		-1, // Type
+		-1, // Body
+		-1, // BodyP
+		-1, // Statement
+		-1, // Print
+		-1, // PrintP
+		-1, // PrintPP
+		-1, // Assign
+		-1, // Cycle
+		-1, // Condition
+		-1, // ConditionP
+		-1, // Expresion
+		-1, // EP
+		-1, // Exp
+		-1, // ExpP
+		-1, // Termino
+		-1, // TP
+		-1, // Factor
+		-1, // FactorP
+		-1, // FactorPP
+		-1, // CTE
+		-1, // Funcs
+		-1, // FuncsP
+		-1, // W
+		-1, // WP
+		-1, // VP
+		-1, // FCall
+		-1, // FCallP
+		-1, // Z
+	},
+	gotoRow{ // S94
 		-1,  // S'
 		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
 		-1,  // ProgramaP
 		-1,  // FP
 		-1,  // Vars
@@ -3663,8 +3892,8 @@ var gotoTab = gotoTable{
 		-1,  // ExpP
 		-1,  // Termino
 		-1,  // TP
-		154, // Factor
-		59,  // FactorP
+		155, // Factor
+		61,  // FactorP
 		-1,  // FactorPP
 		-1,  // CTE
 		-1,  // Funcs
@@ -3676,87 +3905,52 @@ var gotoTab = gotoTable{
 		-1,  // FCallP
 		-1,  // Z
 	},
-	gotoRow{ // S94
-		-1, // S'
-		-1, // Programa
-		-1, // ProgramaP
-		-1, // FP
-		-1, // Vars
-		-1, // VarsP
-		-1, // X
-		-1, // Y
-		-1, // Type
-		-1, // Body
-		-1, // BodyP
-		-1, // Statement
-		-1, // Print
-		-1, // PrintP
-		-1, // PrintPP
-		-1, // Assign
-		-1, // Cycle
-		-1, // Condition
-		-1, // ConditionP
-		-1, // Expresion
-		-1, // EP
-		-1, // Exp
-		-1, // ExpP
-		-1, // Termino
-		-1, // TP
-		-1, // Factor
-		-1, // FactorP
-		-1, // FactorPP
-		-1, // CTE
-		-1, // Funcs
-		-1, // FuncsP
-		-1, // W
-		-1, // WP
-		-1, // VP
-		-1, // FCall
-		-1, // FCallP
-		-1, // Z
-	},
 	gotoRow{ // S95
-		-1, // S'
-		-1, // Programa
-		-1, // ProgramaP
-		-1, // FP
-		-1, // Vars
-		-1, // VarsP
-		-1, // X
-		-1, // Y
-		-1, // Type
-		-1, // Body
-		-1, // BodyP
-		-1, // Statement
-		-1, // Print
-		-1, // PrintP
-		-1, // PrintPP
-		-1, // Assign
-		-1, // Cycle
-		-1, // Condition
-		-1, // ConditionP
-		-1, // Expresion
-		-1, // EP
-		-1, // Exp
-		-1, // ExpP
-		-1, // Termino
-		-1, // TP
-		-1, // Factor
-		-1, // FactorP
-		-1, // FactorPP
-		-1, // CTE
-		-1, // Funcs
-		-1, // FuncsP
-		-1, // W
-		-1, // WP
-		-1, // VP
-		-1, // FCall
-		-1, // FCallP
-		-1, // Z
+		-1,  // S'
+		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
+		-1,  // ProgramaP
+		-1,  // FP
+		-1,  // Vars
+		-1,  // VarsP
+		-1,  // X
+		-1,  // Y
+		-1,  // Type
+		-1,  // Body
+		-1,  // BodyP
+		-1,  // Statement
+		-1,  // Print
+		-1,  // PrintP
+		-1,  // PrintPP
+		-1,  // Assign
+		-1,  // Cycle
+		-1,  // Condition
+		-1,  // ConditionP
+		-1,  // Expresion
+		-1,  // EP
+		-1,  // Exp
+		-1,  // ExpP
+		-1,  // Termino
+		-1,  // TP
+		156, // Factor
+		61,  // FactorP
+		-1,  // FactorPP
+		-1,  // CTE
+		-1,  // Funcs
+		-1,  // FuncsP
+		-1,  // W
+		-1,  // WP
+		-1,  // VP
+		-1,  // FCall
+		-1,  // FCallP
+		-1,  // Z
 	},
 	gotoRow{ // S96
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -3796,6 +3990,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S97
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -3835,6 +4031,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S98
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -3874,6 +4072,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S99
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -3913,6 +4113,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S100
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -3952,6 +4154,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S101
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -3989,86 +4193,92 @@ var gotoTab = gotoTable{
 		-1, // Z
 	},
 	gotoRow{ // S102
-		-1,  // S'
-		-1,  // Programa
-		-1,  // ProgramaP
-		-1,  // FP
-		-1,  // Vars
-		-1,  // VarsP
-		-1,  // X
-		-1,  // Y
-		-1,  // Type
-		-1,  // Body
-		-1,  // BodyP
-		-1,  // Statement
-		-1,  // Print
-		-1,  // PrintP
-		-1,  // PrintPP
-		-1,  // Assign
-		-1,  // Cycle
-		-1,  // Condition
-		-1,  // ConditionP
-		-1,  // Expresion
-		-1,  // EP
-		159, // Exp
-		-1,  // ExpP
-		160, // Termino
-		-1,  // TP
-		161, // Factor
-		162, // FactorP
-		-1,  // FactorPP
-		-1,  // CTE
-		-1,  // Funcs
-		-1,  // FuncsP
-		-1,  // W
-		-1,  // WP
-		-1,  // VP
-		-1,  // FCall
-		-1,  // FCallP
-		-1,  // Z
+		-1, // S'
+		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
+		-1, // ProgramaP
+		-1, // FP
+		-1, // Vars
+		-1, // VarsP
+		-1, // X
+		-1, // Y
+		-1, // Type
+		-1, // Body
+		-1, // BodyP
+		-1, // Statement
+		-1, // Print
+		-1, // PrintP
+		-1, // PrintPP
+		-1, // Assign
+		-1, // Cycle
+		-1, // Condition
+		-1, // ConditionP
+		-1, // Expresion
+		-1, // EP
+		-1, // Exp
+		-1, // ExpP
+		-1, // Termino
+		-1, // TP
+		-1, // Factor
+		-1, // FactorP
+		-1, // FactorPP
+		-1, // CTE
+		-1, // Funcs
+		-1, // FuncsP
+		-1, // W
+		-1, // WP
+		-1, // VP
+		-1, // FCall
+		-1, // FCallP
+		-1, // Z
 	},
 	gotoRow{ // S103
-		-1,  // S'
-		-1,  // Programa
-		-1,  // ProgramaP
-		-1,  // FP
-		-1,  // Vars
-		-1,  // VarsP
-		-1,  // X
-		-1,  // Y
-		-1,  // Type
-		-1,  // Body
-		-1,  // BodyP
-		-1,  // Statement
-		-1,  // Print
-		-1,  // PrintP
-		-1,  // PrintPP
-		-1,  // Assign
-		-1,  // Cycle
-		-1,  // Condition
-		-1,  // ConditionP
-		-1,  // Expresion
-		-1,  // EP
-		163, // Exp
-		-1,  // ExpP
-		160, // Termino
-		-1,  // TP
-		161, // Factor
-		162, // FactorP
-		-1,  // FactorPP
-		-1,  // CTE
-		-1,  // Funcs
-		-1,  // FuncsP
-		-1,  // W
-		-1,  // WP
-		-1,  // VP
-		-1,  // FCall
-		-1,  // FCallP
-		-1,  // Z
+		-1, // S'
+		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
+		-1, // ProgramaP
+		-1, // FP
+		-1, // Vars
+		-1, // VarsP
+		-1, // X
+		-1, // Y
+		-1, // Type
+		-1, // Body
+		-1, // BodyP
+		-1, // Statement
+		-1, // Print
+		-1, // PrintP
+		-1, // PrintPP
+		-1, // Assign
+		-1, // Cycle
+		-1, // Condition
+		-1, // ConditionP
+		-1, // Expresion
+		-1, // EP
+		-1, // Exp
+		-1, // ExpP
+		-1, // Termino
+		-1, // TP
+		-1, // Factor
+		-1, // FactorP
+		-1, // FactorPP
+		-1, // CTE
+		-1, // Funcs
+		-1, // FuncsP
+		-1, // W
+		-1, // WP
+		-1, // VP
+		-1, // FCall
+		-1, // FCallP
+		-1, // Z
 	},
 	gotoRow{ // S104
 		-1,  // S'
 		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
 		-1,  // ProgramaP
 		-1,  // FP
 		-1,  // Vars
@@ -4088,12 +4298,12 @@ var gotoTab = gotoTable{
 		-1,  // ConditionP
 		-1,  // Expresion
 		-1,  // EP
-		164, // Exp
+		161, // Exp
 		-1,  // ExpP
-		160, // Termino
+		162, // Termino
 		-1,  // TP
-		161, // Factor
-		162, // FactorP
+		163, // Factor
+		164, // FactorP
 		-1,  // FactorPP
 		-1,  // CTE
 		-1,  // Funcs
@@ -4106,47 +4316,10 @@ var gotoTab = gotoTable{
 		-1,  // Z
 	},
 	gotoRow{ // S105
-		-1, // S'
-		-1, // Programa
-		-1, // ProgramaP
-		-1, // FP
-		-1, // Vars
-		-1, // VarsP
-		-1, // X
-		-1, // Y
-		-1, // Type
-		-1, // Body
-		-1, // BodyP
-		-1, // Statement
-		-1, // Print
-		-1, // PrintP
-		-1, // PrintPP
-		-1, // Assign
-		-1, // Cycle
-		-1, // Condition
-		-1, // ConditionP
-		-1, // Expresion
-		-1, // EP
-		-1, // Exp
-		-1, // ExpP
-		-1, // Termino
-		-1, // TP
-		-1, // Factor
-		-1, // FactorP
-		-1, // FactorPP
-		-1, // CTE
-		-1, // Funcs
-		-1, // FuncsP
-		-1, // W
-		-1, // WP
-		-1, // VP
-		-1, // FCall
-		-1, // FCallP
-		-1, // Z
-	},
-	gotoRow{ // S106
 		-1,  // S'
 		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
 		-1,  // ProgramaP
 		-1,  // FP
 		-1,  // Vars
@@ -4166,12 +4339,53 @@ var gotoTab = gotoTable{
 		-1,  // ConditionP
 		-1,  // Expresion
 		-1,  // EP
-		-1,  // Exp
+		165, // Exp
 		-1,  // ExpP
-		165, // Termino
+		162, // Termino
 		-1,  // TP
-		65,  // Factor
-		66,  // FactorP
+		163, // Factor
+		164, // FactorP
+		-1,  // FactorPP
+		-1,  // CTE
+		-1,  // Funcs
+		-1,  // FuncsP
+		-1,  // W
+		-1,  // WP
+		-1,  // VP
+		-1,  // FCall
+		-1,  // FCallP
+		-1,  // Z
+	},
+	gotoRow{ // S106
+		-1,  // S'
+		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
+		-1,  // ProgramaP
+		-1,  // FP
+		-1,  // Vars
+		-1,  // VarsP
+		-1,  // X
+		-1,  // Y
+		-1,  // Type
+		-1,  // Body
+		-1,  // BodyP
+		-1,  // Statement
+		-1,  // Print
+		-1,  // PrintP
+		-1,  // PrintPP
+		-1,  // Assign
+		-1,  // Cycle
+		-1,  // Condition
+		-1,  // ConditionP
+		-1,  // Expresion
+		-1,  // EP
+		166, // Exp
+		-1,  // ExpP
+		162, // Termino
+		-1,  // TP
+		163, // Factor
+		164, // FactorP
 		-1,  // FactorPP
 		-1,  // CTE
 		-1,  // Funcs
@@ -4184,47 +4398,10 @@ var gotoTab = gotoTable{
 		-1,  // Z
 	},
 	gotoRow{ // S107
-		-1,  // S'
-		-1,  // Programa
-		-1,  // ProgramaP
-		-1,  // FP
-		-1,  // Vars
-		-1,  // VarsP
-		-1,  // X
-		-1,  // Y
-		-1,  // Type
-		-1,  // Body
-		-1,  // BodyP
-		-1,  // Statement
-		-1,  // Print
-		-1,  // PrintP
-		-1,  // PrintPP
-		-1,  // Assign
-		-1,  // Cycle
-		-1,  // Condition
-		-1,  // ConditionP
-		-1,  // Expresion
-		-1,  // EP
-		-1,  // Exp
-		-1,  // ExpP
-		166, // Termino
-		-1,  // TP
-		65,  // Factor
-		66,  // FactorP
-		-1,  // FactorPP
-		-1,  // CTE
-		-1,  // Funcs
-		-1,  // FuncsP
-		-1,  // W
-		-1,  // WP
-		-1,  // VP
-		-1,  // FCall
-		-1,  // FCallP
-		-1,  // Z
-	},
-	gotoRow{ // S108
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -4261,9 +4438,11 @@ var gotoTab = gotoTable{
 		-1, // FCallP
 		-1, // Z
 	},
-	gotoRow{ // S109
+	gotoRow{ // S108
 		-1,  // S'
 		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
 		-1,  // ProgramaP
 		-1,  // FP
 		-1,  // Vars
@@ -4285,10 +4464,51 @@ var gotoTab = gotoTable{
 		-1,  // EP
 		-1,  // Exp
 		-1,  // ExpP
-		-1,  // Termino
+		167, // Termino
 		-1,  // TP
-		167, // Factor
-		66,  // FactorP
+		67,  // Factor
+		68,  // FactorP
+		-1,  // FactorPP
+		-1,  // CTE
+		-1,  // Funcs
+		-1,  // FuncsP
+		-1,  // W
+		-1,  // WP
+		-1,  // VP
+		-1,  // FCall
+		-1,  // FCallP
+		-1,  // Z
+	},
+	gotoRow{ // S109
+		-1,  // S'
+		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
+		-1,  // ProgramaP
+		-1,  // FP
+		-1,  // Vars
+		-1,  // VarsP
+		-1,  // X
+		-1,  // Y
+		-1,  // Type
+		-1,  // Body
+		-1,  // BodyP
+		-1,  // Statement
+		-1,  // Print
+		-1,  // PrintP
+		-1,  // PrintPP
+		-1,  // Assign
+		-1,  // Cycle
+		-1,  // Condition
+		-1,  // ConditionP
+		-1,  // Expresion
+		-1,  // EP
+		-1,  // Exp
+		-1,  // ExpP
+		168, // Termino
+		-1,  // TP
+		67,  // Factor
+		68,  // FactorP
 		-1,  // FactorPP
 		-1,  // CTE
 		-1,  // Funcs
@@ -4301,8 +4521,51 @@ var gotoTab = gotoTable{
 		-1,  // Z
 	},
 	gotoRow{ // S110
+		-1, // S'
+		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
+		-1, // ProgramaP
+		-1, // FP
+		-1, // Vars
+		-1, // VarsP
+		-1, // X
+		-1, // Y
+		-1, // Type
+		-1, // Body
+		-1, // BodyP
+		-1, // Statement
+		-1, // Print
+		-1, // PrintP
+		-1, // PrintPP
+		-1, // Assign
+		-1, // Cycle
+		-1, // Condition
+		-1, // ConditionP
+		-1, // Expresion
+		-1, // EP
+		-1, // Exp
+		-1, // ExpP
+		-1, // Termino
+		-1, // TP
+		-1, // Factor
+		-1, // FactorP
+		-1, // FactorPP
+		-1, // CTE
+		-1, // Funcs
+		-1, // FuncsP
+		-1, // W
+		-1, // WP
+		-1, // VP
+		-1, // FCall
+		-1, // FCallP
+		-1, // Z
+	},
+	gotoRow{ // S111
 		-1,  // S'
 		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
 		-1,  // ProgramaP
 		-1,  // FP
 		-1,  // Vars
@@ -4326,8 +4589,8 @@ var gotoTab = gotoTable{
 		-1,  // ExpP
 		-1,  // Termino
 		-1,  // TP
-		168, // Factor
-		66,  // FactorP
+		169, // Factor
+		68,  // FactorP
 		-1,  // FactorPP
 		-1,  // CTE
 		-1,  // Funcs
@@ -4339,87 +4602,52 @@ var gotoTab = gotoTable{
 		-1,  // FCallP
 		-1,  // Z
 	},
-	gotoRow{ // S111
-		-1, // S'
-		-1, // Programa
-		-1, // ProgramaP
-		-1, // FP
-		-1, // Vars
-		-1, // VarsP
-		-1, // X
-		-1, // Y
-		-1, // Type
-		-1, // Body
-		-1, // BodyP
-		-1, // Statement
-		-1, // Print
-		-1, // PrintP
-		-1, // PrintPP
-		-1, // Assign
-		-1, // Cycle
-		-1, // Condition
-		-1, // ConditionP
-		-1, // Expresion
-		-1, // EP
-		-1, // Exp
-		-1, // ExpP
-		-1, // Termino
-		-1, // TP
-		-1, // Factor
-		-1, // FactorP
-		-1, // FactorPP
-		-1, // CTE
-		-1, // Funcs
-		-1, // FuncsP
-		-1, // W
-		-1, // WP
-		-1, // VP
-		-1, // FCall
-		-1, // FCallP
-		-1, // Z
-	},
 	gotoRow{ // S112
-		-1, // S'
-		-1, // Programa
-		-1, // ProgramaP
-		-1, // FP
-		-1, // Vars
-		-1, // VarsP
-		-1, // X
-		-1, // Y
-		-1, // Type
-		-1, // Body
-		-1, // BodyP
-		-1, // Statement
-		-1, // Print
-		-1, // PrintP
-		-1, // PrintPP
-		-1, // Assign
-		-1, // Cycle
-		-1, // Condition
-		-1, // ConditionP
-		-1, // Expresion
-		-1, // EP
-		-1, // Exp
-		-1, // ExpP
-		-1, // Termino
-		-1, // TP
-		-1, // Factor
-		-1, // FactorP
-		-1, // FactorPP
-		-1, // CTE
-		-1, // Funcs
-		-1, // FuncsP
-		-1, // W
-		-1, // WP
-		-1, // VP
-		-1, // FCall
-		-1, // FCallP
-		-1, // Z
+		-1,  // S'
+		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
+		-1,  // ProgramaP
+		-1,  // FP
+		-1,  // Vars
+		-1,  // VarsP
+		-1,  // X
+		-1,  // Y
+		-1,  // Type
+		-1,  // Body
+		-1,  // BodyP
+		-1,  // Statement
+		-1,  // Print
+		-1,  // PrintP
+		-1,  // PrintPP
+		-1,  // Assign
+		-1,  // Cycle
+		-1,  // Condition
+		-1,  // ConditionP
+		-1,  // Expresion
+		-1,  // EP
+		-1,  // Exp
+		-1,  // ExpP
+		-1,  // Termino
+		-1,  // TP
+		170, // Factor
+		68,  // FactorP
+		-1,  // FactorPP
+		-1,  // CTE
+		-1,  // Funcs
+		-1,  // FuncsP
+		-1,  // W
+		-1,  // WP
+		-1,  // VP
+		-1,  // FCall
+		-1,  // FCallP
+		-1,  // Z
 	},
 	gotoRow{ // S113
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -4459,6 +4687,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S114
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -4498,6 +4728,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S115
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -4537,6 +4769,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S116
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -4576,6 +4810,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S117
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -4613,47 +4849,51 @@ var gotoTab = gotoTable{
 		-1, // Z
 	},
 	gotoRow{ // S118
-		-1, // S'
-		-1, // Programa
-		-1, // ProgramaP
-		-1, // FP
-		-1, // Vars
-		-1, // VarsP
-		-1, // X
-		-1, // Y
-		-1, // Type
-		-1, // Body
-		-1, // BodyP
-		-1, // Statement
-		-1, // Print
-		-1, // PrintP
-		-1, // PrintPP
-		-1, // Assign
-		-1, // Cycle
-		-1, // Condition
-		-1, // ConditionP
-		-1, // Expresion
-		-1, // EP
-		-1, // Exp
-		-1, // ExpP
-		-1, // Termino
-		-1, // TP
-		-1, // Factor
-		-1, // FactorP
-		-1, // FactorPP
-		-1, // CTE
-		-1, // Funcs
-		-1, // FuncsP
-		-1, // W
-		-1, // WP
-		-1, // VP
-		-1, // FCall
-		-1, // FCallP
-		-1, // Z
+		-1,  // S'
+		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
+		-1,  // ProgramaP
+		-1,  // FP
+		-1,  // Vars
+		-1,  // VarsP
+		-1,  // X
+		-1,  // Y
+		-1,  // Type
+		-1,  // Body
+		-1,  // BodyP
+		-1,  // Statement
+		-1,  // Print
+		173, // PrintP
+		-1,  // PrintPP
+		-1,  // Assign
+		-1,  // Cycle
+		-1,  // Condition
+		-1,  // ConditionP
+		-1,  // Expresion
+		-1,  // EP
+		-1,  // Exp
+		-1,  // ExpP
+		-1,  // Termino
+		-1,  // TP
+		-1,  // Factor
+		-1,  // FactorP
+		-1,  // FactorPP
+		-1,  // CTE
+		-1,  // Funcs
+		-1,  // FuncsP
+		-1,  // W
+		-1,  // WP
+		-1,  // VP
+		-1,  // FCall
+		-1,  // FCallP
+		-1,  // Z
 	},
 	gotoRow{ // S119
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -4693,6 +4933,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S120
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -4730,86 +4972,92 @@ var gotoTab = gotoTable{
 		-1, // Z
 	},
 	gotoRow{ // S121
-		-1,  // S'
-		-1,  // Programa
-		-1,  // ProgramaP
-		-1,  // FP
-		-1,  // Vars
-		-1,  // VarsP
-		-1,  // X
-		-1,  // Y
-		-1,  // Type
-		-1,  // Body
-		-1,  // BodyP
-		-1,  // Statement
-		-1,  // Print
-		-1,  // PrintP
-		-1,  // PrintPP
-		-1,  // Assign
-		-1,  // Cycle
-		-1,  // Condition
-		-1,  // ConditionP
-		-1,  // Expresion
-		-1,  // EP
-		174, // Exp
-		-1,  // ExpP
-		175, // Termino
-		-1,  // TP
-		176, // Factor
-		177, // FactorP
-		-1,  // FactorPP
-		-1,  // CTE
-		-1,  // Funcs
-		-1,  // FuncsP
-		-1,  // W
-		-1,  // WP
-		-1,  // VP
-		-1,  // FCall
-		-1,  // FCallP
-		-1,  // Z
+		-1, // S'
+		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
+		-1, // ProgramaP
+		-1, // FP
+		-1, // Vars
+		-1, // VarsP
+		-1, // X
+		-1, // Y
+		-1, // Type
+		-1, // Body
+		-1, // BodyP
+		-1, // Statement
+		-1, // Print
+		-1, // PrintP
+		-1, // PrintPP
+		-1, // Assign
+		-1, // Cycle
+		-1, // Condition
+		-1, // ConditionP
+		-1, // Expresion
+		-1, // EP
+		-1, // Exp
+		-1, // ExpP
+		-1, // Termino
+		-1, // TP
+		-1, // Factor
+		-1, // FactorP
+		-1, // FactorPP
+		-1, // CTE
+		-1, // Funcs
+		-1, // FuncsP
+		-1, // W
+		-1, // WP
+		-1, // VP
+		-1, // FCall
+		-1, // FCallP
+		-1, // Z
 	},
 	gotoRow{ // S122
-		-1,  // S'
-		-1,  // Programa
-		-1,  // ProgramaP
-		-1,  // FP
-		-1,  // Vars
-		-1,  // VarsP
-		-1,  // X
-		-1,  // Y
-		-1,  // Type
-		-1,  // Body
-		-1,  // BodyP
-		-1,  // Statement
-		-1,  // Print
-		-1,  // PrintP
-		-1,  // PrintPP
-		-1,  // Assign
-		-1,  // Cycle
-		-1,  // Condition
-		-1,  // ConditionP
-		-1,  // Expresion
-		-1,  // EP
-		178, // Exp
-		-1,  // ExpP
-		175, // Termino
-		-1,  // TP
-		176, // Factor
-		177, // FactorP
-		-1,  // FactorPP
-		-1,  // CTE
-		-1,  // Funcs
-		-1,  // FuncsP
-		-1,  // W
-		-1,  // WP
-		-1,  // VP
-		-1,  // FCall
-		-1,  // FCallP
-		-1,  // Z
+		-1, // S'
+		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
+		-1, // ProgramaP
+		-1, // FP
+		-1, // Vars
+		-1, // VarsP
+		-1, // X
+		-1, // Y
+		-1, // Type
+		-1, // Body
+		-1, // BodyP
+		-1, // Statement
+		-1, // Print
+		-1, // PrintP
+		-1, // PrintPP
+		-1, // Assign
+		-1, // Cycle
+		-1, // Condition
+		-1, // ConditionP
+		-1, // Expresion
+		-1, // EP
+		-1, // Exp
+		-1, // ExpP
+		-1, // Termino
+		-1, // TP
+		-1, // Factor
+		-1, // FactorP
+		-1, // FactorPP
+		-1, // CTE
+		-1, // Funcs
+		-1, // FuncsP
+		-1, // W
+		-1, // WP
+		-1, // VP
+		-1, // FCall
+		-1, // FCallP
+		-1, // Z
 	},
 	gotoRow{ // S123
 		-1,  // S'
 		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
 		-1,  // ProgramaP
 		-1,  // FP
 		-1,  // Vars
@@ -4829,12 +5077,12 @@ var gotoTab = gotoTable{
 		-1,  // ConditionP
 		-1,  // Expresion
 		-1,  // EP
-		179, // Exp
+		177, // Exp
 		-1,  // ExpP
-		175, // Termino
+		178, // Termino
 		-1,  // TP
-		176, // Factor
-		177, // FactorP
+		179, // Factor
+		180, // FactorP
 		-1,  // FactorPP
 		-1,  // CTE
 		-1,  // Funcs
@@ -4847,47 +5095,10 @@ var gotoTab = gotoTable{
 		-1,  // Z
 	},
 	gotoRow{ // S124
-		-1, // S'
-		-1, // Programa
-		-1, // ProgramaP
-		-1, // FP
-		-1, // Vars
-		-1, // VarsP
-		-1, // X
-		-1, // Y
-		-1, // Type
-		-1, // Body
-		-1, // BodyP
-		-1, // Statement
-		-1, // Print
-		-1, // PrintP
-		-1, // PrintPP
-		-1, // Assign
-		-1, // Cycle
-		-1, // Condition
-		-1, // ConditionP
-		-1, // Expresion
-		-1, // EP
-		-1, // Exp
-		-1, // ExpP
-		-1, // Termino
-		-1, // TP
-		-1, // Factor
-		-1, // FactorP
-		-1, // FactorPP
-		-1, // CTE
-		-1, // Funcs
-		-1, // FuncsP
-		-1, // W
-		-1, // WP
-		-1, // VP
-		-1, // FCall
-		-1, // FCallP
-		-1, // Z
-	},
-	gotoRow{ // S125
 		-1,  // S'
 		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
 		-1,  // ProgramaP
 		-1,  // FP
 		-1,  // Vars
@@ -4907,12 +5118,53 @@ var gotoTab = gotoTable{
 		-1,  // ConditionP
 		-1,  // Expresion
 		-1,  // EP
-		-1,  // Exp
+		181, // Exp
 		-1,  // ExpP
-		180, // Termino
+		178, // Termino
 		-1,  // TP
-		73,  // Factor
-		74,  // FactorP
+		179, // Factor
+		180, // FactorP
+		-1,  // FactorPP
+		-1,  // CTE
+		-1,  // Funcs
+		-1,  // FuncsP
+		-1,  // W
+		-1,  // WP
+		-1,  // VP
+		-1,  // FCall
+		-1,  // FCallP
+		-1,  // Z
+	},
+	gotoRow{ // S125
+		-1,  // S'
+		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
+		-1,  // ProgramaP
+		-1,  // FP
+		-1,  // Vars
+		-1,  // VarsP
+		-1,  // X
+		-1,  // Y
+		-1,  // Type
+		-1,  // Body
+		-1,  // BodyP
+		-1,  // Statement
+		-1,  // Print
+		-1,  // PrintP
+		-1,  // PrintPP
+		-1,  // Assign
+		-1,  // Cycle
+		-1,  // Condition
+		-1,  // ConditionP
+		-1,  // Expresion
+		-1,  // EP
+		182, // Exp
+		-1,  // ExpP
+		178, // Termino
+		-1,  // TP
+		179, // Factor
+		180, // FactorP
 		-1,  // FactorPP
 		-1,  // CTE
 		-1,  // Funcs
@@ -4925,47 +5177,10 @@ var gotoTab = gotoTable{
 		-1,  // Z
 	},
 	gotoRow{ // S126
-		-1,  // S'
-		-1,  // Programa
-		-1,  // ProgramaP
-		-1,  // FP
-		-1,  // Vars
-		-1,  // VarsP
-		-1,  // X
-		-1,  // Y
-		-1,  // Type
-		-1,  // Body
-		-1,  // BodyP
-		-1,  // Statement
-		-1,  // Print
-		-1,  // PrintP
-		-1,  // PrintPP
-		-1,  // Assign
-		-1,  // Cycle
-		-1,  // Condition
-		-1,  // ConditionP
-		-1,  // Expresion
-		-1,  // EP
-		-1,  // Exp
-		-1,  // ExpP
-		181, // Termino
-		-1,  // TP
-		73,  // Factor
-		74,  // FactorP
-		-1,  // FactorPP
-		-1,  // CTE
-		-1,  // Funcs
-		-1,  // FuncsP
-		-1,  // W
-		-1,  // WP
-		-1,  // VP
-		-1,  // FCall
-		-1,  // FCallP
-		-1,  // Z
-	},
-	gotoRow{ // S127
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -5002,9 +5217,11 @@ var gotoTab = gotoTable{
 		-1, // FCallP
 		-1, // Z
 	},
-	gotoRow{ // S128
+	gotoRow{ // S127
 		-1,  // S'
 		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
 		-1,  // ProgramaP
 		-1,  // FP
 		-1,  // Vars
@@ -5026,10 +5243,51 @@ var gotoTab = gotoTable{
 		-1,  // EP
 		-1,  // Exp
 		-1,  // ExpP
-		-1,  // Termino
+		183, // Termino
 		-1,  // TP
-		182, // Factor
-		74,  // FactorP
+		75,  // Factor
+		76,  // FactorP
+		-1,  // FactorPP
+		-1,  // CTE
+		-1,  // Funcs
+		-1,  // FuncsP
+		-1,  // W
+		-1,  // WP
+		-1,  // VP
+		-1,  // FCall
+		-1,  // FCallP
+		-1,  // Z
+	},
+	gotoRow{ // S128
+		-1,  // S'
+		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
+		-1,  // ProgramaP
+		-1,  // FP
+		-1,  // Vars
+		-1,  // VarsP
+		-1,  // X
+		-1,  // Y
+		-1,  // Type
+		-1,  // Body
+		-1,  // BodyP
+		-1,  // Statement
+		-1,  // Print
+		-1,  // PrintP
+		-1,  // PrintPP
+		-1,  // Assign
+		-1,  // Cycle
+		-1,  // Condition
+		-1,  // ConditionP
+		-1,  // Expresion
+		-1,  // EP
+		-1,  // Exp
+		-1,  // ExpP
+		184, // Termino
+		-1,  // TP
+		75,  // Factor
+		76,  // FactorP
 		-1,  // FactorPP
 		-1,  // CTE
 		-1,  // Funcs
@@ -5042,8 +5300,51 @@ var gotoTab = gotoTable{
 		-1,  // Z
 	},
 	gotoRow{ // S129
+		-1, // S'
+		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
+		-1, // ProgramaP
+		-1, // FP
+		-1, // Vars
+		-1, // VarsP
+		-1, // X
+		-1, // Y
+		-1, // Type
+		-1, // Body
+		-1, // BodyP
+		-1, // Statement
+		-1, // Print
+		-1, // PrintP
+		-1, // PrintPP
+		-1, // Assign
+		-1, // Cycle
+		-1, // Condition
+		-1, // ConditionP
+		-1, // Expresion
+		-1, // EP
+		-1, // Exp
+		-1, // ExpP
+		-1, // Termino
+		-1, // TP
+		-1, // Factor
+		-1, // FactorP
+		-1, // FactorPP
+		-1, // CTE
+		-1, // Funcs
+		-1, // FuncsP
+		-1, // W
+		-1, // WP
+		-1, // VP
+		-1, // FCall
+		-1, // FCallP
+		-1, // Z
+	},
+	gotoRow{ // S130
 		-1,  // S'
 		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
 		-1,  // ProgramaP
 		-1,  // FP
 		-1,  // Vars
@@ -5067,8 +5368,8 @@ var gotoTab = gotoTable{
 		-1,  // ExpP
 		-1,  // Termino
 		-1,  // TP
-		183, // Factor
-		74,  // FactorP
+		185, // Factor
+		76,  // FactorP
 		-1,  // FactorPP
 		-1,  // CTE
 		-1,  // Funcs
@@ -5080,87 +5381,52 @@ var gotoTab = gotoTable{
 		-1,  // FCallP
 		-1,  // Z
 	},
-	gotoRow{ // S130
-		-1, // S'
-		-1, // Programa
-		-1, // ProgramaP
-		-1, // FP
-		-1, // Vars
-		-1, // VarsP
-		-1, // X
-		-1, // Y
-		-1, // Type
-		-1, // Body
-		-1, // BodyP
-		-1, // Statement
-		-1, // Print
-		-1, // PrintP
-		-1, // PrintPP
-		-1, // Assign
-		-1, // Cycle
-		-1, // Condition
-		-1, // ConditionP
-		-1, // Expresion
-		-1, // EP
-		-1, // Exp
-		-1, // ExpP
-		-1, // Termino
-		-1, // TP
-		-1, // Factor
-		-1, // FactorP
-		-1, // FactorPP
-		-1, // CTE
-		-1, // Funcs
-		-1, // FuncsP
-		-1, // W
-		-1, // WP
-		-1, // VP
-		-1, // FCall
-		-1, // FCallP
-		-1, // Z
-	},
 	gotoRow{ // S131
-		-1, // S'
-		-1, // Programa
-		-1, // ProgramaP
-		-1, // FP
-		-1, // Vars
-		-1, // VarsP
-		-1, // X
-		-1, // Y
-		-1, // Type
-		-1, // Body
-		-1, // BodyP
-		-1, // Statement
-		-1, // Print
-		-1, // PrintP
-		-1, // PrintPP
-		-1, // Assign
-		-1, // Cycle
-		-1, // Condition
-		-1, // ConditionP
-		-1, // Expresion
-		-1, // EP
-		-1, // Exp
-		-1, // ExpP
-		-1, // Termino
-		-1, // TP
-		-1, // Factor
-		-1, // FactorP
-		-1, // FactorPP
-		-1, // CTE
-		-1, // Funcs
-		-1, // FuncsP
-		-1, // W
-		-1, // WP
-		-1, // VP
-		-1, // FCall
-		-1, // FCallP
-		-1, // Z
+		-1,  // S'
+		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
+		-1,  // ProgramaP
+		-1,  // FP
+		-1,  // Vars
+		-1,  // VarsP
+		-1,  // X
+		-1,  // Y
+		-1,  // Type
+		-1,  // Body
+		-1,  // BodyP
+		-1,  // Statement
+		-1,  // Print
+		-1,  // PrintP
+		-1,  // PrintPP
+		-1,  // Assign
+		-1,  // Cycle
+		-1,  // Condition
+		-1,  // ConditionP
+		-1,  // Expresion
+		-1,  // EP
+		-1,  // Exp
+		-1,  // ExpP
+		-1,  // Termino
+		-1,  // TP
+		186, // Factor
+		76,  // FactorP
+		-1,  // FactorPP
+		-1,  // CTE
+		-1,  // Funcs
+		-1,  // FuncsP
+		-1,  // W
+		-1,  // WP
+		-1,  // VP
+		-1,  // FCall
+		-1,  // FCallP
+		-1,  // Z
 	},
 	gotoRow{ // S132
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -5200,6 +5466,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S133
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -5237,47 +5505,51 @@ var gotoTab = gotoTable{
 		-1, // Z
 	},
 	gotoRow{ // S134
-		-1,  // S'
-		-1,  // Programa
-		-1,  // ProgramaP
-		-1,  // FP
-		-1,  // Vars
-		-1,  // VarsP
-		-1,  // X
-		-1,  // Y
-		-1,  // Type
-		185, // Body
-		-1,  // BodyP
-		-1,  // Statement
-		-1,  // Print
-		-1,  // PrintP
-		-1,  // PrintPP
-		-1,  // Assign
-		-1,  // Cycle
-		-1,  // Condition
-		-1,  // ConditionP
-		-1,  // Expresion
-		-1,  // EP
-		-1,  // Exp
-		-1,  // ExpP
-		-1,  // Termino
-		-1,  // TP
-		-1,  // Factor
-		-1,  // FactorP
-		-1,  // FactorPP
-		-1,  // CTE
-		-1,  // Funcs
-		-1,  // FuncsP
-		-1,  // W
-		-1,  // WP
-		-1,  // VP
-		-1,  // FCall
-		-1,  // FCallP
-		-1,  // Z
+		-1, // S'
+		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
+		-1, // ProgramaP
+		-1, // FP
+		-1, // Vars
+		-1, // VarsP
+		-1, // X
+		-1, // Y
+		-1, // Type
+		-1, // Body
+		-1, // BodyP
+		-1, // Statement
+		-1, // Print
+		-1, // PrintP
+		-1, // PrintPP
+		-1, // Assign
+		-1, // Cycle
+		-1, // Condition
+		-1, // ConditionP
+		-1, // Expresion
+		-1, // EP
+		-1, // Exp
+		-1, // ExpP
+		-1, // Termino
+		-1, // TP
+		-1, // Factor
+		-1, // FactorP
+		-1, // FactorPP
+		-1, // CTE
+		-1, // Funcs
+		-1, // FuncsP
+		-1, // W
+		-1, // WP
+		-1, // VP
+		-1, // FCall
+		-1, // FCallP
+		-1, // Z
 	},
 	gotoRow{ // S135
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -5315,8 +5587,51 @@ var gotoTab = gotoTable{
 		-1, // Z
 	},
 	gotoRow{ // S136
+		-1,  // S'
+		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
+		-1,  // ProgramaP
+		-1,  // FP
+		-1,  // Vars
+		-1,  // VarsP
+		-1,  // X
+		-1,  // Y
+		-1,  // Type
+		188, // Body
+		-1,  // BodyP
+		-1,  // Statement
+		-1,  // Print
+		-1,  // PrintP
+		-1,  // PrintPP
+		-1,  // Assign
+		-1,  // Cycle
+		-1,  // Condition
+		-1,  // ConditionP
+		-1,  // Expresion
+		-1,  // EP
+		-1,  // Exp
+		-1,  // ExpP
+		-1,  // Termino
+		-1,  // TP
+		-1,  // Factor
+		-1,  // FactorP
+		-1,  // FactorPP
+		-1,  // CTE
+		-1,  // Funcs
+		-1,  // FuncsP
+		-1,  // W
+		-1,  // WP
+		-1,  // VP
+		-1,  // FCall
+		-1,  // FCallP
+		-1,  // Z
+	},
+	gotoRow{ // S137
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -5353,48 +5668,11 @@ var gotoTab = gotoTable{
 		-1, // FCallP
 		-1, // Z
 	},
-	gotoRow{ // S137
-		-1,  // S'
-		-1,  // Programa
-		-1,  // ProgramaP
-		-1,  // FP
-		-1,  // Vars
-		-1,  // VarsP
-		-1,  // X
-		-1,  // Y
-		-1,  // Type
-		-1,  // Body
-		-1,  // BodyP
-		-1,  // Statement
-		-1,  // Print
-		-1,  // PrintP
-		-1,  // PrintPP
-		-1,  // Assign
-		-1,  // Cycle
-		-1,  // Condition
-		-1,  // ConditionP
-		-1,  // Expresion
-		-1,  // EP
-		-1,  // Exp
-		-1,  // ExpP
-		-1,  // Termino
-		-1,  // TP
-		-1,  // Factor
-		-1,  // FactorP
-		-1,  // FactorPP
-		-1,  // CTE
-		-1,  // Funcs
-		-1,  // FuncsP
-		-1,  // W
-		187, // WP
-		-1,  // VP
-		-1,  // FCall
-		-1,  // FCallP
-		-1,  // Z
-	},
 	gotoRow{ // S138
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -5432,8 +5710,51 @@ var gotoTab = gotoTable{
 		-1, // Z
 	},
 	gotoRow{ // S139
+		-1,  // S'
+		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
+		-1,  // ProgramaP
+		-1,  // FP
+		-1,  // Vars
+		-1,  // VarsP
+		-1,  // X
+		-1,  // Y
+		-1,  // Type
+		-1,  // Body
+		-1,  // BodyP
+		-1,  // Statement
+		-1,  // Print
+		-1,  // PrintP
+		-1,  // PrintPP
+		-1,  // Assign
+		-1,  // Cycle
+		-1,  // Condition
+		-1,  // ConditionP
+		-1,  // Expresion
+		-1,  // EP
+		-1,  // Exp
+		-1,  // ExpP
+		-1,  // Termino
+		-1,  // TP
+		-1,  // Factor
+		-1,  // FactorP
+		-1,  // FactorPP
+		-1,  // CTE
+		-1,  // Funcs
+		-1,  // FuncsP
+		-1,  // W
+		190, // WP
+		-1,  // VP
+		-1,  // FCall
+		-1,  // FCallP
+		-1,  // Z
+	},
+	gotoRow{ // S140
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -5470,13 +5791,56 @@ var gotoTab = gotoTable{
 		-1, // FCallP
 		-1, // Z
 	},
-	gotoRow{ // S140
+	gotoRow{ // S141
+		-1, // S'
+		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
+		-1, // ProgramaP
+		-1, // FP
+		-1, // Vars
+		-1, // VarsP
+		-1, // X
+		-1, // Y
+		-1, // Type
+		-1, // Body
+		-1, // BodyP
+		-1, // Statement
+		-1, // Print
+		-1, // PrintP
+		-1, // PrintPP
+		-1, // Assign
+		-1, // Cycle
+		-1, // Condition
+		-1, // ConditionP
+		-1, // Expresion
+		-1, // EP
+		-1, // Exp
+		-1, // ExpP
+		-1, // Termino
+		-1, // TP
+		-1, // Factor
+		-1, // FactorP
+		-1, // FactorPP
+		-1, // CTE
+		-1, // Funcs
+		-1, // FuncsP
+		-1, // W
+		-1, // WP
+		-1, // VP
+		-1, // FCall
+		-1, // FCallP
+		-1, // Z
+	},
+	gotoRow{ // S142
 		-1,  // S'
 		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
 		-1,  // ProgramaP
 		-1,  // FP
 		-1,  // Vars
-		189, // VarsP
+		192, // VarsP
 		-1,  // X
 		-1,  // Y
 		-1,  // Type
@@ -5508,88 +5872,12 @@ var gotoTab = gotoTable{
 		-1,  // FCall
 		-1,  // FCallP
 		-1,  // Z
-	},
-	gotoRow{ // S141
-		-1,  // S'
-		-1,  // Programa
-		-1,  // ProgramaP
-		-1,  // FP
-		-1,  // Vars
-		-1,  // VarsP
-		-1,  // X
-		-1,  // Y
-		-1,  // Type
-		190, // Body
-		-1,  // BodyP
-		-1,  // Statement
-		-1,  // Print
-		-1,  // PrintP
-		-1,  // PrintPP
-		-1,  // Assign
-		-1,  // Cycle
-		-1,  // Condition
-		-1,  // ConditionP
-		-1,  // Expresion
-		-1,  // EP
-		-1,  // Exp
-		-1,  // ExpP
-		-1,  // Termino
-		-1,  // TP
-		-1,  // Factor
-		-1,  // FactorP
-		-1,  // FactorPP
-		-1,  // CTE
-		-1,  // Funcs
-		-1,  // FuncsP
-		-1,  // W
-		-1,  // WP
-		-1,  // VP
-		-1,  // FCall
-		-1,  // FCallP
-		-1,  // Z
-	},
-	gotoRow{ // S142
-		-1, // S'
-		-1, // Programa
-		-1, // ProgramaP
-		-1, // FP
-		-1, // Vars
-		-1, // VarsP
-		-1, // X
-		-1, // Y
-		-1, // Type
-		-1, // Body
-		-1, // BodyP
-		-1, // Statement
-		-1, // Print
-		-1, // PrintP
-		-1, // PrintPP
-		-1, // Assign
-		-1, // Cycle
-		-1, // Condition
-		-1, // ConditionP
-		-1, // Expresion
-		-1, // EP
-		-1, // Exp
-		-1, // ExpP
-		-1, // Termino
-		-1, // TP
-		-1, // Factor
-		-1, // FactorP
-		-1, // FactorPP
-		-1, // CTE
-		-1, // Funcs
-		-1, // FuncsP
-		-1, // W
-		-1, // WP
-		-1, // VP
-		-1, // FCall
-		-1, // FCallP
-		-1, // Z
 	},
 	gotoRow{ // S143
 		-1,  // S'
 		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
 		-1,  // ProgramaP
 		-1,  // FP
 		-1,  // Vars
@@ -5597,7 +5885,7 @@ var gotoTab = gotoTable{
 		-1,  // X
 		-1,  // Y
 		-1,  // Type
-		-1,  // Body
+		193, // Body
 		-1,  // BodyP
 		-1,  // Statement
 		-1,  // Print
@@ -5624,50 +5912,13 @@ var gotoTab = gotoTable{
 		-1,  // VP
 		-1,  // FCall
 		-1,  // FCallP
-		192, // Z
-	},
-	gotoRow{ // S144
-		-1,  // S'
-		-1,  // Programa
-		-1,  // ProgramaP
-		-1,  // FP
-		-1,  // Vars
-		-1,  // VarsP
-		-1,  // X
-		-1,  // Y
-		-1,  // Type
-		-1,  // Body
-		-1,  // BodyP
-		-1,  // Statement
-		-1,  // Print
-		-1,  // PrintP
-		-1,  // PrintPP
-		-1,  // Assign
-		-1,  // Cycle
-		-1,  // Condition
-		-1,  // ConditionP
-		193, // Expresion
-		-1,  // EP
-		71,  // Exp
-		-1,  // ExpP
-		72,  // Termino
-		-1,  // TP
-		73,  // Factor
-		74,  // FactorP
-		-1,  // FactorPP
-		-1,  // CTE
-		-1,  // Funcs
-		-1,  // FuncsP
-		-1,  // W
-		-1,  // WP
-		-1,  // VP
-		-1,  // FCall
-		-1,  // FCallP
 		-1,  // Z
 	},
-	gotoRow{ // S145
+	gotoRow{ // S144
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -5704,9 +5955,11 @@ var gotoTab = gotoTable{
 		-1, // FCallP
 		-1, // Z
 	},
-	gotoRow{ // S146
+	gotoRow{ // S145
 		-1,  // S'
 		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
 		-1,  // ProgramaP
 		-1,  // FP
 		-1,  // Vars
@@ -5727,11 +5980,52 @@ var gotoTab = gotoTable{
 		-1,  // Expresion
 		-1,  // EP
 		-1,  // Exp
-		194, // ExpP
+		-1,  // ExpP
 		-1,  // Termino
 		-1,  // TP
 		-1,  // Factor
 		-1,  // FactorP
+		-1,  // FactorPP
+		-1,  // CTE
+		-1,  // Funcs
+		-1,  // FuncsP
+		-1,  // W
+		-1,  // WP
+		-1,  // VP
+		-1,  // FCall
+		-1,  // FCallP
+		195, // Z
+	},
+	gotoRow{ // S146
+		-1,  // S'
+		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
+		-1,  // ProgramaP
+		-1,  // FP
+		-1,  // Vars
+		-1,  // VarsP
+		-1,  // X
+		-1,  // Y
+		-1,  // Type
+		-1,  // Body
+		-1,  // BodyP
+		-1,  // Statement
+		-1,  // Print
+		-1,  // PrintP
+		-1,  // PrintPP
+		-1,  // Assign
+		-1,  // Cycle
+		-1,  // Condition
+		-1,  // ConditionP
+		196, // Expresion
+		-1,  // EP
+		73,  // Exp
+		-1,  // ExpP
+		74,  // Termino
+		-1,  // TP
+		75,  // Factor
+		76,  // FactorP
 		-1,  // FactorPP
 		-1,  // CTE
 		-1,  // Funcs
@@ -5744,47 +6038,51 @@ var gotoTab = gotoTable{
 		-1,  // Z
 	},
 	gotoRow{ // S147
-		-1,  // S'
-		-1,  // Programa
-		-1,  // ProgramaP
-		-1,  // FP
-		-1,  // Vars
-		-1,  // VarsP
-		-1,  // X
-		-1,  // Y
-		-1,  // Type
-		-1,  // Body
-		-1,  // BodyP
-		-1,  // Statement
-		-1,  // Print
-		-1,  // PrintP
-		-1,  // PrintPP
-		-1,  // Assign
-		-1,  // Cycle
-		-1,  // Condition
-		-1,  // ConditionP
-		-1,  // Expresion
-		-1,  // EP
-		-1,  // Exp
-		-1,  // ExpP
-		-1,  // Termino
-		197, // TP
-		-1,  // Factor
-		-1,  // FactorP
-		-1,  // FactorPP
-		-1,  // CTE
-		-1,  // Funcs
-		-1,  // FuncsP
-		-1,  // W
-		-1,  // WP
-		-1,  // VP
-		-1,  // FCall
-		-1,  // FCallP
-		-1,  // Z
+		-1, // S'
+		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
+		-1, // ProgramaP
+		-1, // FP
+		-1, // Vars
+		-1, // VarsP
+		-1, // X
+		-1, // Y
+		-1, // Type
+		-1, // Body
+		-1, // BodyP
+		-1, // Statement
+		-1, // Print
+		-1, // PrintP
+		-1, // PrintPP
+		-1, // Assign
+		-1, // Cycle
+		-1, // Condition
+		-1, // ConditionP
+		-1, // Expresion
+		-1, // EP
+		-1, // Exp
+		-1, // ExpP
+		-1, // Termino
+		-1, // TP
+		-1, // Factor
+		-1, // FactorP
+		-1, // FactorPP
+		-1, // CTE
+		-1, // Funcs
+		-1, // FuncsP
+		-1, // W
+		-1, // WP
+		-1, // VP
+		-1, // FCall
+		-1, // FCallP
+		-1, // Z
 	},
 	gotoRow{ // S148
 		-1,  // S'
 		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
 		-1,  // ProgramaP
 		-1,  // FP
 		-1,  // Vars
@@ -5805,13 +6103,13 @@ var gotoTab = gotoTable{
 		-1,  // Expresion
 		-1,  // EP
 		-1,  // Exp
-		-1,  // ExpP
+		197, // ExpP
 		-1,  // Termino
 		-1,  // TP
 		-1,  // Factor
 		-1,  // FactorP
-		201, // FactorPP
-		202, // CTE
+		-1,  // FactorPP
+		-1,  // CTE
 		-1,  // Funcs
 		-1,  // FuncsP
 		-1,  // W
@@ -5822,164 +6120,10 @@ var gotoTab = gotoTable{
 		-1,  // Z
 	},
 	gotoRow{ // S149
-		-1, // S'
-		-1, // Programa
-		-1, // ProgramaP
-		-1, // FP
-		-1, // Vars
-		-1, // VarsP
-		-1, // X
-		-1, // Y
-		-1, // Type
-		-1, // Body
-		-1, // BodyP
-		-1, // Statement
-		-1, // Print
-		-1, // PrintP
-		-1, // PrintPP
-		-1, // Assign
-		-1, // Cycle
-		-1, // Condition
-		-1, // ConditionP
-		-1, // Expresion
-		-1, // EP
-		-1, // Exp
-		-1, // ExpP
-		-1, // Termino
-		-1, // TP
-		-1, // Factor
-		-1, // FactorP
-		-1, // FactorPP
-		-1, // CTE
-		-1, // Funcs
-		-1, // FuncsP
-		-1, // W
-		-1, // WP
-		-1, // VP
-		-1, // FCall
-		-1, // FCallP
-		-1, // Z
-	},
-	gotoRow{ // S150
-		-1, // S'
-		-1, // Programa
-		-1, // ProgramaP
-		-1, // FP
-		-1, // Vars
-		-1, // VarsP
-		-1, // X
-		-1, // Y
-		-1, // Type
-		-1, // Body
-		-1, // BodyP
-		-1, // Statement
-		-1, // Print
-		-1, // PrintP
-		-1, // PrintPP
-		-1, // Assign
-		-1, // Cycle
-		-1, // Condition
-		-1, // ConditionP
-		-1, // Expresion
-		-1, // EP
-		-1, // Exp
-		-1, // ExpP
-		-1, // Termino
-		-1, // TP
-		-1, // Factor
-		-1, // FactorP
-		-1, // FactorPP
-		-1, // CTE
-		-1, // Funcs
-		-1, // FuncsP
-		-1, // W
-		-1, // WP
-		-1, // VP
-		-1, // FCall
-		-1, // FCallP
-		-1, // Z
-	},
-	gotoRow{ // S151
 		-1,  // S'
 		-1,  // Programa
-		-1,  // ProgramaP
-		-1,  // FP
-		-1,  // Vars
-		-1,  // VarsP
-		-1,  // X
-		-1,  // Y
-		-1,  // Type
-		-1,  // Body
-		-1,  // BodyP
-		-1,  // Statement
-		-1,  // Print
-		-1,  // PrintP
-		-1,  // PrintPP
-		-1,  // Assign
-		-1,  // Cycle
-		-1,  // Condition
-		-1,  // ConditionP
-		-1,  // Expresion
-		-1,  // EP
-		-1,  // Exp
-		204, // ExpP
-		-1,  // Termino
-		-1,  // TP
-		-1,  // Factor
-		-1,  // FactorP
-		-1,  // FactorPP
-		-1,  // CTE
-		-1,  // Funcs
-		-1,  // FuncsP
-		-1,  // W
-		-1,  // WP
-		-1,  // VP
-		-1,  // FCall
-		-1,  // FCallP
-		-1,  // Z
-	},
-	gotoRow{ // S152
-		-1,  // S'
-		-1,  // Programa
-		-1,  // ProgramaP
-		-1,  // FP
-		-1,  // Vars
-		-1,  // VarsP
-		-1,  // X
-		-1,  // Y
-		-1,  // Type
-		-1,  // Body
-		-1,  // BodyP
-		-1,  // Statement
-		-1,  // Print
-		-1,  // PrintP
-		-1,  // PrintPP
-		-1,  // Assign
-		-1,  // Cycle
-		-1,  // Condition
-		-1,  // ConditionP
-		-1,  // Expresion
-		-1,  // EP
-		-1,  // Exp
-		205, // ExpP
-		-1,  // Termino
-		-1,  // TP
-		-1,  // Factor
-		-1,  // FactorP
-		-1,  // FactorPP
-		-1,  // CTE
-		-1,  // Funcs
-		-1,  // FuncsP
-		-1,  // W
-		-1,  // WP
-		-1,  // VP
-		-1,  // FCall
-		-1,  // FCallP
-		-1,  // Z
-	},
-	gotoRow{ // S153
-		-1,  // S'
-		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
 		-1,  // ProgramaP
 		-1,  // FP
 		-1,  // Vars
@@ -6002,7 +6146,171 @@ var gotoTab = gotoTable{
 		-1,  // Exp
 		-1,  // ExpP
 		-1,  // Termino
-		206, // TP
+		200, // TP
+		-1,  // Factor
+		-1,  // FactorP
+		-1,  // FactorPP
+		-1,  // CTE
+		-1,  // Funcs
+		-1,  // FuncsP
+		-1,  // W
+		-1,  // WP
+		-1,  // VP
+		-1,  // FCall
+		-1,  // FCallP
+		-1,  // Z
+	},
+	gotoRow{ // S150
+		-1,  // S'
+		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
+		-1,  // ProgramaP
+		-1,  // FP
+		-1,  // Vars
+		-1,  // VarsP
+		-1,  // X
+		-1,  // Y
+		-1,  // Type
+		-1,  // Body
+		-1,  // BodyP
+		-1,  // Statement
+		-1,  // Print
+		-1,  // PrintP
+		-1,  // PrintPP
+		-1,  // Assign
+		-1,  // Cycle
+		-1,  // Condition
+		-1,  // ConditionP
+		-1,  // Expresion
+		-1,  // EP
+		-1,  // Exp
+		-1,  // ExpP
+		-1,  // Termino
+		-1,  // TP
+		-1,  // Factor
+		-1,  // FactorP
+		204, // FactorPP
+		205, // CTE
+		-1,  // Funcs
+		-1,  // FuncsP
+		-1,  // W
+		-1,  // WP
+		-1,  // VP
+		-1,  // FCall
+		-1,  // FCallP
+		-1,  // Z
+	},
+	gotoRow{ // S151
+		-1, // S'
+		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
+		-1, // ProgramaP
+		-1, // FP
+		-1, // Vars
+		-1, // VarsP
+		-1, // X
+		-1, // Y
+		-1, // Type
+		-1, // Body
+		-1, // BodyP
+		-1, // Statement
+		-1, // Print
+		-1, // PrintP
+		-1, // PrintPP
+		-1, // Assign
+		-1, // Cycle
+		-1, // Condition
+		-1, // ConditionP
+		-1, // Expresion
+		-1, // EP
+		-1, // Exp
+		-1, // ExpP
+		-1, // Termino
+		-1, // TP
+		-1, // Factor
+		-1, // FactorP
+		-1, // FactorPP
+		-1, // CTE
+		-1, // Funcs
+		-1, // FuncsP
+		-1, // W
+		-1, // WP
+		-1, // VP
+		-1, // FCall
+		-1, // FCallP
+		-1, // Z
+	},
+	gotoRow{ // S152
+		-1, // S'
+		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
+		-1, // ProgramaP
+		-1, // FP
+		-1, // Vars
+		-1, // VarsP
+		-1, // X
+		-1, // Y
+		-1, // Type
+		-1, // Body
+		-1, // BodyP
+		-1, // Statement
+		-1, // Print
+		-1, // PrintP
+		-1, // PrintPP
+		-1, // Assign
+		-1, // Cycle
+		-1, // Condition
+		-1, // ConditionP
+		-1, // Expresion
+		-1, // EP
+		-1, // Exp
+		-1, // ExpP
+		-1, // Termino
+		-1, // TP
+		-1, // Factor
+		-1, // FactorP
+		-1, // FactorPP
+		-1, // CTE
+		-1, // Funcs
+		-1, // FuncsP
+		-1, // W
+		-1, // WP
+		-1, // VP
+		-1, // FCall
+		-1, // FCallP
+		-1, // Z
+	},
+	gotoRow{ // S153
+		-1,  // S'
+		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
+		-1,  // ProgramaP
+		-1,  // FP
+		-1,  // Vars
+		-1,  // VarsP
+		-1,  // X
+		-1,  // Y
+		-1,  // Type
+		-1,  // Body
+		-1,  // BodyP
+		-1,  // Statement
+		-1,  // Print
+		-1,  // PrintP
+		-1,  // PrintPP
+		-1,  // Assign
+		-1,  // Cycle
+		-1,  // Condition
+		-1,  // ConditionP
+		-1,  // Expresion
+		-1,  // EP
+		-1,  // Exp
+		207, // ExpP
+		-1,  // Termino
+		-1,  // TP
 		-1,  // Factor
 		-1,  // FactorP
 		-1,  // FactorPP
@@ -6019,6 +6327,49 @@ var gotoTab = gotoTable{
 	gotoRow{ // S154
 		-1,  // S'
 		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
+		-1,  // ProgramaP
+		-1,  // FP
+		-1,  // Vars
+		-1,  // VarsP
+		-1,  // X
+		-1,  // Y
+		-1,  // Type
+		-1,  // Body
+		-1,  // BodyP
+		-1,  // Statement
+		-1,  // Print
+		-1,  // PrintP
+		-1,  // PrintPP
+		-1,  // Assign
+		-1,  // Cycle
+		-1,  // Condition
+		-1,  // ConditionP
+		-1,  // Expresion
+		-1,  // EP
+		-1,  // Exp
+		208, // ExpP
+		-1,  // Termino
+		-1,  // TP
+		-1,  // Factor
+		-1,  // FactorP
+		-1,  // FactorPP
+		-1,  // CTE
+		-1,  // Funcs
+		-1,  // FuncsP
+		-1,  // W
+		-1,  // WP
+		-1,  // VP
+		-1,  // FCall
+		-1,  // FCallP
+		-1,  // Z
+	},
+	gotoRow{ // S155
+		-1,  // S'
+		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
 		-1,  // ProgramaP
 		-1,  // FP
 		-1,  // Vars
@@ -6041,7 +6392,7 @@ var gotoTab = gotoTable{
 		-1,  // Exp
 		-1,  // ExpP
 		-1,  // Termino
-		207, // TP
+		209, // TP
 		-1,  // Factor
 		-1,  // FactorP
 		-1,  // FactorPP
@@ -6055,87 +6406,52 @@ var gotoTab = gotoTable{
 		-1,  // FCallP
 		-1,  // Z
 	},
-	gotoRow{ // S155
-		-1, // S'
-		-1, // Programa
-		-1, // ProgramaP
-		-1, // FP
-		-1, // Vars
-		-1, // VarsP
-		-1, // X
-		-1, // Y
-		-1, // Type
-		-1, // Body
-		-1, // BodyP
-		-1, // Statement
-		-1, // Print
-		-1, // PrintP
-		-1, // PrintPP
-		-1, // Assign
-		-1, // Cycle
-		-1, // Condition
-		-1, // ConditionP
-		-1, // Expresion
-		-1, // EP
-		-1, // Exp
-		-1, // ExpP
-		-1, // Termino
-		-1, // TP
-		-1, // Factor
-		-1, // FactorP
-		-1, // FactorPP
-		-1, // CTE
-		-1, // Funcs
-		-1, // FuncsP
-		-1, // W
-		-1, // WP
-		-1, // VP
-		-1, // FCall
-		-1, // FCallP
-		-1, // Z
-	},
 	gotoRow{ // S156
-		-1, // S'
-		-1, // Programa
-		-1, // ProgramaP
-		-1, // FP
-		-1, // Vars
-		-1, // VarsP
-		-1, // X
-		-1, // Y
-		-1, // Type
-		-1, // Body
-		-1, // BodyP
-		-1, // Statement
-		-1, // Print
-		-1, // PrintP
-		-1, // PrintPP
-		-1, // Assign
-		-1, // Cycle
-		-1, // Condition
-		-1, // ConditionP
-		-1, // Expresion
-		-1, // EP
-		-1, // Exp
-		-1, // ExpP
-		-1, // Termino
-		-1, // TP
-		-1, // Factor
-		-1, // FactorP
-		-1, // FactorPP
-		-1, // CTE
-		-1, // Funcs
-		-1, // FuncsP
-		-1, // W
-		-1, // WP
-		-1, // VP
-		-1, // FCall
-		-1, // FCallP
-		-1, // Z
+		-1,  // S'
+		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
+		-1,  // ProgramaP
+		-1,  // FP
+		-1,  // Vars
+		-1,  // VarsP
+		-1,  // X
+		-1,  // Y
+		-1,  // Type
+		-1,  // Body
+		-1,  // BodyP
+		-1,  // Statement
+		-1,  // Print
+		-1,  // PrintP
+		-1,  // PrintPP
+		-1,  // Assign
+		-1,  // Cycle
+		-1,  // Condition
+		-1,  // ConditionP
+		-1,  // Expresion
+		-1,  // EP
+		-1,  // Exp
+		-1,  // ExpP
+		-1,  // Termino
+		210, // TP
+		-1,  // Factor
+		-1,  // FactorP
+		-1,  // FactorPP
+		-1,  // CTE
+		-1,  // Funcs
+		-1,  // FuncsP
+		-1,  // W
+		-1,  // WP
+		-1,  // VP
+		-1,  // FCall
+		-1,  // FCallP
+		-1,  // Z
 	},
 	gotoRow{ // S157
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -6173,47 +6489,51 @@ var gotoTab = gotoTable{
 		-1, // Z
 	},
 	gotoRow{ // S158
-		-1,  // S'
-		-1,  // Programa
-		-1,  // ProgramaP
-		-1,  // FP
-		-1,  // Vars
-		-1,  // VarsP
-		-1,  // X
-		-1,  // Y
-		-1,  // Type
-		-1,  // Body
-		-1,  // BodyP
-		-1,  // Statement
-		-1,  // Print
-		-1,  // PrintP
-		-1,  // PrintPP
-		-1,  // Assign
-		-1,  // Cycle
-		-1,  // Condition
-		-1,  // ConditionP
-		209, // Expresion
-		-1,  // EP
-		71,  // Exp
-		-1,  // ExpP
-		72,  // Termino
-		-1,  // TP
-		73,  // Factor
-		74,  // FactorP
-		-1,  // FactorPP
-		-1,  // CTE
-		-1,  // Funcs
-		-1,  // FuncsP
-		-1,  // W
-		-1,  // WP
-		-1,  // VP
-		-1,  // FCall
-		-1,  // FCallP
-		-1,  // Z
+		-1, // S'
+		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
+		-1, // ProgramaP
+		-1, // FP
+		-1, // Vars
+		-1, // VarsP
+		-1, // X
+		-1, // Y
+		-1, // Type
+		-1, // Body
+		-1, // BodyP
+		-1, // Statement
+		-1, // Print
+		-1, // PrintP
+		-1, // PrintPP
+		-1, // Assign
+		-1, // Cycle
+		-1, // Condition
+		-1, // ConditionP
+		-1, // Expresion
+		-1, // EP
+		-1, // Exp
+		-1, // ExpP
+		-1, // Termino
+		-1, // TP
+		-1, // Factor
+		-1, // FactorP
+		-1, // FactorPP
+		-1, // CTE
+		-1, // Funcs
+		-1, // FuncsP
+		-1, // W
+		-1, // WP
+		-1, // VP
+		-1, // FCall
+		-1, // FCallP
+		-1, // Z
 	},
 	gotoRow{ // S159
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -6253,6 +6573,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S160
 		-1,  // S'
 		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
 		-1,  // ProgramaP
 		-1,  // FP
 		-1,  // Vars
@@ -6270,14 +6592,14 @@ var gotoTab = gotoTable{
 		-1,  // Cycle
 		-1,  // Condition
 		-1,  // ConditionP
-		-1,  // Expresion
+		212, // Expresion
 		-1,  // EP
-		-1,  // Exp
-		210, // ExpP
-		-1,  // Termino
+		73,  // Exp
+		-1,  // ExpP
+		74,  // Termino
 		-1,  // TP
-		-1,  // Factor
-		-1,  // FactorP
+		75,  // Factor
+		76,  // FactorP
 		-1,  // FactorPP
 		-1,  // CTE
 		-1,  // Funcs
@@ -6290,47 +6612,51 @@ var gotoTab = gotoTable{
 		-1,  // Z
 	},
 	gotoRow{ // S161
-		-1,  // S'
-		-1,  // Programa
-		-1,  // ProgramaP
-		-1,  // FP
-		-1,  // Vars
-		-1,  // VarsP
-		-1,  // X
-		-1,  // Y
-		-1,  // Type
-		-1,  // Body
-		-1,  // BodyP
-		-1,  // Statement
-		-1,  // Print
-		-1,  // PrintP
-		-1,  // PrintPP
-		-1,  // Assign
-		-1,  // Cycle
-		-1,  // Condition
-		-1,  // ConditionP
-		-1,  // Expresion
-		-1,  // EP
-		-1,  // Exp
-		-1,  // ExpP
-		-1,  // Termino
-		213, // TP
-		-1,  // Factor
-		-1,  // FactorP
-		-1,  // FactorPP
-		-1,  // CTE
-		-1,  // Funcs
-		-1,  // FuncsP
-		-1,  // W
-		-1,  // WP
-		-1,  // VP
-		-1,  // FCall
-		-1,  // FCallP
-		-1,  // Z
+		-1, // S'
+		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
+		-1, // ProgramaP
+		-1, // FP
+		-1, // Vars
+		-1, // VarsP
+		-1, // X
+		-1, // Y
+		-1, // Type
+		-1, // Body
+		-1, // BodyP
+		-1, // Statement
+		-1, // Print
+		-1, // PrintP
+		-1, // PrintPP
+		-1, // Assign
+		-1, // Cycle
+		-1, // Condition
+		-1, // ConditionP
+		-1, // Expresion
+		-1, // EP
+		-1, // Exp
+		-1, // ExpP
+		-1, // Termino
+		-1, // TP
+		-1, // Factor
+		-1, // FactorP
+		-1, // FactorPP
+		-1, // CTE
+		-1, // Funcs
+		-1, // FuncsP
+		-1, // W
+		-1, // WP
+		-1, // VP
+		-1, // FCall
+		-1, // FCallP
+		-1, // Z
 	},
 	gotoRow{ // S162
 		-1,  // S'
 		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
 		-1,  // ProgramaP
 		-1,  // FP
 		-1,  // Vars
@@ -6351,13 +6677,13 @@ var gotoTab = gotoTable{
 		-1,  // Expresion
 		-1,  // EP
 		-1,  // Exp
-		-1,  // ExpP
+		213, // ExpP
 		-1,  // Termino
 		-1,  // TP
 		-1,  // Factor
 		-1,  // FactorP
-		217, // FactorPP
-		218, // CTE
+		-1,  // FactorPP
+		-1,  // CTE
 		-1,  // Funcs
 		-1,  // FuncsP
 		-1,  // W
@@ -6368,164 +6694,10 @@ var gotoTab = gotoTable{
 		-1,  // Z
 	},
 	gotoRow{ // S163
-		-1, // S'
-		-1, // Programa
-		-1, // ProgramaP
-		-1, // FP
-		-1, // Vars
-		-1, // VarsP
-		-1, // X
-		-1, // Y
-		-1, // Type
-		-1, // Body
-		-1, // BodyP
-		-1, // Statement
-		-1, // Print
-		-1, // PrintP
-		-1, // PrintPP
-		-1, // Assign
-		-1, // Cycle
-		-1, // Condition
-		-1, // ConditionP
-		-1, // Expresion
-		-1, // EP
-		-1, // Exp
-		-1, // ExpP
-		-1, // Termino
-		-1, // TP
-		-1, // Factor
-		-1, // FactorP
-		-1, // FactorPP
-		-1, // CTE
-		-1, // Funcs
-		-1, // FuncsP
-		-1, // W
-		-1, // WP
-		-1, // VP
-		-1, // FCall
-		-1, // FCallP
-		-1, // Z
-	},
-	gotoRow{ // S164
-		-1, // S'
-		-1, // Programa
-		-1, // ProgramaP
-		-1, // FP
-		-1, // Vars
-		-1, // VarsP
-		-1, // X
-		-1, // Y
-		-1, // Type
-		-1, // Body
-		-1, // BodyP
-		-1, // Statement
-		-1, // Print
-		-1, // PrintP
-		-1, // PrintPP
-		-1, // Assign
-		-1, // Cycle
-		-1, // Condition
-		-1, // ConditionP
-		-1, // Expresion
-		-1, // EP
-		-1, // Exp
-		-1, // ExpP
-		-1, // Termino
-		-1, // TP
-		-1, // Factor
-		-1, // FactorP
-		-1, // FactorPP
-		-1, // CTE
-		-1, // Funcs
-		-1, // FuncsP
-		-1, // W
-		-1, // WP
-		-1, // VP
-		-1, // FCall
-		-1, // FCallP
-		-1, // Z
-	},
-	gotoRow{ // S165
 		-1,  // S'
 		-1,  // Programa
-		-1,  // ProgramaP
-		-1,  // FP
-		-1,  // Vars
-		-1,  // VarsP
-		-1,  // X
-		-1,  // Y
-		-1,  // Type
-		-1,  // Body
-		-1,  // BodyP
-		-1,  // Statement
-		-1,  // Print
-		-1,  // PrintP
-		-1,  // PrintPP
-		-1,  // Assign
-		-1,  // Cycle
-		-1,  // Condition
-		-1,  // ConditionP
-		-1,  // Expresion
-		-1,  // EP
-		-1,  // Exp
-		220, // ExpP
-		-1,  // Termino
-		-1,  // TP
-		-1,  // Factor
-		-1,  // FactorP
-		-1,  // FactorPP
-		-1,  // CTE
-		-1,  // Funcs
-		-1,  // FuncsP
-		-1,  // W
-		-1,  // WP
-		-1,  // VP
-		-1,  // FCall
-		-1,  // FCallP
-		-1,  // Z
-	},
-	gotoRow{ // S166
-		-1,  // S'
-		-1,  // Programa
-		-1,  // ProgramaP
-		-1,  // FP
-		-1,  // Vars
-		-1,  // VarsP
-		-1,  // X
-		-1,  // Y
-		-1,  // Type
-		-1,  // Body
-		-1,  // BodyP
-		-1,  // Statement
-		-1,  // Print
-		-1,  // PrintP
-		-1,  // PrintPP
-		-1,  // Assign
-		-1,  // Cycle
-		-1,  // Condition
-		-1,  // ConditionP
-		-1,  // Expresion
-		-1,  // EP
-		-1,  // Exp
-		221, // ExpP
-		-1,  // Termino
-		-1,  // TP
-		-1,  // Factor
-		-1,  // FactorP
-		-1,  // FactorPP
-		-1,  // CTE
-		-1,  // Funcs
-		-1,  // FuncsP
-		-1,  // W
-		-1,  // WP
-		-1,  // VP
-		-1,  // FCall
-		-1,  // FCallP
-		-1,  // Z
-	},
-	gotoRow{ // S167
-		-1,  // S'
-		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
 		-1,  // ProgramaP
 		-1,  // FP
 		-1,  // Vars
@@ -6548,7 +6720,171 @@ var gotoTab = gotoTable{
 		-1,  // Exp
 		-1,  // ExpP
 		-1,  // Termino
-		222, // TP
+		216, // TP
+		-1,  // Factor
+		-1,  // FactorP
+		-1,  // FactorPP
+		-1,  // CTE
+		-1,  // Funcs
+		-1,  // FuncsP
+		-1,  // W
+		-1,  // WP
+		-1,  // VP
+		-1,  // FCall
+		-1,  // FCallP
+		-1,  // Z
+	},
+	gotoRow{ // S164
+		-1,  // S'
+		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
+		-1,  // ProgramaP
+		-1,  // FP
+		-1,  // Vars
+		-1,  // VarsP
+		-1,  // X
+		-1,  // Y
+		-1,  // Type
+		-1,  // Body
+		-1,  // BodyP
+		-1,  // Statement
+		-1,  // Print
+		-1,  // PrintP
+		-1,  // PrintPP
+		-1,  // Assign
+		-1,  // Cycle
+		-1,  // Condition
+		-1,  // ConditionP
+		-1,  // Expresion
+		-1,  // EP
+		-1,  // Exp
+		-1,  // ExpP
+		-1,  // Termino
+		-1,  // TP
+		-1,  // Factor
+		-1,  // FactorP
+		220, // FactorPP
+		221, // CTE
+		-1,  // Funcs
+		-1,  // FuncsP
+		-1,  // W
+		-1,  // WP
+		-1,  // VP
+		-1,  // FCall
+		-1,  // FCallP
+		-1,  // Z
+	},
+	gotoRow{ // S165
+		-1, // S'
+		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
+		-1, // ProgramaP
+		-1, // FP
+		-1, // Vars
+		-1, // VarsP
+		-1, // X
+		-1, // Y
+		-1, // Type
+		-1, // Body
+		-1, // BodyP
+		-1, // Statement
+		-1, // Print
+		-1, // PrintP
+		-1, // PrintPP
+		-1, // Assign
+		-1, // Cycle
+		-1, // Condition
+		-1, // ConditionP
+		-1, // Expresion
+		-1, // EP
+		-1, // Exp
+		-1, // ExpP
+		-1, // Termino
+		-1, // TP
+		-1, // Factor
+		-1, // FactorP
+		-1, // FactorPP
+		-1, // CTE
+		-1, // Funcs
+		-1, // FuncsP
+		-1, // W
+		-1, // WP
+		-1, // VP
+		-1, // FCall
+		-1, // FCallP
+		-1, // Z
+	},
+	gotoRow{ // S166
+		-1, // S'
+		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
+		-1, // ProgramaP
+		-1, // FP
+		-1, // Vars
+		-1, // VarsP
+		-1, // X
+		-1, // Y
+		-1, // Type
+		-1, // Body
+		-1, // BodyP
+		-1, // Statement
+		-1, // Print
+		-1, // PrintP
+		-1, // PrintPP
+		-1, // Assign
+		-1, // Cycle
+		-1, // Condition
+		-1, // ConditionP
+		-1, // Expresion
+		-1, // EP
+		-1, // Exp
+		-1, // ExpP
+		-1, // Termino
+		-1, // TP
+		-1, // Factor
+		-1, // FactorP
+		-1, // FactorPP
+		-1, // CTE
+		-1, // Funcs
+		-1, // FuncsP
+		-1, // W
+		-1, // WP
+		-1, // VP
+		-1, // FCall
+		-1, // FCallP
+		-1, // Z
+	},
+	gotoRow{ // S167
+		-1,  // S'
+		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
+		-1,  // ProgramaP
+		-1,  // FP
+		-1,  // Vars
+		-1,  // VarsP
+		-1,  // X
+		-1,  // Y
+		-1,  // Type
+		-1,  // Body
+		-1,  // BodyP
+		-1,  // Statement
+		-1,  // Print
+		-1,  // PrintP
+		-1,  // PrintPP
+		-1,  // Assign
+		-1,  // Cycle
+		-1,  // Condition
+		-1,  // ConditionP
+		-1,  // Expresion
+		-1,  // EP
+		-1,  // Exp
+		223, // ExpP
+		-1,  // Termino
+		-1,  // TP
 		-1,  // Factor
 		-1,  // FactorP
 		-1,  // FactorPP
@@ -6565,6 +6901,49 @@ var gotoTab = gotoTable{
 	gotoRow{ // S168
 		-1,  // S'
 		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
+		-1,  // ProgramaP
+		-1,  // FP
+		-1,  // Vars
+		-1,  // VarsP
+		-1,  // X
+		-1,  // Y
+		-1,  // Type
+		-1,  // Body
+		-1,  // BodyP
+		-1,  // Statement
+		-1,  // Print
+		-1,  // PrintP
+		-1,  // PrintPP
+		-1,  // Assign
+		-1,  // Cycle
+		-1,  // Condition
+		-1,  // ConditionP
+		-1,  // Expresion
+		-1,  // EP
+		-1,  // Exp
+		224, // ExpP
+		-1,  // Termino
+		-1,  // TP
+		-1,  // Factor
+		-1,  // FactorP
+		-1,  // FactorPP
+		-1,  // CTE
+		-1,  // Funcs
+		-1,  // FuncsP
+		-1,  // W
+		-1,  // WP
+		-1,  // VP
+		-1,  // FCall
+		-1,  // FCallP
+		-1,  // Z
+	},
+	gotoRow{ // S169
+		-1,  // S'
+		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
 		-1,  // ProgramaP
 		-1,  // FP
 		-1,  // Vars
@@ -6587,7 +6966,7 @@ var gotoTab = gotoTable{
 		-1,  // Exp
 		-1,  // ExpP
 		-1,  // Termino
-		223, // TP
+		225, // TP
 		-1,  // Factor
 		-1,  // FactorP
 		-1,  // FactorPP
@@ -6601,87 +6980,52 @@ var gotoTab = gotoTable{
 		-1,  // FCallP
 		-1,  // Z
 	},
-	gotoRow{ // S169
-		-1, // S'
-		-1, // Programa
-		-1, // ProgramaP
-		-1, // FP
-		-1, // Vars
-		-1, // VarsP
-		-1, // X
-		-1, // Y
-		-1, // Type
-		-1, // Body
-		-1, // BodyP
-		-1, // Statement
-		-1, // Print
-		-1, // PrintP
-		-1, // PrintPP
-		-1, // Assign
-		-1, // Cycle
-		-1, // Condition
-		-1, // ConditionP
-		-1, // Expresion
-		-1, // EP
-		-1, // Exp
-		-1, // ExpP
-		-1, // Termino
-		-1, // TP
-		-1, // Factor
-		-1, // FactorP
-		-1, // FactorPP
-		-1, // CTE
-		-1, // Funcs
-		-1, // FuncsP
-		-1, // W
-		-1, // WP
-		-1, // VP
-		-1, // FCall
-		-1, // FCallP
-		-1, // Z
-	},
 	gotoRow{ // S170
-		-1, // S'
-		-1, // Programa
-		-1, // ProgramaP
-		-1, // FP
-		-1, // Vars
-		-1, // VarsP
-		-1, // X
-		-1, // Y
-		-1, // Type
-		-1, // Body
-		-1, // BodyP
-		-1, // Statement
-		-1, // Print
-		-1, // PrintP
-		-1, // PrintPP
-		-1, // Assign
-		-1, // Cycle
-		-1, // Condition
-		-1, // ConditionP
-		-1, // Expresion
-		-1, // EP
-		-1, // Exp
-		-1, // ExpP
-		-1, // Termino
-		-1, // TP
-		-1, // Factor
-		-1, // FactorP
-		-1, // FactorPP
-		-1, // CTE
-		-1, // Funcs
-		-1, // FuncsP
-		-1, // W
-		-1, // WP
-		-1, // VP
-		-1, // FCall
-		-1, // FCallP
-		-1, // Z
+		-1,  // S'
+		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
+		-1,  // ProgramaP
+		-1,  // FP
+		-1,  // Vars
+		-1,  // VarsP
+		-1,  // X
+		-1,  // Y
+		-1,  // Type
+		-1,  // Body
+		-1,  // BodyP
+		-1,  // Statement
+		-1,  // Print
+		-1,  // PrintP
+		-1,  // PrintPP
+		-1,  // Assign
+		-1,  // Cycle
+		-1,  // Condition
+		-1,  // ConditionP
+		-1,  // Expresion
+		-1,  // EP
+		-1,  // Exp
+		-1,  // ExpP
+		-1,  // Termino
+		226, // TP
+		-1,  // Factor
+		-1,  // FactorP
+		-1,  // FactorPP
+		-1,  // CTE
+		-1,  // Funcs
+		-1,  // FuncsP
+		-1,  // W
+		-1,  // WP
+		-1,  // VP
+		-1,  // FCall
+		-1,  // FCallP
+		-1,  // Z
 	},
 	gotoRow{ // S171
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -6719,86 +7063,92 @@ var gotoTab = gotoTable{
 		-1, // Z
 	},
 	gotoRow{ // S172
-		-1,  // S'
-		-1,  // Programa
-		-1,  // ProgramaP
-		-1,  // FP
-		-1,  // Vars
-		-1,  // VarsP
-		-1,  // X
-		-1,  // Y
-		-1,  // Type
-		225, // Body
-		-1,  // BodyP
-		-1,  // Statement
-		-1,  // Print
-		-1,  // PrintP
-		-1,  // PrintPP
-		-1,  // Assign
-		-1,  // Cycle
-		-1,  // Condition
-		-1,  // ConditionP
-		-1,  // Expresion
-		-1,  // EP
-		-1,  // Exp
-		-1,  // ExpP
-		-1,  // Termino
-		-1,  // TP
-		-1,  // Factor
-		-1,  // FactorP
-		-1,  // FactorPP
-		-1,  // CTE
-		-1,  // Funcs
-		-1,  // FuncsP
-		-1,  // W
-		-1,  // WP
-		-1,  // VP
-		-1,  // FCall
-		-1,  // FCallP
-		-1,  // Z
+		-1, // S'
+		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
+		-1, // ProgramaP
+		-1, // FP
+		-1, // Vars
+		-1, // VarsP
+		-1, // X
+		-1, // Y
+		-1, // Type
+		-1, // Body
+		-1, // BodyP
+		-1, // Statement
+		-1, // Print
+		-1, // PrintP
+		-1, // PrintPP
+		-1, // Assign
+		-1, // Cycle
+		-1, // Condition
+		-1, // ConditionP
+		-1, // Expresion
+		-1, // EP
+		-1, // Exp
+		-1, // ExpP
+		-1, // Termino
+		-1, // TP
+		-1, // Factor
+		-1, // FactorP
+		-1, // FactorPP
+		-1, // CTE
+		-1, // Funcs
+		-1, // FuncsP
+		-1, // W
+		-1, // WP
+		-1, // VP
+		-1, // FCall
+		-1, // FCallP
+		-1, // Z
 	},
 	gotoRow{ // S173
-		-1,  // S'
-		-1,  // Programa
-		-1,  // ProgramaP
-		-1,  // FP
-		-1,  // Vars
-		-1,  // VarsP
-		-1,  // X
-		-1,  // Y
-		-1,  // Type
-		-1,  // Body
-		-1,  // BodyP
-		-1,  // Statement
-		-1,  // Print
-		-1,  // PrintP
-		-1,  // PrintPP
-		-1,  // Assign
-		-1,  // Cycle
-		-1,  // Condition
-		-1,  // ConditionP
-		227, // Expresion
-		-1,  // EP
-		71,  // Exp
-		-1,  // ExpP
-		72,  // Termino
-		-1,  // TP
-		73,  // Factor
-		74,  // FactorP
-		-1,  // FactorPP
-		-1,  // CTE
-		-1,  // Funcs
-		-1,  // FuncsP
-		-1,  // W
-		-1,  // WP
-		-1,  // VP
-		-1,  // FCall
-		-1,  // FCallP
-		-1,  // Z
+		-1, // S'
+		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
+		-1, // ProgramaP
+		-1, // FP
+		-1, // Vars
+		-1, // VarsP
+		-1, // X
+		-1, // Y
+		-1, // Type
+		-1, // Body
+		-1, // BodyP
+		-1, // Statement
+		-1, // Print
+		-1, // PrintP
+		-1, // PrintPP
+		-1, // Assign
+		-1, // Cycle
+		-1, // Condition
+		-1, // ConditionP
+		-1, // Expresion
+		-1, // EP
+		-1, // Exp
+		-1, // ExpP
+		-1, // Termino
+		-1, // TP
+		-1, // Factor
+		-1, // FactorP
+		-1, // FactorPP
+		-1, // CTE
+		-1, // Funcs
+		-1, // FuncsP
+		-1, // W
+		-1, // WP
+		-1, // VP
+		-1, // FCall
+		-1, // FCallP
+		-1, // Z
 	},
 	gotoRow{ // S174
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -6838,6 +7188,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S175
 		-1,  // S'
 		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
 		-1,  // ProgramaP
 		-1,  // FP
 		-1,  // Vars
@@ -6845,7 +7197,7 @@ var gotoTab = gotoTable{
 		-1,  // X
 		-1,  // Y
 		-1,  // Type
-		-1,  // Body
+		228, // Body
 		-1,  // BodyP
 		-1,  // Statement
 		-1,  // Print
@@ -6858,7 +7210,7 @@ var gotoTab = gotoTable{
 		-1,  // Expresion
 		-1,  // EP
 		-1,  // Exp
-		228, // ExpP
+		-1,  // ExpP
 		-1,  // Termino
 		-1,  // TP
 		-1,  // Factor
@@ -6877,6 +7229,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S176
 		-1,  // S'
 		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
 		-1,  // ProgramaP
 		-1,  // FP
 		-1,  // Vars
@@ -6894,14 +7248,14 @@ var gotoTab = gotoTable{
 		-1,  // Cycle
 		-1,  // Condition
 		-1,  // ConditionP
-		-1,  // Expresion
+		230, // Expresion
 		-1,  // EP
-		-1,  // Exp
+		73,  // Exp
 		-1,  // ExpP
-		-1,  // Termino
-		231, // TP
-		-1,  // Factor
-		-1,  // FactorP
+		74,  // Termino
+		-1,  // TP
+		75,  // Factor
+		76,  // FactorP
 		-1,  // FactorPP
 		-1,  // CTE
 		-1,  // Funcs
@@ -6914,8 +7268,133 @@ var gotoTab = gotoTable{
 		-1,  // Z
 	},
 	gotoRow{ // S177
+		-1, // S'
+		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
+		-1, // ProgramaP
+		-1, // FP
+		-1, // Vars
+		-1, // VarsP
+		-1, // X
+		-1, // Y
+		-1, // Type
+		-1, // Body
+		-1, // BodyP
+		-1, // Statement
+		-1, // Print
+		-1, // PrintP
+		-1, // PrintPP
+		-1, // Assign
+		-1, // Cycle
+		-1, // Condition
+		-1, // ConditionP
+		-1, // Expresion
+		-1, // EP
+		-1, // Exp
+		-1, // ExpP
+		-1, // Termino
+		-1, // TP
+		-1, // Factor
+		-1, // FactorP
+		-1, // FactorPP
+		-1, // CTE
+		-1, // Funcs
+		-1, // FuncsP
+		-1, // W
+		-1, // WP
+		-1, // VP
+		-1, // FCall
+		-1, // FCallP
+		-1, // Z
+	},
+	gotoRow{ // S178
 		-1,  // S'
 		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
+		-1,  // ProgramaP
+		-1,  // FP
+		-1,  // Vars
+		-1,  // VarsP
+		-1,  // X
+		-1,  // Y
+		-1,  // Type
+		-1,  // Body
+		-1,  // BodyP
+		-1,  // Statement
+		-1,  // Print
+		-1,  // PrintP
+		-1,  // PrintPP
+		-1,  // Assign
+		-1,  // Cycle
+		-1,  // Condition
+		-1,  // ConditionP
+		-1,  // Expresion
+		-1,  // EP
+		-1,  // Exp
+		231, // ExpP
+		-1,  // Termino
+		-1,  // TP
+		-1,  // Factor
+		-1,  // FactorP
+		-1,  // FactorPP
+		-1,  // CTE
+		-1,  // Funcs
+		-1,  // FuncsP
+		-1,  // W
+		-1,  // WP
+		-1,  // VP
+		-1,  // FCall
+		-1,  // FCallP
+		-1,  // Z
+	},
+	gotoRow{ // S179
+		-1,  // S'
+		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
+		-1,  // ProgramaP
+		-1,  // FP
+		-1,  // Vars
+		-1,  // VarsP
+		-1,  // X
+		-1,  // Y
+		-1,  // Type
+		-1,  // Body
+		-1,  // BodyP
+		-1,  // Statement
+		-1,  // Print
+		-1,  // PrintP
+		-1,  // PrintPP
+		-1,  // Assign
+		-1,  // Cycle
+		-1,  // Condition
+		-1,  // ConditionP
+		-1,  // Expresion
+		-1,  // EP
+		-1,  // Exp
+		-1,  // ExpP
+		-1,  // Termino
+		234, // TP
+		-1,  // Factor
+		-1,  // FactorP
+		-1,  // FactorPP
+		-1,  // CTE
+		-1,  // Funcs
+		-1,  // FuncsP
+		-1,  // W
+		-1,  // WP
+		-1,  // VP
+		-1,  // FCall
+		-1,  // FCallP
+		-1,  // Z
+	},
+	gotoRow{ // S180
+		-1,  // S'
+		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
 		-1,  // ProgramaP
 		-1,  // FP
 		-1,  // Vars
@@ -6941,125 +7420,8 @@ var gotoTab = gotoTable{
 		-1,  // TP
 		-1,  // Factor
 		-1,  // FactorP
-		235, // FactorPP
-		236, // CTE
-		-1,  // Funcs
-		-1,  // FuncsP
-		-1,  // W
-		-1,  // WP
-		-1,  // VP
-		-1,  // FCall
-		-1,  // FCallP
-		-1,  // Z
-	},
-	gotoRow{ // S178
-		-1, // S'
-		-1, // Programa
-		-1, // ProgramaP
-		-1, // FP
-		-1, // Vars
-		-1, // VarsP
-		-1, // X
-		-1, // Y
-		-1, // Type
-		-1, // Body
-		-1, // BodyP
-		-1, // Statement
-		-1, // Print
-		-1, // PrintP
-		-1, // PrintPP
-		-1, // Assign
-		-1, // Cycle
-		-1, // Condition
-		-1, // ConditionP
-		-1, // Expresion
-		-1, // EP
-		-1, // Exp
-		-1, // ExpP
-		-1, // Termino
-		-1, // TP
-		-1, // Factor
-		-1, // FactorP
-		-1, // FactorPP
-		-1, // CTE
-		-1, // Funcs
-		-1, // FuncsP
-		-1, // W
-		-1, // WP
-		-1, // VP
-		-1, // FCall
-		-1, // FCallP
-		-1, // Z
-	},
-	gotoRow{ // S179
-		-1, // S'
-		-1, // Programa
-		-1, // ProgramaP
-		-1, // FP
-		-1, // Vars
-		-1, // VarsP
-		-1, // X
-		-1, // Y
-		-1, // Type
-		-1, // Body
-		-1, // BodyP
-		-1, // Statement
-		-1, // Print
-		-1, // PrintP
-		-1, // PrintPP
-		-1, // Assign
-		-1, // Cycle
-		-1, // Condition
-		-1, // ConditionP
-		-1, // Expresion
-		-1, // EP
-		-1, // Exp
-		-1, // ExpP
-		-1, // Termino
-		-1, // TP
-		-1, // Factor
-		-1, // FactorP
-		-1, // FactorPP
-		-1, // CTE
-		-1, // Funcs
-		-1, // FuncsP
-		-1, // W
-		-1, // WP
-		-1, // VP
-		-1, // FCall
-		-1, // FCallP
-		-1, // Z
-	},
-	gotoRow{ // S180
-		-1,  // S'
-		-1,  // Programa
-		-1,  // ProgramaP
-		-1,  // FP
-		-1,  // Vars
-		-1,  // VarsP
-		-1,  // X
-		-1,  // Y
-		-1,  // Type
-		-1,  // Body
-		-1,  // BodyP
-		-1,  // Statement
-		-1,  // Print
-		-1,  // PrintP
-		-1,  // PrintPP
-		-1,  // Assign
-		-1,  // Cycle
-		-1,  // Condition
-		-1,  // ConditionP
-		-1,  // Expresion
-		-1,  // EP
-		-1,  // Exp
-		238, // ExpP
-		-1,  // Termino
-		-1,  // TP
-		-1,  // Factor
-		-1,  // FactorP
-		-1,  // FactorPP
-		-1,  // CTE
+		238, // FactorPP
+		239, // CTE
 		-1,  // Funcs
 		-1,  // FuncsP
 		-1,  // W
@@ -7070,86 +7432,92 @@ var gotoTab = gotoTable{
 		-1,  // Z
 	},
 	gotoRow{ // S181
-		-1,  // S'
-		-1,  // Programa
-		-1,  // ProgramaP
-		-1,  // FP
-		-1,  // Vars
-		-1,  // VarsP
-		-1,  // X
-		-1,  // Y
-		-1,  // Type
-		-1,  // Body
-		-1,  // BodyP
-		-1,  // Statement
-		-1,  // Print
-		-1,  // PrintP
-		-1,  // PrintPP
-		-1,  // Assign
-		-1,  // Cycle
-		-1,  // Condition
-		-1,  // ConditionP
-		-1,  // Expresion
-		-1,  // EP
-		-1,  // Exp
-		239, // ExpP
-		-1,  // Termino
-		-1,  // TP
-		-1,  // Factor
-		-1,  // FactorP
-		-1,  // FactorPP
-		-1,  // CTE
-		-1,  // Funcs
-		-1,  // FuncsP
-		-1,  // W
-		-1,  // WP
-		-1,  // VP
-		-1,  // FCall
-		-1,  // FCallP
-		-1,  // Z
+		-1, // S'
+		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
+		-1, // ProgramaP
+		-1, // FP
+		-1, // Vars
+		-1, // VarsP
+		-1, // X
+		-1, // Y
+		-1, // Type
+		-1, // Body
+		-1, // BodyP
+		-1, // Statement
+		-1, // Print
+		-1, // PrintP
+		-1, // PrintPP
+		-1, // Assign
+		-1, // Cycle
+		-1, // Condition
+		-1, // ConditionP
+		-1, // Expresion
+		-1, // EP
+		-1, // Exp
+		-1, // ExpP
+		-1, // Termino
+		-1, // TP
+		-1, // Factor
+		-1, // FactorP
+		-1, // FactorPP
+		-1, // CTE
+		-1, // Funcs
+		-1, // FuncsP
+		-1, // W
+		-1, // WP
+		-1, // VP
+		-1, // FCall
+		-1, // FCallP
+		-1, // Z
 	},
 	gotoRow{ // S182
-		-1,  // S'
-		-1,  // Programa
-		-1,  // ProgramaP
-		-1,  // FP
-		-1,  // Vars
-		-1,  // VarsP
-		-1,  // X
-		-1,  // Y
-		-1,  // Type
-		-1,  // Body
-		-1,  // BodyP
-		-1,  // Statement
-		-1,  // Print
-		-1,  // PrintP
-		-1,  // PrintPP
-		-1,  // Assign
-		-1,  // Cycle
-		-1,  // Condition
-		-1,  // ConditionP
-		-1,  // Expresion
-		-1,  // EP
-		-1,  // Exp
-		-1,  // ExpP
-		-1,  // Termino
-		240, // TP
-		-1,  // Factor
-		-1,  // FactorP
-		-1,  // FactorPP
-		-1,  // CTE
-		-1,  // Funcs
-		-1,  // FuncsP
-		-1,  // W
-		-1,  // WP
-		-1,  // VP
-		-1,  // FCall
-		-1,  // FCallP
-		-1,  // Z
+		-1, // S'
+		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
+		-1, // ProgramaP
+		-1, // FP
+		-1, // Vars
+		-1, // VarsP
+		-1, // X
+		-1, // Y
+		-1, // Type
+		-1, // Body
+		-1, // BodyP
+		-1, // Statement
+		-1, // Print
+		-1, // PrintP
+		-1, // PrintPP
+		-1, // Assign
+		-1, // Cycle
+		-1, // Condition
+		-1, // ConditionP
+		-1, // Expresion
+		-1, // EP
+		-1, // Exp
+		-1, // ExpP
+		-1, // Termino
+		-1, // TP
+		-1, // Factor
+		-1, // FactorP
+		-1, // FactorPP
+		-1, // CTE
+		-1, // Funcs
+		-1, // FuncsP
+		-1, // W
+		-1, // WP
+		-1, // VP
+		-1, // FCall
+		-1, // FCallP
+		-1, // Z
 	},
 	gotoRow{ // S183
 		-1,  // S'
 		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
 		-1,  // ProgramaP
 		-1,  // FP
 		-1,  // Vars
@@ -7170,9 +7538,9 @@ var gotoTab = gotoTable{
 		-1,  // Expresion
 		-1,  // EP
 		-1,  // Exp
-		-1,  // ExpP
+		241, // ExpP
 		-1,  // Termino
-		241, // TP
+		-1,  // TP
 		-1,  // Factor
 		-1,  // FactorP
 		-1,  // FactorPP
@@ -7187,47 +7555,10 @@ var gotoTab = gotoTable{
 		-1,  // Z
 	},
 	gotoRow{ // S184
-		-1, // S'
-		-1, // Programa
-		-1, // ProgramaP
-		-1, // FP
-		-1, // Vars
-		-1, // VarsP
-		-1, // X
-		-1, // Y
-		-1, // Type
-		-1, // Body
-		-1, // BodyP
-		-1, // Statement
-		-1, // Print
-		-1, // PrintP
-		-1, // PrintPP
-		-1, // Assign
-		-1, // Cycle
-		-1, // Condition
-		-1, // ConditionP
-		-1, // Expresion
-		-1, // EP
-		-1, // Exp
-		-1, // ExpP
-		-1, // Termino
-		-1, // TP
-		-1, // Factor
-		-1, // FactorP
-		-1, // FactorPP
-		-1, // CTE
-		-1, // Funcs
-		-1, // FuncsP
-		-1, // W
-		-1, // WP
-		-1, // VP
-		-1, // FCall
-		-1, // FCallP
-		-1, // Z
-	},
-	gotoRow{ // S185
 		-1,  // S'
 		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
 		-1,  // ProgramaP
 		-1,  // FP
 		-1,  // Vars
@@ -7244,13 +7575,54 @@ var gotoTab = gotoTable{
 		-1,  // Assign
 		-1,  // Cycle
 		-1,  // Condition
-		243, // ConditionP
+		-1,  // ConditionP
+		-1,  // Expresion
+		-1,  // EP
+		-1,  // Exp
+		242, // ExpP
+		-1,  // Termino
+		-1,  // TP
+		-1,  // Factor
+		-1,  // FactorP
+		-1,  // FactorPP
+		-1,  // CTE
+		-1,  // Funcs
+		-1,  // FuncsP
+		-1,  // W
+		-1,  // WP
+		-1,  // VP
+		-1,  // FCall
+		-1,  // FCallP
+		-1,  // Z
+	},
+	gotoRow{ // S185
+		-1,  // S'
+		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
+		-1,  // ProgramaP
+		-1,  // FP
+		-1,  // Vars
+		-1,  // VarsP
+		-1,  // X
+		-1,  // Y
+		-1,  // Type
+		-1,  // Body
+		-1,  // BodyP
+		-1,  // Statement
+		-1,  // Print
+		-1,  // PrintP
+		-1,  // PrintPP
+		-1,  // Assign
+		-1,  // Cycle
+		-1,  // Condition
+		-1,  // ConditionP
 		-1,  // Expresion
 		-1,  // EP
 		-1,  // Exp
 		-1,  // ExpP
 		-1,  // Termino
-		-1,  // TP
+		243, // TP
 		-1,  // Factor
 		-1,  // FactorP
 		-1,  // FactorPP
@@ -7267,6 +7639,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S186
 		-1,  // S'
 		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
 		-1,  // ProgramaP
 		-1,  // FP
 		-1,  // Vars
@@ -7275,21 +7649,21 @@ var gotoTab = gotoTable{
 		-1,  // Y
 		-1,  // Type
 		-1,  // Body
-		245, // BodyP
-		25,  // Statement
-		30,  // Print
+		-1,  // BodyP
+		-1,  // Statement
+		-1,  // Print
 		-1,  // PrintP
 		-1,  // PrintPP
-		26,  // Assign
-		28,  // Cycle
-		27,  // Condition
+		-1,  // Assign
+		-1,  // Cycle
+		-1,  // Condition
 		-1,  // ConditionP
 		-1,  // Expresion
 		-1,  // EP
 		-1,  // Exp
 		-1,  // ExpP
 		-1,  // Termino
-		-1,  // TP
+		244, // TP
 		-1,  // Factor
 		-1,  // FactorP
 		-1,  // FactorPP
@@ -7299,13 +7673,15 @@ var gotoTab = gotoTable{
 		-1,  // W
 		-1,  // WP
 		-1,  // VP
-		29,  // FCall
+		-1,  // FCall
 		-1,  // FCallP
 		-1,  // Z
 	},
 	gotoRow{ // S187
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -7345,11 +7721,13 @@ var gotoTab = gotoTable{
 	gotoRow{ // S188
 		-1,  // S'
 		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
 		-1,  // ProgramaP
 		-1,  // FP
 		-1,  // Vars
 		-1,  // VarsP
-		246, // X
+		-1,  // X
 		-1,  // Y
 		-1,  // Type
 		-1,  // Body
@@ -7361,7 +7739,7 @@ var gotoTab = gotoTable{
 		-1,  // Assign
 		-1,  // Cycle
 		-1,  // Condition
-		-1,  // ConditionP
+		246, // ConditionP
 		-1,  // Expresion
 		-1,  // EP
 		-1,  // Exp
@@ -7382,47 +7760,51 @@ var gotoTab = gotoTable{
 		-1,  // Z
 	},
 	gotoRow{ // S189
-		-1, // S'
-		-1, // Programa
-		-1, // ProgramaP
-		-1, // FP
-		-1, // Vars
-		-1, // VarsP
-		-1, // X
-		-1, // Y
-		-1, // Type
-		-1, // Body
-		-1, // BodyP
-		-1, // Statement
-		-1, // Print
-		-1, // PrintP
-		-1, // PrintPP
-		-1, // Assign
-		-1, // Cycle
-		-1, // Condition
-		-1, // ConditionP
-		-1, // Expresion
-		-1, // EP
-		-1, // Exp
-		-1, // ExpP
-		-1, // Termino
-		-1, // TP
-		-1, // Factor
-		-1, // FactorP
-		-1, // FactorPP
-		-1, // CTE
-		-1, // Funcs
-		-1, // FuncsP
-		-1, // W
-		-1, // WP
-		-1, // VP
-		-1, // FCall
-		-1, // FCallP
-		-1, // Z
+		-1,  // S'
+		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
+		-1,  // ProgramaP
+		-1,  // FP
+		-1,  // Vars
+		-1,  // VarsP
+		-1,  // X
+		-1,  // Y
+		-1,  // Type
+		-1,  // Body
+		248, // BodyP
+		27,  // Statement
+		32,  // Print
+		-1,  // PrintP
+		-1,  // PrintPP
+		28,  // Assign
+		30,  // Cycle
+		29,  // Condition
+		-1,  // ConditionP
+		-1,  // Expresion
+		-1,  // EP
+		-1,  // Exp
+		-1,  // ExpP
+		-1,  // Termino
+		-1,  // TP
+		-1,  // Factor
+		-1,  // FactorP
+		-1,  // FactorPP
+		-1,  // CTE
+		-1,  // Funcs
+		-1,  // FuncsP
+		-1,  // W
+		-1,  // WP
+		-1,  // VP
+		31,  // FCall
+		-1,  // FCallP
+		-1,  // Z
 	},
 	gotoRow{ // S190
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -7462,22 +7844,24 @@ var gotoTab = gotoTable{
 	gotoRow{ // S191
 		-1,  // S'
 		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
 		-1,  // ProgramaP
 		-1,  // FP
 		-1,  // Vars
 		-1,  // VarsP
-		-1,  // X
+		249, // X
 		-1,  // Y
 		-1,  // Type
 		-1,  // Body
-		248, // BodyP
-		25,  // Statement
-		30,  // Print
+		-1,  // BodyP
+		-1,  // Statement
+		-1,  // Print
 		-1,  // PrintP
 		-1,  // PrintPP
-		26,  // Assign
-		28,  // Cycle
-		27,  // Condition
+		-1,  // Assign
+		-1,  // Cycle
+		-1,  // Condition
 		-1,  // ConditionP
 		-1,  // Expresion
 		-1,  // EP
@@ -7494,13 +7878,15 @@ var gotoTab = gotoTable{
 		-1,  // W
 		-1,  // WP
 		-1,  // VP
-		29,  // FCall
+		-1,  // FCall
 		-1,  // FCallP
 		-1,  // Z
 	},
 	gotoRow{ // S192
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -7540,6 +7926,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S193
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -7577,8 +7965,51 @@ var gotoTab = gotoTable{
 		-1, // Z
 	},
 	gotoRow{ // S194
+		-1,  // S'
+		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
+		-1,  // ProgramaP
+		-1,  // FP
+		-1,  // Vars
+		-1,  // VarsP
+		-1,  // X
+		-1,  // Y
+		-1,  // Type
+		-1,  // Body
+		251, // BodyP
+		27,  // Statement
+		32,  // Print
+		-1,  // PrintP
+		-1,  // PrintPP
+		28,  // Assign
+		30,  // Cycle
+		29,  // Condition
+		-1,  // ConditionP
+		-1,  // Expresion
+		-1,  // EP
+		-1,  // Exp
+		-1,  // ExpP
+		-1,  // Termino
+		-1,  // TP
+		-1,  // Factor
+		-1,  // FactorP
+		-1,  // FactorPP
+		-1,  // CTE
+		-1,  // Funcs
+		-1,  // FuncsP
+		-1,  // W
+		-1,  // WP
+		-1,  // VP
+		31,  // FCall
+		-1,  // FCallP
+		-1,  // Z
+	},
+	gotoRow{ // S195
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -7615,87 +8046,52 @@ var gotoTab = gotoTable{
 		-1, // FCallP
 		-1, // Z
 	},
-	gotoRow{ // S195
-		-1,  // S'
-		-1,  // Programa
-		-1,  // ProgramaP
-		-1,  // FP
-		-1,  // Vars
-		-1,  // VarsP
-		-1,  // X
-		-1,  // Y
-		-1,  // Type
-		-1,  // Body
-		-1,  // BodyP
-		-1,  // Statement
-		-1,  // Print
-		-1,  // PrintP
-		-1,  // PrintPP
-		-1,  // Assign
-		-1,  // Cycle
-		-1,  // Condition
-		-1,  // ConditionP
-		-1,  // Expresion
-		-1,  // EP
-		-1,  // Exp
-		-1,  // ExpP
-		250, // Termino
-		-1,  // TP
-		147, // Factor
-		148, // FactorP
-		-1,  // FactorPP
-		-1,  // CTE
-		-1,  // Funcs
-		-1,  // FuncsP
-		-1,  // W
-		-1,  // WP
-		-1,  // VP
-		-1,  // FCall
-		-1,  // FCallP
-		-1,  // Z
-	},
 	gotoRow{ // S196
-		-1,  // S'
-		-1,  // Programa
-		-1,  // ProgramaP
-		-1,  // FP
-		-1,  // Vars
-		-1,  // VarsP
-		-1,  // X
-		-1,  // Y
-		-1,  // Type
-		-1,  // Body
-		-1,  // BodyP
-		-1,  // Statement
-		-1,  // Print
-		-1,  // PrintP
-		-1,  // PrintPP
-		-1,  // Assign
-		-1,  // Cycle
-		-1,  // Condition
-		-1,  // ConditionP
-		-1,  // Expresion
-		-1,  // EP
-		-1,  // Exp
-		-1,  // ExpP
-		251, // Termino
-		-1,  // TP
-		147, // Factor
-		148, // FactorP
-		-1,  // FactorPP
-		-1,  // CTE
-		-1,  // Funcs
-		-1,  // FuncsP
-		-1,  // W
-		-1,  // WP
-		-1,  // VP
-		-1,  // FCall
-		-1,  // FCallP
-		-1,  // Z
+		-1, // S'
+		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
+		-1, // ProgramaP
+		-1, // FP
+		-1, // Vars
+		-1, // VarsP
+		-1, // X
+		-1, // Y
+		-1, // Type
+		-1, // Body
+		-1, // BodyP
+		-1, // Statement
+		-1, // Print
+		-1, // PrintP
+		-1, // PrintPP
+		-1, // Assign
+		-1, // Cycle
+		-1, // Condition
+		-1, // ConditionP
+		-1, // Expresion
+		-1, // EP
+		-1, // Exp
+		-1, // ExpP
+		-1, // Termino
+		-1, // TP
+		-1, // Factor
+		-1, // FactorP
+		-1, // FactorPP
+		-1, // CTE
+		-1, // Funcs
+		-1, // FuncsP
+		-1, // W
+		-1, // WP
+		-1, // VP
+		-1, // FCall
+		-1, // FCallP
+		-1, // Z
 	},
 	gotoRow{ // S197
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -7735,6 +8131,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S198
 		-1,  // S'
 		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
 		-1,  // ProgramaP
 		-1,  // FP
 		-1,  // Vars
@@ -7756,10 +8154,10 @@ var gotoTab = gotoTable{
 		-1,  // EP
 		-1,  // Exp
 		-1,  // ExpP
-		-1,  // Termino
+		253, // Termino
 		-1,  // TP
-		252, // Factor
-		148, // FactorP
+		149, // Factor
+		150, // FactorP
 		-1,  // FactorPP
 		-1,  // CTE
 		-1,  // Funcs
@@ -7774,6 +8172,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S199
 		-1,  // S'
 		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
 		-1,  // ProgramaP
 		-1,  // FP
 		-1,  // Vars
@@ -7795,10 +8195,10 @@ var gotoTab = gotoTable{
 		-1,  // EP
 		-1,  // Exp
 		-1,  // ExpP
-		-1,  // Termino
+		254, // Termino
 		-1,  // TP
-		253, // Factor
-		148, // FactorP
+		149, // Factor
+		150, // FactorP
 		-1,  // FactorPP
 		-1,  // CTE
 		-1,  // Funcs
@@ -7813,6 +8213,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S200
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -7850,86 +8252,92 @@ var gotoTab = gotoTable{
 		-1, // Z
 	},
 	gotoRow{ // S201
-		-1, // S'
-		-1, // Programa
-		-1, // ProgramaP
-		-1, // FP
-		-1, // Vars
-		-1, // VarsP
-		-1, // X
-		-1, // Y
-		-1, // Type
-		-1, // Body
-		-1, // BodyP
-		-1, // Statement
-		-1, // Print
-		-1, // PrintP
-		-1, // PrintPP
-		-1, // Assign
-		-1, // Cycle
-		-1, // Condition
-		-1, // ConditionP
-		-1, // Expresion
-		-1, // EP
-		-1, // Exp
-		-1, // ExpP
-		-1, // Termino
-		-1, // TP
-		-1, // Factor
-		-1, // FactorP
-		-1, // FactorPP
-		-1, // CTE
-		-1, // Funcs
-		-1, // FuncsP
-		-1, // W
-		-1, // WP
-		-1, // VP
-		-1, // FCall
-		-1, // FCallP
-		-1, // Z
+		-1,  // S'
+		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
+		-1,  // ProgramaP
+		-1,  // FP
+		-1,  // Vars
+		-1,  // VarsP
+		-1,  // X
+		-1,  // Y
+		-1,  // Type
+		-1,  // Body
+		-1,  // BodyP
+		-1,  // Statement
+		-1,  // Print
+		-1,  // PrintP
+		-1,  // PrintPP
+		-1,  // Assign
+		-1,  // Cycle
+		-1,  // Condition
+		-1,  // ConditionP
+		-1,  // Expresion
+		-1,  // EP
+		-1,  // Exp
+		-1,  // ExpP
+		-1,  // Termino
+		-1,  // TP
+		255, // Factor
+		150, // FactorP
+		-1,  // FactorPP
+		-1,  // CTE
+		-1,  // Funcs
+		-1,  // FuncsP
+		-1,  // W
+		-1,  // WP
+		-1,  // VP
+		-1,  // FCall
+		-1,  // FCallP
+		-1,  // Z
 	},
 	gotoRow{ // S202
-		-1, // S'
-		-1, // Programa
-		-1, // ProgramaP
-		-1, // FP
-		-1, // Vars
-		-1, // VarsP
-		-1, // X
-		-1, // Y
-		-1, // Type
-		-1, // Body
-		-1, // BodyP
-		-1, // Statement
-		-1, // Print
-		-1, // PrintP
-		-1, // PrintPP
-		-1, // Assign
-		-1, // Cycle
-		-1, // Condition
-		-1, // ConditionP
-		-1, // Expresion
-		-1, // EP
-		-1, // Exp
-		-1, // ExpP
-		-1, // Termino
-		-1, // TP
-		-1, // Factor
-		-1, // FactorP
-		-1, // FactorPP
-		-1, // CTE
-		-1, // Funcs
-		-1, // FuncsP
-		-1, // W
-		-1, // WP
-		-1, // VP
-		-1, // FCall
-		-1, // FCallP
-		-1, // Z
+		-1,  // S'
+		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
+		-1,  // ProgramaP
+		-1,  // FP
+		-1,  // Vars
+		-1,  // VarsP
+		-1,  // X
+		-1,  // Y
+		-1,  // Type
+		-1,  // Body
+		-1,  // BodyP
+		-1,  // Statement
+		-1,  // Print
+		-1,  // PrintP
+		-1,  // PrintPP
+		-1,  // Assign
+		-1,  // Cycle
+		-1,  // Condition
+		-1,  // ConditionP
+		-1,  // Expresion
+		-1,  // EP
+		-1,  // Exp
+		-1,  // ExpP
+		-1,  // Termino
+		-1,  // TP
+		256, // Factor
+		150, // FactorP
+		-1,  // FactorPP
+		-1,  // CTE
+		-1,  // Funcs
+		-1,  // FuncsP
+		-1,  // W
+		-1,  // WP
+		-1,  // VP
+		-1,  // FCall
+		-1,  // FCallP
+		-1,  // Z
 	},
 	gotoRow{ // S203
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -7969,6 +8377,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S204
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -8008,6 +8418,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S205
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -8047,6 +8459,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S206
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -8086,6 +8500,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S207
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -8125,6 +8541,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S208
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -8164,6 +8582,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S209
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -8203,6 +8623,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S210
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -8240,86 +8662,92 @@ var gotoTab = gotoTable{
 		-1, // Z
 	},
 	gotoRow{ // S211
-		-1,  // S'
-		-1,  // Programa
-		-1,  // ProgramaP
-		-1,  // FP
-		-1,  // Vars
-		-1,  // VarsP
-		-1,  // X
-		-1,  // Y
-		-1,  // Type
-		-1,  // Body
-		-1,  // BodyP
-		-1,  // Statement
-		-1,  // Print
-		-1,  // PrintP
-		-1,  // PrintPP
-		-1,  // Assign
-		-1,  // Cycle
-		-1,  // Condition
-		-1,  // ConditionP
-		-1,  // Expresion
-		-1,  // EP
-		-1,  // Exp
-		-1,  // ExpP
-		256, // Termino
-		-1,  // TP
-		161, // Factor
-		162, // FactorP
-		-1,  // FactorPP
-		-1,  // CTE
-		-1,  // Funcs
-		-1,  // FuncsP
-		-1,  // W
-		-1,  // WP
-		-1,  // VP
-		-1,  // FCall
-		-1,  // FCallP
-		-1,  // Z
+		-1, // S'
+		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
+		-1, // ProgramaP
+		-1, // FP
+		-1, // Vars
+		-1, // VarsP
+		-1, // X
+		-1, // Y
+		-1, // Type
+		-1, // Body
+		-1, // BodyP
+		-1, // Statement
+		-1, // Print
+		-1, // PrintP
+		-1, // PrintPP
+		-1, // Assign
+		-1, // Cycle
+		-1, // Condition
+		-1, // ConditionP
+		-1, // Expresion
+		-1, // EP
+		-1, // Exp
+		-1, // ExpP
+		-1, // Termino
+		-1, // TP
+		-1, // Factor
+		-1, // FactorP
+		-1, // FactorPP
+		-1, // CTE
+		-1, // Funcs
+		-1, // FuncsP
+		-1, // W
+		-1, // WP
+		-1, // VP
+		-1, // FCall
+		-1, // FCallP
+		-1, // Z
 	},
 	gotoRow{ // S212
-		-1,  // S'
-		-1,  // Programa
-		-1,  // ProgramaP
-		-1,  // FP
-		-1,  // Vars
-		-1,  // VarsP
-		-1,  // X
-		-1,  // Y
-		-1,  // Type
-		-1,  // Body
-		-1,  // BodyP
-		-1,  // Statement
-		-1,  // Print
-		-1,  // PrintP
-		-1,  // PrintPP
-		-1,  // Assign
-		-1,  // Cycle
-		-1,  // Condition
-		-1,  // ConditionP
-		-1,  // Expresion
-		-1,  // EP
-		-1,  // Exp
-		-1,  // ExpP
-		257, // Termino
-		-1,  // TP
-		161, // Factor
-		162, // FactorP
-		-1,  // FactorPP
-		-1,  // CTE
-		-1,  // Funcs
-		-1,  // FuncsP
-		-1,  // W
-		-1,  // WP
-		-1,  // VP
-		-1,  // FCall
-		-1,  // FCallP
-		-1,  // Z
+		-1, // S'
+		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
+		-1, // ProgramaP
+		-1, // FP
+		-1, // Vars
+		-1, // VarsP
+		-1, // X
+		-1, // Y
+		-1, // Type
+		-1, // Body
+		-1, // BodyP
+		-1, // Statement
+		-1, // Print
+		-1, // PrintP
+		-1, // PrintPP
+		-1, // Assign
+		-1, // Cycle
+		-1, // Condition
+		-1, // ConditionP
+		-1, // Expresion
+		-1, // EP
+		-1, // Exp
+		-1, // ExpP
+		-1, // Termino
+		-1, // TP
+		-1, // Factor
+		-1, // FactorP
+		-1, // FactorPP
+		-1, // CTE
+		-1, // Funcs
+		-1, // FuncsP
+		-1, // W
+		-1, // WP
+		-1, // VP
+		-1, // FCall
+		-1, // FCallP
+		-1, // Z
 	},
 	gotoRow{ // S213
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -8359,6 +8787,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S214
 		-1,  // S'
 		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
 		-1,  // ProgramaP
 		-1,  // FP
 		-1,  // Vars
@@ -8380,10 +8810,10 @@ var gotoTab = gotoTable{
 		-1,  // EP
 		-1,  // Exp
 		-1,  // ExpP
-		-1,  // Termino
+		259, // Termino
 		-1,  // TP
-		258, // Factor
-		162, // FactorP
+		163, // Factor
+		164, // FactorP
 		-1,  // FactorPP
 		-1,  // CTE
 		-1,  // Funcs
@@ -8398,6 +8828,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S215
 		-1,  // S'
 		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
 		-1,  // ProgramaP
 		-1,  // FP
 		-1,  // Vars
@@ -8419,10 +8851,10 @@ var gotoTab = gotoTable{
 		-1,  // EP
 		-1,  // Exp
 		-1,  // ExpP
-		-1,  // Termino
+		260, // Termino
 		-1,  // TP
-		259, // Factor
-		162, // FactorP
+		163, // Factor
+		164, // FactorP
 		-1,  // FactorPP
 		-1,  // CTE
 		-1,  // Funcs
@@ -8437,6 +8869,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S216
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -8474,86 +8908,92 @@ var gotoTab = gotoTable{
 		-1, // Z
 	},
 	gotoRow{ // S217
-		-1, // S'
-		-1, // Programa
-		-1, // ProgramaP
-		-1, // FP
-		-1, // Vars
-		-1, // VarsP
-		-1, // X
-		-1, // Y
-		-1, // Type
-		-1, // Body
-		-1, // BodyP
-		-1, // Statement
-		-1, // Print
-		-1, // PrintP
-		-1, // PrintPP
-		-1, // Assign
-		-1, // Cycle
-		-1, // Condition
-		-1, // ConditionP
-		-1, // Expresion
-		-1, // EP
-		-1, // Exp
-		-1, // ExpP
-		-1, // Termino
-		-1, // TP
-		-1, // Factor
-		-1, // FactorP
-		-1, // FactorPP
-		-1, // CTE
-		-1, // Funcs
-		-1, // FuncsP
-		-1, // W
-		-1, // WP
-		-1, // VP
-		-1, // FCall
-		-1, // FCallP
-		-1, // Z
+		-1,  // S'
+		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
+		-1,  // ProgramaP
+		-1,  // FP
+		-1,  // Vars
+		-1,  // VarsP
+		-1,  // X
+		-1,  // Y
+		-1,  // Type
+		-1,  // Body
+		-1,  // BodyP
+		-1,  // Statement
+		-1,  // Print
+		-1,  // PrintP
+		-1,  // PrintPP
+		-1,  // Assign
+		-1,  // Cycle
+		-1,  // Condition
+		-1,  // ConditionP
+		-1,  // Expresion
+		-1,  // EP
+		-1,  // Exp
+		-1,  // ExpP
+		-1,  // Termino
+		-1,  // TP
+		261, // Factor
+		164, // FactorP
+		-1,  // FactorPP
+		-1,  // CTE
+		-1,  // Funcs
+		-1,  // FuncsP
+		-1,  // W
+		-1,  // WP
+		-1,  // VP
+		-1,  // FCall
+		-1,  // FCallP
+		-1,  // Z
 	},
 	gotoRow{ // S218
-		-1, // S'
-		-1, // Programa
-		-1, // ProgramaP
-		-1, // FP
-		-1, // Vars
-		-1, // VarsP
-		-1, // X
-		-1, // Y
-		-1, // Type
-		-1, // Body
-		-1, // BodyP
-		-1, // Statement
-		-1, // Print
-		-1, // PrintP
-		-1, // PrintPP
-		-1, // Assign
-		-1, // Cycle
-		-1, // Condition
-		-1, // ConditionP
-		-1, // Expresion
-		-1, // EP
-		-1, // Exp
-		-1, // ExpP
-		-1, // Termino
-		-1, // TP
-		-1, // Factor
-		-1, // FactorP
-		-1, // FactorPP
-		-1, // CTE
-		-1, // Funcs
-		-1, // FuncsP
-		-1, // W
-		-1, // WP
-		-1, // VP
-		-1, // FCall
-		-1, // FCallP
-		-1, // Z
+		-1,  // S'
+		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
+		-1,  // ProgramaP
+		-1,  // FP
+		-1,  // Vars
+		-1,  // VarsP
+		-1,  // X
+		-1,  // Y
+		-1,  // Type
+		-1,  // Body
+		-1,  // BodyP
+		-1,  // Statement
+		-1,  // Print
+		-1,  // PrintP
+		-1,  // PrintPP
+		-1,  // Assign
+		-1,  // Cycle
+		-1,  // Condition
+		-1,  // ConditionP
+		-1,  // Expresion
+		-1,  // EP
+		-1,  // Exp
+		-1,  // ExpP
+		-1,  // Termino
+		-1,  // TP
+		262, // Factor
+		164, // FactorP
+		-1,  // FactorPP
+		-1,  // CTE
+		-1,  // Funcs
+		-1,  // FuncsP
+		-1,  // W
+		-1,  // WP
+		-1,  // VP
+		-1,  // FCall
+		-1,  // FCallP
+		-1,  // Z
 	},
 	gotoRow{ // S219
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -8593,6 +9033,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S220
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -8632,6 +9074,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S221
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -8671,6 +9115,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S222
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -8710,6 +9156,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S223
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -8749,6 +9197,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S224
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -8788,6 +9238,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S225
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -8825,47 +9277,51 @@ var gotoTab = gotoTable{
 		-1, // Z
 	},
 	gotoRow{ // S226
-		-1,  // S'
-		-1,  // Programa
-		-1,  // ProgramaP
-		-1,  // FP
-		-1,  // Vars
-		-1,  // VarsP
-		-1,  // X
-		-1,  // Y
-		-1,  // Type
-		-1,  // Body
-		262, // BodyP
-		25,  // Statement
-		30,  // Print
-		-1,  // PrintP
-		-1,  // PrintPP
-		26,  // Assign
-		28,  // Cycle
-		27,  // Condition
-		-1,  // ConditionP
-		-1,  // Expresion
-		-1,  // EP
-		-1,  // Exp
-		-1,  // ExpP
-		-1,  // Termino
-		-1,  // TP
-		-1,  // Factor
-		-1,  // FactorP
-		-1,  // FactorPP
-		-1,  // CTE
-		-1,  // Funcs
-		-1,  // FuncsP
-		-1,  // W
-		-1,  // WP
-		-1,  // VP
-		29,  // FCall
-		-1,  // FCallP
-		-1,  // Z
+		-1, // S'
+		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
+		-1, // ProgramaP
+		-1, // FP
+		-1, // Vars
+		-1, // VarsP
+		-1, // X
+		-1, // Y
+		-1, // Type
+		-1, // Body
+		-1, // BodyP
+		-1, // Statement
+		-1, // Print
+		-1, // PrintP
+		-1, // PrintPP
+		-1, // Assign
+		-1, // Cycle
+		-1, // Condition
+		-1, // ConditionP
+		-1, // Expresion
+		-1, // EP
+		-1, // Exp
+		-1, // ExpP
+		-1, // Termino
+		-1, // TP
+		-1, // Factor
+		-1, // FactorP
+		-1, // FactorPP
+		-1, // CTE
+		-1, // Funcs
+		-1, // FuncsP
+		-1, // W
+		-1, // WP
+		-1, // VP
+		-1, // FCall
+		-1, // FCallP
+		-1, // Z
 	},
 	gotoRow{ // S227
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -8905,6 +9361,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S228
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -8944,6 +9402,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S229
 		-1,  // S'
 		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
 		-1,  // ProgramaP
 		-1,  // FP
 		-1,  // Vars
@@ -8952,23 +9412,23 @@ var gotoTab = gotoTable{
 		-1,  // Y
 		-1,  // Type
 		-1,  // Body
-		-1,  // BodyP
-		-1,  // Statement
-		-1,  // Print
+		265, // BodyP
+		27,  // Statement
+		32,  // Print
 		-1,  // PrintP
 		-1,  // PrintPP
-		-1,  // Assign
-		-1,  // Cycle
-		-1,  // Condition
+		28,  // Assign
+		30,  // Cycle
+		29,  // Condition
 		-1,  // ConditionP
 		-1,  // Expresion
 		-1,  // EP
 		-1,  // Exp
 		-1,  // ExpP
-		264, // Termino
+		-1,  // Termino
 		-1,  // TP
-		176, // Factor
-		177, // FactorP
+		-1,  // Factor
+		-1,  // FactorP
 		-1,  // FactorPP
 		-1,  // CTE
 		-1,  // Funcs
@@ -8976,52 +9436,56 @@ var gotoTab = gotoTable{
 		-1,  // W
 		-1,  // WP
 		-1,  // VP
-		-1,  // FCall
+		31,  // FCall
 		-1,  // FCallP
 		-1,  // Z
 	},
 	gotoRow{ // S230
-		-1,  // S'
-		-1,  // Programa
-		-1,  // ProgramaP
-		-1,  // FP
-		-1,  // Vars
-		-1,  // VarsP
-		-1,  // X
-		-1,  // Y
-		-1,  // Type
-		-1,  // Body
-		-1,  // BodyP
-		-1,  // Statement
-		-1,  // Print
-		-1,  // PrintP
-		-1,  // PrintPP
-		-1,  // Assign
-		-1,  // Cycle
-		-1,  // Condition
-		-1,  // ConditionP
-		-1,  // Expresion
-		-1,  // EP
-		-1,  // Exp
-		-1,  // ExpP
-		265, // Termino
-		-1,  // TP
-		176, // Factor
-		177, // FactorP
-		-1,  // FactorPP
-		-1,  // CTE
-		-1,  // Funcs
-		-1,  // FuncsP
-		-1,  // W
-		-1,  // WP
-		-1,  // VP
-		-1,  // FCall
-		-1,  // FCallP
-		-1,  // Z
+		-1, // S'
+		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
+		-1, // ProgramaP
+		-1, // FP
+		-1, // Vars
+		-1, // VarsP
+		-1, // X
+		-1, // Y
+		-1, // Type
+		-1, // Body
+		-1, // BodyP
+		-1, // Statement
+		-1, // Print
+		-1, // PrintP
+		-1, // PrintPP
+		-1, // Assign
+		-1, // Cycle
+		-1, // Condition
+		-1, // ConditionP
+		-1, // Expresion
+		-1, // EP
+		-1, // Exp
+		-1, // ExpP
+		-1, // Termino
+		-1, // TP
+		-1, // Factor
+		-1, // FactorP
+		-1, // FactorPP
+		-1, // CTE
+		-1, // Funcs
+		-1, // FuncsP
+		-1, // W
+		-1, // WP
+		-1, // VP
+		-1, // FCall
+		-1, // FCallP
+		-1, // Z
 	},
 	gotoRow{ // S231
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -9061,6 +9525,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S232
 		-1,  // S'
 		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
 		-1,  // ProgramaP
 		-1,  // FP
 		-1,  // Vars
@@ -9082,10 +9548,10 @@ var gotoTab = gotoTable{
 		-1,  // EP
 		-1,  // Exp
 		-1,  // ExpP
-		-1,  // Termino
+		267, // Termino
 		-1,  // TP
-		266, // Factor
-		177, // FactorP
+		179, // Factor
+		180, // FactorP
 		-1,  // FactorPP
 		-1,  // CTE
 		-1,  // Funcs
@@ -9100,6 +9566,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S233
 		-1,  // S'
 		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
 		-1,  // ProgramaP
 		-1,  // FP
 		-1,  // Vars
@@ -9121,10 +9589,10 @@ var gotoTab = gotoTable{
 		-1,  // EP
 		-1,  // Exp
 		-1,  // ExpP
-		-1,  // Termino
+		268, // Termino
 		-1,  // TP
-		267, // Factor
-		177, // FactorP
+		179, // Factor
+		180, // FactorP
 		-1,  // FactorPP
 		-1,  // CTE
 		-1,  // Funcs
@@ -9139,6 +9607,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S234
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -9176,86 +9646,92 @@ var gotoTab = gotoTable{
 		-1, // Z
 	},
 	gotoRow{ // S235
-		-1, // S'
-		-1, // Programa
-		-1, // ProgramaP
-		-1, // FP
-		-1, // Vars
-		-1, // VarsP
-		-1, // X
-		-1, // Y
-		-1, // Type
-		-1, // Body
-		-1, // BodyP
-		-1, // Statement
-		-1, // Print
-		-1, // PrintP
-		-1, // PrintPP
-		-1, // Assign
-		-1, // Cycle
-		-1, // Condition
-		-1, // ConditionP
-		-1, // Expresion
-		-1, // EP
-		-1, // Exp
-		-1, // ExpP
-		-1, // Termino
-		-1, // TP
-		-1, // Factor
-		-1, // FactorP
-		-1, // FactorPP
-		-1, // CTE
-		-1, // Funcs
-		-1, // FuncsP
-		-1, // W
-		-1, // WP
-		-1, // VP
-		-1, // FCall
-		-1, // FCallP
-		-1, // Z
+		-1,  // S'
+		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
+		-1,  // ProgramaP
+		-1,  // FP
+		-1,  // Vars
+		-1,  // VarsP
+		-1,  // X
+		-1,  // Y
+		-1,  // Type
+		-1,  // Body
+		-1,  // BodyP
+		-1,  // Statement
+		-1,  // Print
+		-1,  // PrintP
+		-1,  // PrintPP
+		-1,  // Assign
+		-1,  // Cycle
+		-1,  // Condition
+		-1,  // ConditionP
+		-1,  // Expresion
+		-1,  // EP
+		-1,  // Exp
+		-1,  // ExpP
+		-1,  // Termino
+		-1,  // TP
+		269, // Factor
+		180, // FactorP
+		-1,  // FactorPP
+		-1,  // CTE
+		-1,  // Funcs
+		-1,  // FuncsP
+		-1,  // W
+		-1,  // WP
+		-1,  // VP
+		-1,  // FCall
+		-1,  // FCallP
+		-1,  // Z
 	},
 	gotoRow{ // S236
-		-1, // S'
-		-1, // Programa
-		-1, // ProgramaP
-		-1, // FP
-		-1, // Vars
-		-1, // VarsP
-		-1, // X
-		-1, // Y
-		-1, // Type
-		-1, // Body
-		-1, // BodyP
-		-1, // Statement
-		-1, // Print
-		-1, // PrintP
-		-1, // PrintPP
-		-1, // Assign
-		-1, // Cycle
-		-1, // Condition
-		-1, // ConditionP
-		-1, // Expresion
-		-1, // EP
-		-1, // Exp
-		-1, // ExpP
-		-1, // Termino
-		-1, // TP
-		-1, // Factor
-		-1, // FactorP
-		-1, // FactorPP
-		-1, // CTE
-		-1, // Funcs
-		-1, // FuncsP
-		-1, // W
-		-1, // WP
-		-1, // VP
-		-1, // FCall
-		-1, // FCallP
-		-1, // Z
+		-1,  // S'
+		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
+		-1,  // ProgramaP
+		-1,  // FP
+		-1,  // Vars
+		-1,  // VarsP
+		-1,  // X
+		-1,  // Y
+		-1,  // Type
+		-1,  // Body
+		-1,  // BodyP
+		-1,  // Statement
+		-1,  // Print
+		-1,  // PrintP
+		-1,  // PrintPP
+		-1,  // Assign
+		-1,  // Cycle
+		-1,  // Condition
+		-1,  // ConditionP
+		-1,  // Expresion
+		-1,  // EP
+		-1,  // Exp
+		-1,  // ExpP
+		-1,  // Termino
+		-1,  // TP
+		270, // Factor
+		180, // FactorP
+		-1,  // FactorPP
+		-1,  // CTE
+		-1,  // Funcs
+		-1,  // FuncsP
+		-1,  // W
+		-1,  // WP
+		-1,  // VP
+		-1,  // FCall
+		-1,  // FCallP
+		-1,  // Z
 	},
 	gotoRow{ // S237
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -9295,6 +9771,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S238
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -9334,6 +9812,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S239
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -9373,6 +9853,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S240
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -9412,6 +9894,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S241
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -9451,6 +9935,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S242
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -9490,6 +9976,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S243
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -9527,47 +10015,51 @@ var gotoTab = gotoTable{
 		-1, // Z
 	},
 	gotoRow{ // S244
-		-1,  // S'
-		-1,  // Programa
-		-1,  // ProgramaP
-		-1,  // FP
-		-1,  // Vars
-		-1,  // VarsP
-		-1,  // X
-		-1,  // Y
-		-1,  // Type
-		269, // Body
-		-1,  // BodyP
-		-1,  // Statement
-		-1,  // Print
-		-1,  // PrintP
-		-1,  // PrintPP
-		-1,  // Assign
-		-1,  // Cycle
-		-1,  // Condition
-		-1,  // ConditionP
-		-1,  // Expresion
-		-1,  // EP
-		-1,  // Exp
-		-1,  // ExpP
-		-1,  // Termino
-		-1,  // TP
-		-1,  // Factor
-		-1,  // FactorP
-		-1,  // FactorPP
-		-1,  // CTE
-		-1,  // Funcs
-		-1,  // FuncsP
-		-1,  // W
-		-1,  // WP
-		-1,  // VP
-		-1,  // FCall
-		-1,  // FCallP
-		-1,  // Z
+		-1, // S'
+		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
+		-1, // ProgramaP
+		-1, // FP
+		-1, // Vars
+		-1, // VarsP
+		-1, // X
+		-1, // Y
+		-1, // Type
+		-1, // Body
+		-1, // BodyP
+		-1, // Statement
+		-1, // Print
+		-1, // PrintP
+		-1, // PrintPP
+		-1, // Assign
+		-1, // Cycle
+		-1, // Condition
+		-1, // ConditionP
+		-1, // Expresion
+		-1, // EP
+		-1, // Exp
+		-1, // ExpP
+		-1, // Termino
+		-1, // TP
+		-1, // Factor
+		-1, // FactorP
+		-1, // FactorPP
+		-1, // CTE
+		-1, // Funcs
+		-1, // FuncsP
+		-1, // W
+		-1, // WP
+		-1, // VP
+		-1, // FCall
+		-1, // FCallP
+		-1, // Z
 	},
 	gotoRow{ // S245
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -9607,6 +10099,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S246
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -9644,47 +10138,51 @@ var gotoTab = gotoTable{
 		-1, // Z
 	},
 	gotoRow{ // S247
-		-1, // S'
-		-1, // Programa
-		-1, // ProgramaP
-		-1, // FP
-		-1, // Vars
-		-1, // VarsP
-		-1, // X
-		-1, // Y
-		-1, // Type
-		-1, // Body
-		-1, // BodyP
-		-1, // Statement
-		-1, // Print
-		-1, // PrintP
-		-1, // PrintPP
-		-1, // Assign
-		-1, // Cycle
-		-1, // Condition
-		-1, // ConditionP
-		-1, // Expresion
-		-1, // EP
-		-1, // Exp
-		-1, // ExpP
-		-1, // Termino
-		-1, // TP
-		-1, // Factor
-		-1, // FactorP
-		-1, // FactorPP
-		-1, // CTE
-		-1, // Funcs
-		-1, // FuncsP
-		-1, // W
-		-1, // WP
-		-1, // VP
-		-1, // FCall
-		-1, // FCallP
-		-1, // Z
+		-1,  // S'
+		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
+		-1,  // ProgramaP
+		-1,  // FP
+		-1,  // Vars
+		-1,  // VarsP
+		-1,  // X
+		-1,  // Y
+		-1,  // Type
+		272, // Body
+		-1,  // BodyP
+		-1,  // Statement
+		-1,  // Print
+		-1,  // PrintP
+		-1,  // PrintPP
+		-1,  // Assign
+		-1,  // Cycle
+		-1,  // Condition
+		-1,  // ConditionP
+		-1,  // Expresion
+		-1,  // EP
+		-1,  // Exp
+		-1,  // ExpP
+		-1,  // Termino
+		-1,  // TP
+		-1,  // Factor
+		-1,  // FactorP
+		-1,  // FactorPP
+		-1,  // CTE
+		-1,  // Funcs
+		-1,  // FuncsP
+		-1,  // W
+		-1,  // WP
+		-1,  // VP
+		-1,  // FCall
+		-1,  // FCallP
+		-1,  // Z
 	},
 	gotoRow{ // S248
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -9724,6 +10222,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S249
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -9761,125 +10261,133 @@ var gotoTab = gotoTable{
 		-1, // Z
 	},
 	gotoRow{ // S250
-		-1,  // S'
-		-1,  // Programa
-		-1,  // ProgramaP
-		-1,  // FP
-		-1,  // Vars
-		-1,  // VarsP
-		-1,  // X
-		-1,  // Y
-		-1,  // Type
-		-1,  // Body
-		-1,  // BodyP
-		-1,  // Statement
-		-1,  // Print
-		-1,  // PrintP
-		-1,  // PrintPP
-		-1,  // Assign
-		-1,  // Cycle
-		-1,  // Condition
-		-1,  // ConditionP
-		-1,  // Expresion
-		-1,  // EP
-		-1,  // Exp
-		275, // ExpP
-		-1,  // Termino
-		-1,  // TP
-		-1,  // Factor
-		-1,  // FactorP
-		-1,  // FactorPP
-		-1,  // CTE
-		-1,  // Funcs
-		-1,  // FuncsP
-		-1,  // W
-		-1,  // WP
-		-1,  // VP
-		-1,  // FCall
-		-1,  // FCallP
-		-1,  // Z
+		-1, // S'
+		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
+		-1, // ProgramaP
+		-1, // FP
+		-1, // Vars
+		-1, // VarsP
+		-1, // X
+		-1, // Y
+		-1, // Type
+		-1, // Body
+		-1, // BodyP
+		-1, // Statement
+		-1, // Print
+		-1, // PrintP
+		-1, // PrintPP
+		-1, // Assign
+		-1, // Cycle
+		-1, // Condition
+		-1, // ConditionP
+		-1, // Expresion
+		-1, // EP
+		-1, // Exp
+		-1, // ExpP
+		-1, // Termino
+		-1, // TP
+		-1, // Factor
+		-1, // FactorP
+		-1, // FactorPP
+		-1, // CTE
+		-1, // Funcs
+		-1, // FuncsP
+		-1, // W
+		-1, // WP
+		-1, // VP
+		-1, // FCall
+		-1, // FCallP
+		-1, // Z
 	},
 	gotoRow{ // S251
-		-1,  // S'
-		-1,  // Programa
-		-1,  // ProgramaP
-		-1,  // FP
-		-1,  // Vars
-		-1,  // VarsP
-		-1,  // X
-		-1,  // Y
-		-1,  // Type
-		-1,  // Body
-		-1,  // BodyP
-		-1,  // Statement
-		-1,  // Print
-		-1,  // PrintP
-		-1,  // PrintPP
-		-1,  // Assign
-		-1,  // Cycle
-		-1,  // Condition
-		-1,  // ConditionP
-		-1,  // Expresion
-		-1,  // EP
-		-1,  // Exp
-		276, // ExpP
-		-1,  // Termino
-		-1,  // TP
-		-1,  // Factor
-		-1,  // FactorP
-		-1,  // FactorPP
-		-1,  // CTE
-		-1,  // Funcs
-		-1,  // FuncsP
-		-1,  // W
-		-1,  // WP
-		-1,  // VP
-		-1,  // FCall
-		-1,  // FCallP
-		-1,  // Z
+		-1, // S'
+		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
+		-1, // ProgramaP
+		-1, // FP
+		-1, // Vars
+		-1, // VarsP
+		-1, // X
+		-1, // Y
+		-1, // Type
+		-1, // Body
+		-1, // BodyP
+		-1, // Statement
+		-1, // Print
+		-1, // PrintP
+		-1, // PrintPP
+		-1, // Assign
+		-1, // Cycle
+		-1, // Condition
+		-1, // ConditionP
+		-1, // Expresion
+		-1, // EP
+		-1, // Exp
+		-1, // ExpP
+		-1, // Termino
+		-1, // TP
+		-1, // Factor
+		-1, // FactorP
+		-1, // FactorPP
+		-1, // CTE
+		-1, // Funcs
+		-1, // FuncsP
+		-1, // W
+		-1, // WP
+		-1, // VP
+		-1, // FCall
+		-1, // FCallP
+		-1, // Z
 	},
 	gotoRow{ // S252
-		-1,  // S'
-		-1,  // Programa
-		-1,  // ProgramaP
-		-1,  // FP
-		-1,  // Vars
-		-1,  // VarsP
-		-1,  // X
-		-1,  // Y
-		-1,  // Type
-		-1,  // Body
-		-1,  // BodyP
-		-1,  // Statement
-		-1,  // Print
-		-1,  // PrintP
-		-1,  // PrintPP
-		-1,  // Assign
-		-1,  // Cycle
-		-1,  // Condition
-		-1,  // ConditionP
-		-1,  // Expresion
-		-1,  // EP
-		-1,  // Exp
-		-1,  // ExpP
-		-1,  // Termino
-		277, // TP
-		-1,  // Factor
-		-1,  // FactorP
-		-1,  // FactorPP
-		-1,  // CTE
-		-1,  // Funcs
-		-1,  // FuncsP
-		-1,  // W
-		-1,  // WP
-		-1,  // VP
-		-1,  // FCall
-		-1,  // FCallP
-		-1,  // Z
+		-1, // S'
+		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
+		-1, // ProgramaP
+		-1, // FP
+		-1, // Vars
+		-1, // VarsP
+		-1, // X
+		-1, // Y
+		-1, // Type
+		-1, // Body
+		-1, // BodyP
+		-1, // Statement
+		-1, // Print
+		-1, // PrintP
+		-1, // PrintPP
+		-1, // Assign
+		-1, // Cycle
+		-1, // Condition
+		-1, // ConditionP
+		-1, // Expresion
+		-1, // EP
+		-1, // Exp
+		-1, // ExpP
+		-1, // Termino
+		-1, // TP
+		-1, // Factor
+		-1, // FactorP
+		-1, // FactorPP
+		-1, // CTE
+		-1, // Funcs
+		-1, // FuncsP
+		-1, // W
+		-1, // WP
+		-1, // VP
+		-1, // FCall
+		-1, // FCallP
+		-1, // Z
 	},
 	gotoRow{ // S253
 		-1,  // S'
 		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
 		-1,  // ProgramaP
 		-1,  // FP
 		-1,  // Vars
@@ -9900,9 +10408,9 @@ var gotoTab = gotoTable{
 		-1,  // Expresion
 		-1,  // EP
 		-1,  // Exp
-		-1,  // ExpP
+		278, // ExpP
 		-1,  // Termino
-		278, // TP
+		-1,  // TP
 		-1,  // Factor
 		-1,  // FactorP
 		-1,  // FactorPP
@@ -9917,86 +10425,10 @@ var gotoTab = gotoTable{
 		-1,  // Z
 	},
 	gotoRow{ // S254
-		-1, // S'
-		-1, // Programa
-		-1, // ProgramaP
-		-1, // FP
-		-1, // Vars
-		-1, // VarsP
-		-1, // X
-		-1, // Y
-		-1, // Type
-		-1, // Body
-		-1, // BodyP
-		-1, // Statement
-		-1, // Print
-		-1, // PrintP
-		-1, // PrintPP
-		-1, // Assign
-		-1, // Cycle
-		-1, // Condition
-		-1, // ConditionP
-		-1, // Expresion
-		-1, // EP
-		-1, // Exp
-		-1, // ExpP
-		-1, // Termino
-		-1, // TP
-		-1, // Factor
-		-1, // FactorP
-		-1, // FactorPP
-		-1, // CTE
-		-1, // Funcs
-		-1, // FuncsP
-		-1, // W
-		-1, // WP
-		-1, // VP
-		-1, // FCall
-		-1, // FCallP
-		-1, // Z
-	},
-	gotoRow{ // S255
-		-1, // S'
-		-1, // Programa
-		-1, // ProgramaP
-		-1, // FP
-		-1, // Vars
-		-1, // VarsP
-		-1, // X
-		-1, // Y
-		-1, // Type
-		-1, // Body
-		-1, // BodyP
-		-1, // Statement
-		-1, // Print
-		-1, // PrintP
-		-1, // PrintPP
-		-1, // Assign
-		-1, // Cycle
-		-1, // Condition
-		-1, // ConditionP
-		-1, // Expresion
-		-1, // EP
-		-1, // Exp
-		-1, // ExpP
-		-1, // Termino
-		-1, // TP
-		-1, // Factor
-		-1, // FactorP
-		-1, // FactorPP
-		-1, // CTE
-		-1, // Funcs
-		-1, // FuncsP
-		-1, // W
-		-1, // WP
-		-1, // VP
-		-1, // FCall
-		-1, // FCallP
-		-1, // Z
-	},
-	gotoRow{ // S256
 		-1,  // S'
 		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
 		-1,  // ProgramaP
 		-1,  // FP
 		-1,  // Vars
@@ -10017,9 +10449,91 @@ var gotoTab = gotoTable{
 		-1,  // Expresion
 		-1,  // EP
 		-1,  // Exp
-		280, // ExpP
+		279, // ExpP
 		-1,  // Termino
 		-1,  // TP
+		-1,  // Factor
+		-1,  // FactorP
+		-1,  // FactorPP
+		-1,  // CTE
+		-1,  // Funcs
+		-1,  // FuncsP
+		-1,  // W
+		-1,  // WP
+		-1,  // VP
+		-1,  // FCall
+		-1,  // FCallP
+		-1,  // Z
+	},
+	gotoRow{ // S255
+		-1,  // S'
+		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
+		-1,  // ProgramaP
+		-1,  // FP
+		-1,  // Vars
+		-1,  // VarsP
+		-1,  // X
+		-1,  // Y
+		-1,  // Type
+		-1,  // Body
+		-1,  // BodyP
+		-1,  // Statement
+		-1,  // Print
+		-1,  // PrintP
+		-1,  // PrintPP
+		-1,  // Assign
+		-1,  // Cycle
+		-1,  // Condition
+		-1,  // ConditionP
+		-1,  // Expresion
+		-1,  // EP
+		-1,  // Exp
+		-1,  // ExpP
+		-1,  // Termino
+		280, // TP
+		-1,  // Factor
+		-1,  // FactorP
+		-1,  // FactorPP
+		-1,  // CTE
+		-1,  // Funcs
+		-1,  // FuncsP
+		-1,  // W
+		-1,  // WP
+		-1,  // VP
+		-1,  // FCall
+		-1,  // FCallP
+		-1,  // Z
+	},
+	gotoRow{ // S256
+		-1,  // S'
+		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
+		-1,  // ProgramaP
+		-1,  // FP
+		-1,  // Vars
+		-1,  // VarsP
+		-1,  // X
+		-1,  // Y
+		-1,  // Type
+		-1,  // Body
+		-1,  // BodyP
+		-1,  // Statement
+		-1,  // Print
+		-1,  // PrintP
+		-1,  // PrintPP
+		-1,  // Assign
+		-1,  // Cycle
+		-1,  // Condition
+		-1,  // ConditionP
+		-1,  // Expresion
+		-1,  // EP
+		-1,  // Exp
+		-1,  // ExpP
+		-1,  // Termino
+		281, // TP
 		-1,  // Factor
 		-1,  // FactorP
 		-1,  // FactorPP
@@ -10034,8 +10548,92 @@ var gotoTab = gotoTable{
 		-1,  // Z
 	},
 	gotoRow{ // S257
+		-1, // S'
+		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
+		-1, // ProgramaP
+		-1, // FP
+		-1, // Vars
+		-1, // VarsP
+		-1, // X
+		-1, // Y
+		-1, // Type
+		-1, // Body
+		-1, // BodyP
+		-1, // Statement
+		-1, // Print
+		-1, // PrintP
+		-1, // PrintPP
+		-1, // Assign
+		-1, // Cycle
+		-1, // Condition
+		-1, // ConditionP
+		-1, // Expresion
+		-1, // EP
+		-1, // Exp
+		-1, // ExpP
+		-1, // Termino
+		-1, // TP
+		-1, // Factor
+		-1, // FactorP
+		-1, // FactorPP
+		-1, // CTE
+		-1, // Funcs
+		-1, // FuncsP
+		-1, // W
+		-1, // WP
+		-1, // VP
+		-1, // FCall
+		-1, // FCallP
+		-1, // Z
+	},
+	gotoRow{ // S258
+		-1, // S'
+		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
+		-1, // ProgramaP
+		-1, // FP
+		-1, // Vars
+		-1, // VarsP
+		-1, // X
+		-1, // Y
+		-1, // Type
+		-1, // Body
+		-1, // BodyP
+		-1, // Statement
+		-1, // Print
+		-1, // PrintP
+		-1, // PrintPP
+		-1, // Assign
+		-1, // Cycle
+		-1, // Condition
+		-1, // ConditionP
+		-1, // Expresion
+		-1, // EP
+		-1, // Exp
+		-1, // ExpP
+		-1, // Termino
+		-1, // TP
+		-1, // Factor
+		-1, // FactorP
+		-1, // FactorPP
+		-1, // CTE
+		-1, // Funcs
+		-1, // FuncsP
+		-1, // W
+		-1, // WP
+		-1, // VP
+		-1, // FCall
+		-1, // FCallP
+		-1, // Z
+	},
+	gotoRow{ // S259
 		-1,  // S'
 		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
 		-1,  // ProgramaP
 		-1,  // FP
 		-1,  // Vars
@@ -10056,7 +10654,7 @@ var gotoTab = gotoTable{
 		-1,  // Expresion
 		-1,  // EP
 		-1,  // Exp
-		281, // ExpP
+		283, // ExpP
 		-1,  // Termino
 		-1,  // TP
 		-1,  // Factor
@@ -10072,204 +10670,134 @@ var gotoTab = gotoTable{
 		-1,  // FCallP
 		-1,  // Z
 	},
-	gotoRow{ // S258
-		-1,  // S'
-		-1,  // Programa
-		-1,  // ProgramaP
-		-1,  // FP
-		-1,  // Vars
-		-1,  // VarsP
-		-1,  // X
-		-1,  // Y
-		-1,  // Type
-		-1,  // Body
-		-1,  // BodyP
-		-1,  // Statement
-		-1,  // Print
-		-1,  // PrintP
-		-1,  // PrintPP
-		-1,  // Assign
-		-1,  // Cycle
-		-1,  // Condition
-		-1,  // ConditionP
-		-1,  // Expresion
-		-1,  // EP
-		-1,  // Exp
-		-1,  // ExpP
-		-1,  // Termino
-		282, // TP
-		-1,  // Factor
-		-1,  // FactorP
-		-1,  // FactorPP
-		-1,  // CTE
-		-1,  // Funcs
-		-1,  // FuncsP
-		-1,  // W
-		-1,  // WP
-		-1,  // VP
-		-1,  // FCall
-		-1,  // FCallP
-		-1,  // Z
-	},
-	gotoRow{ // S259
-		-1,  // S'
-		-1,  // Programa
-		-1,  // ProgramaP
-		-1,  // FP
-		-1,  // Vars
-		-1,  // VarsP
-		-1,  // X
-		-1,  // Y
-		-1,  // Type
-		-1,  // Body
-		-1,  // BodyP
-		-1,  // Statement
-		-1,  // Print
-		-1,  // PrintP
-		-1,  // PrintPP
-		-1,  // Assign
-		-1,  // Cycle
-		-1,  // Condition
-		-1,  // ConditionP
-		-1,  // Expresion
-		-1,  // EP
-		-1,  // Exp
-		-1,  // ExpP
-		-1,  // Termino
-		283, // TP
-		-1,  // Factor
-		-1,  // FactorP
-		-1,  // FactorPP
-		-1,  // CTE
-		-1,  // Funcs
-		-1,  // FuncsP
-		-1,  // W
-		-1,  // WP
-		-1,  // VP
-		-1,  // FCall
-		-1,  // FCallP
-		-1,  // Z
-	},
 	gotoRow{ // S260
-		-1, // S'
-		-1, // Programa
-		-1, // ProgramaP
-		-1, // FP
-		-1, // Vars
-		-1, // VarsP
-		-1, // X
-		-1, // Y
-		-1, // Type
-		-1, // Body
-		-1, // BodyP
-		-1, // Statement
-		-1, // Print
-		-1, // PrintP
-		-1, // PrintPP
-		-1, // Assign
-		-1, // Cycle
-		-1, // Condition
-		-1, // ConditionP
-		-1, // Expresion
-		-1, // EP
-		-1, // Exp
-		-1, // ExpP
-		-1, // Termino
-		-1, // TP
-		-1, // Factor
-		-1, // FactorP
-		-1, // FactorPP
-		-1, // CTE
-		-1, // Funcs
-		-1, // FuncsP
-		-1, // W
-		-1, // WP
-		-1, // VP
-		-1, // FCall
-		-1, // FCallP
-		-1, // Z
+		-1,  // S'
+		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
+		-1,  // ProgramaP
+		-1,  // FP
+		-1,  // Vars
+		-1,  // VarsP
+		-1,  // X
+		-1,  // Y
+		-1,  // Type
+		-1,  // Body
+		-1,  // BodyP
+		-1,  // Statement
+		-1,  // Print
+		-1,  // PrintP
+		-1,  // PrintPP
+		-1,  // Assign
+		-1,  // Cycle
+		-1,  // Condition
+		-1,  // ConditionP
+		-1,  // Expresion
+		-1,  // EP
+		-1,  // Exp
+		284, // ExpP
+		-1,  // Termino
+		-1,  // TP
+		-1,  // Factor
+		-1,  // FactorP
+		-1,  // FactorPP
+		-1,  // CTE
+		-1,  // Funcs
+		-1,  // FuncsP
+		-1,  // W
+		-1,  // WP
+		-1,  // VP
+		-1,  // FCall
+		-1,  // FCallP
+		-1,  // Z
 	},
 	gotoRow{ // S261
-		-1, // S'
-		-1, // Programa
-		-1, // ProgramaP
-		-1, // FP
-		-1, // Vars
-		-1, // VarsP
-		-1, // X
-		-1, // Y
-		-1, // Type
-		-1, // Body
-		-1, // BodyP
-		-1, // Statement
-		-1, // Print
-		-1, // PrintP
-		-1, // PrintPP
-		-1, // Assign
-		-1, // Cycle
-		-1, // Condition
-		-1, // ConditionP
-		-1, // Expresion
-		-1, // EP
-		-1, // Exp
-		-1, // ExpP
-		-1, // Termino
-		-1, // TP
-		-1, // Factor
-		-1, // FactorP
-		-1, // FactorPP
-		-1, // CTE
-		-1, // Funcs
-		-1, // FuncsP
-		-1, // W
-		-1, // WP
-		-1, // VP
-		-1, // FCall
-		-1, // FCallP
-		-1, // Z
+		-1,  // S'
+		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
+		-1,  // ProgramaP
+		-1,  // FP
+		-1,  // Vars
+		-1,  // VarsP
+		-1,  // X
+		-1,  // Y
+		-1,  // Type
+		-1,  // Body
+		-1,  // BodyP
+		-1,  // Statement
+		-1,  // Print
+		-1,  // PrintP
+		-1,  // PrintPP
+		-1,  // Assign
+		-1,  // Cycle
+		-1,  // Condition
+		-1,  // ConditionP
+		-1,  // Expresion
+		-1,  // EP
+		-1,  // Exp
+		-1,  // ExpP
+		-1,  // Termino
+		285, // TP
+		-1,  // Factor
+		-1,  // FactorP
+		-1,  // FactorPP
+		-1,  // CTE
+		-1,  // Funcs
+		-1,  // FuncsP
+		-1,  // W
+		-1,  // WP
+		-1,  // VP
+		-1,  // FCall
+		-1,  // FCallP
+		-1,  // Z
 	},
 	gotoRow{ // S262
-		-1, // S'
-		-1, // Programa
-		-1, // ProgramaP
-		-1, // FP
-		-1, // Vars
-		-1, // VarsP
-		-1, // X
-		-1, // Y
-		-1, // Type
-		-1, // Body
-		-1, // BodyP
-		-1, // Statement
-		-1, // Print
-		-1, // PrintP
-		-1, // PrintPP
-		-1, // Assign
-		-1, // Cycle
-		-1, // Condition
-		-1, // ConditionP
-		-1, // Expresion
-		-1, // EP
-		-1, // Exp
-		-1, // ExpP
-		-1, // Termino
-		-1, // TP
-		-1, // Factor
-		-1, // FactorP
-		-1, // FactorPP
-		-1, // CTE
-		-1, // Funcs
-		-1, // FuncsP
-		-1, // W
-		-1, // WP
-		-1, // VP
-		-1, // FCall
-		-1, // FCallP
-		-1, // Z
+		-1,  // S'
+		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
+		-1,  // ProgramaP
+		-1,  // FP
+		-1,  // Vars
+		-1,  // VarsP
+		-1,  // X
+		-1,  // Y
+		-1,  // Type
+		-1,  // Body
+		-1,  // BodyP
+		-1,  // Statement
+		-1,  // Print
+		-1,  // PrintP
+		-1,  // PrintPP
+		-1,  // Assign
+		-1,  // Cycle
+		-1,  // Condition
+		-1,  // ConditionP
+		-1,  // Expresion
+		-1,  // EP
+		-1,  // Exp
+		-1,  // ExpP
+		-1,  // Termino
+		286, // TP
+		-1,  // Factor
+		-1,  // FactorP
+		-1,  // FactorPP
+		-1,  // CTE
+		-1,  // Funcs
+		-1,  // FuncsP
+		-1,  // W
+		-1,  // WP
+		-1,  // VP
+		-1,  // FCall
+		-1,  // FCallP
+		-1,  // Z
 	},
 	gotoRow{ // S263
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -10307,125 +10835,133 @@ var gotoTab = gotoTable{
 		-1, // Z
 	},
 	gotoRow{ // S264
-		-1,  // S'
-		-1,  // Programa
-		-1,  // ProgramaP
-		-1,  // FP
-		-1,  // Vars
-		-1,  // VarsP
-		-1,  // X
-		-1,  // Y
-		-1,  // Type
-		-1,  // Body
-		-1,  // BodyP
-		-1,  // Statement
-		-1,  // Print
-		-1,  // PrintP
-		-1,  // PrintPP
-		-1,  // Assign
-		-1,  // Cycle
-		-1,  // Condition
-		-1,  // ConditionP
-		-1,  // Expresion
-		-1,  // EP
-		-1,  // Exp
-		286, // ExpP
-		-1,  // Termino
-		-1,  // TP
-		-1,  // Factor
-		-1,  // FactorP
-		-1,  // FactorPP
-		-1,  // CTE
-		-1,  // Funcs
-		-1,  // FuncsP
-		-1,  // W
-		-1,  // WP
-		-1,  // VP
-		-1,  // FCall
-		-1,  // FCallP
-		-1,  // Z
+		-1, // S'
+		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
+		-1, // ProgramaP
+		-1, // FP
+		-1, // Vars
+		-1, // VarsP
+		-1, // X
+		-1, // Y
+		-1, // Type
+		-1, // Body
+		-1, // BodyP
+		-1, // Statement
+		-1, // Print
+		-1, // PrintP
+		-1, // PrintPP
+		-1, // Assign
+		-1, // Cycle
+		-1, // Condition
+		-1, // ConditionP
+		-1, // Expresion
+		-1, // EP
+		-1, // Exp
+		-1, // ExpP
+		-1, // Termino
+		-1, // TP
+		-1, // Factor
+		-1, // FactorP
+		-1, // FactorPP
+		-1, // CTE
+		-1, // Funcs
+		-1, // FuncsP
+		-1, // W
+		-1, // WP
+		-1, // VP
+		-1, // FCall
+		-1, // FCallP
+		-1, // Z
 	},
 	gotoRow{ // S265
-		-1,  // S'
-		-1,  // Programa
-		-1,  // ProgramaP
-		-1,  // FP
-		-1,  // Vars
-		-1,  // VarsP
-		-1,  // X
-		-1,  // Y
-		-1,  // Type
-		-1,  // Body
-		-1,  // BodyP
-		-1,  // Statement
-		-1,  // Print
-		-1,  // PrintP
-		-1,  // PrintPP
-		-1,  // Assign
-		-1,  // Cycle
-		-1,  // Condition
-		-1,  // ConditionP
-		-1,  // Expresion
-		-1,  // EP
-		-1,  // Exp
-		287, // ExpP
-		-1,  // Termino
-		-1,  // TP
-		-1,  // Factor
-		-1,  // FactorP
-		-1,  // FactorPP
-		-1,  // CTE
-		-1,  // Funcs
-		-1,  // FuncsP
-		-1,  // W
-		-1,  // WP
-		-1,  // VP
-		-1,  // FCall
-		-1,  // FCallP
-		-1,  // Z
+		-1, // S'
+		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
+		-1, // ProgramaP
+		-1, // FP
+		-1, // Vars
+		-1, // VarsP
+		-1, // X
+		-1, // Y
+		-1, // Type
+		-1, // Body
+		-1, // BodyP
+		-1, // Statement
+		-1, // Print
+		-1, // PrintP
+		-1, // PrintPP
+		-1, // Assign
+		-1, // Cycle
+		-1, // Condition
+		-1, // ConditionP
+		-1, // Expresion
+		-1, // EP
+		-1, // Exp
+		-1, // ExpP
+		-1, // Termino
+		-1, // TP
+		-1, // Factor
+		-1, // FactorP
+		-1, // FactorPP
+		-1, // CTE
+		-1, // Funcs
+		-1, // FuncsP
+		-1, // W
+		-1, // WP
+		-1, // VP
+		-1, // FCall
+		-1, // FCallP
+		-1, // Z
 	},
 	gotoRow{ // S266
-		-1,  // S'
-		-1,  // Programa
-		-1,  // ProgramaP
-		-1,  // FP
-		-1,  // Vars
-		-1,  // VarsP
-		-1,  // X
-		-1,  // Y
-		-1,  // Type
-		-1,  // Body
-		-1,  // BodyP
-		-1,  // Statement
-		-1,  // Print
-		-1,  // PrintP
-		-1,  // PrintPP
-		-1,  // Assign
-		-1,  // Cycle
-		-1,  // Condition
-		-1,  // ConditionP
-		-1,  // Expresion
-		-1,  // EP
-		-1,  // Exp
-		-1,  // ExpP
-		-1,  // Termino
-		288, // TP
-		-1,  // Factor
-		-1,  // FactorP
-		-1,  // FactorPP
-		-1,  // CTE
-		-1,  // Funcs
-		-1,  // FuncsP
-		-1,  // W
-		-1,  // WP
-		-1,  // VP
-		-1,  // FCall
-		-1,  // FCallP
-		-1,  // Z
+		-1, // S'
+		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
+		-1, // ProgramaP
+		-1, // FP
+		-1, // Vars
+		-1, // VarsP
+		-1, // X
+		-1, // Y
+		-1, // Type
+		-1, // Body
+		-1, // BodyP
+		-1, // Statement
+		-1, // Print
+		-1, // PrintP
+		-1, // PrintPP
+		-1, // Assign
+		-1, // Cycle
+		-1, // Condition
+		-1, // ConditionP
+		-1, // Expresion
+		-1, // EP
+		-1, // Exp
+		-1, // ExpP
+		-1, // Termino
+		-1, // TP
+		-1, // Factor
+		-1, // FactorP
+		-1, // FactorPP
+		-1, // CTE
+		-1, // Funcs
+		-1, // FuncsP
+		-1, // W
+		-1, // WP
+		-1, // VP
+		-1, // FCall
+		-1, // FCallP
+		-1, // Z
 	},
 	gotoRow{ // S267
 		-1,  // S'
 		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
 		-1,  // ProgramaP
 		-1,  // FP
 		-1,  // Vars
@@ -10446,9 +10982,9 @@ var gotoTab = gotoTable{
 		-1,  // Expresion
 		-1,  // EP
 		-1,  // Exp
-		-1,  // ExpP
+		289, // ExpP
 		-1,  // Termino
-		289, // TP
+		-1,  // TP
 		-1,  // Factor
 		-1,  // FactorP
 		-1,  // FactorPP
@@ -10463,86 +10999,10 @@ var gotoTab = gotoTable{
 		-1,  // Z
 	},
 	gotoRow{ // S268
-		-1, // S'
-		-1, // Programa
-		-1, // ProgramaP
-		-1, // FP
-		-1, // Vars
-		-1, // VarsP
-		-1, // X
-		-1, // Y
-		-1, // Type
-		-1, // Body
-		-1, // BodyP
-		-1, // Statement
-		-1, // Print
-		-1, // PrintP
-		-1, // PrintPP
-		-1, // Assign
-		-1, // Cycle
-		-1, // Condition
-		-1, // ConditionP
-		-1, // Expresion
-		-1, // EP
-		-1, // Exp
-		-1, // ExpP
-		-1, // Termino
-		-1, // TP
-		-1, // Factor
-		-1, // FactorP
-		-1, // FactorPP
-		-1, // CTE
-		-1, // Funcs
-		-1, // FuncsP
-		-1, // W
-		-1, // WP
-		-1, // VP
-		-1, // FCall
-		-1, // FCallP
-		-1, // Z
-	},
-	gotoRow{ // S269
-		-1, // S'
-		-1, // Programa
-		-1, // ProgramaP
-		-1, // FP
-		-1, // Vars
-		-1, // VarsP
-		-1, // X
-		-1, // Y
-		-1, // Type
-		-1, // Body
-		-1, // BodyP
-		-1, // Statement
-		-1, // Print
-		-1, // PrintP
-		-1, // PrintPP
-		-1, // Assign
-		-1, // Cycle
-		-1, // Condition
-		-1, // ConditionP
-		-1, // Expresion
-		-1, // EP
-		-1, // Exp
-		-1, // ExpP
-		-1, // Termino
-		-1, // TP
-		-1, // Factor
-		-1, // FactorP
-		-1, // FactorPP
-		-1, // CTE
-		-1, // Funcs
-		-1, // FuncsP
-		-1, // W
-		-1, // WP
-		-1, // VP
-		-1, // FCall
-		-1, // FCallP
-		-1, // Z
-	},
-	gotoRow{ // S270
 		-1,  // S'
 		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
 		-1,  // ProgramaP
 		-1,  // FP
 		-1,  // Vars
@@ -10551,19 +11011,19 @@ var gotoTab = gotoTable{
 		-1,  // Y
 		-1,  // Type
 		-1,  // Body
-		291, // BodyP
-		25,  // Statement
-		30,  // Print
+		-1,  // BodyP
+		-1,  // Statement
+		-1,  // Print
 		-1,  // PrintP
 		-1,  // PrintPP
-		26,  // Assign
-		28,  // Cycle
-		27,  // Condition
+		-1,  // Assign
+		-1,  // Cycle
+		-1,  // Condition
 		-1,  // ConditionP
 		-1,  // Expresion
 		-1,  // EP
 		-1,  // Exp
-		-1,  // ExpP
+		290, // ExpP
 		-1,  // Termino
 		-1,  // TP
 		-1,  // Factor
@@ -10575,13 +11035,97 @@ var gotoTab = gotoTable{
 		-1,  // W
 		-1,  // WP
 		-1,  // VP
-		29,  // FCall
+		-1,  // FCall
+		-1,  // FCallP
+		-1,  // Z
+	},
+	gotoRow{ // S269
+		-1,  // S'
+		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
+		-1,  // ProgramaP
+		-1,  // FP
+		-1,  // Vars
+		-1,  // VarsP
+		-1,  // X
+		-1,  // Y
+		-1,  // Type
+		-1,  // Body
+		-1,  // BodyP
+		-1,  // Statement
+		-1,  // Print
+		-1,  // PrintP
+		-1,  // PrintPP
+		-1,  // Assign
+		-1,  // Cycle
+		-1,  // Condition
+		-1,  // ConditionP
+		-1,  // Expresion
+		-1,  // EP
+		-1,  // Exp
+		-1,  // ExpP
+		-1,  // Termino
+		291, // TP
+		-1,  // Factor
+		-1,  // FactorP
+		-1,  // FactorPP
+		-1,  // CTE
+		-1,  // Funcs
+		-1,  // FuncsP
+		-1,  // W
+		-1,  // WP
+		-1,  // VP
+		-1,  // FCall
+		-1,  // FCallP
+		-1,  // Z
+	},
+	gotoRow{ // S270
+		-1,  // S'
+		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
+		-1,  // ProgramaP
+		-1,  // FP
+		-1,  // Vars
+		-1,  // VarsP
+		-1,  // X
+		-1,  // Y
+		-1,  // Type
+		-1,  // Body
+		-1,  // BodyP
+		-1,  // Statement
+		-1,  // Print
+		-1,  // PrintP
+		-1,  // PrintPP
+		-1,  // Assign
+		-1,  // Cycle
+		-1,  // Condition
+		-1,  // ConditionP
+		-1,  // Expresion
+		-1,  // EP
+		-1,  // Exp
+		-1,  // ExpP
+		-1,  // Termino
+		292, // TP
+		-1,  // Factor
+		-1,  // FactorP
+		-1,  // FactorPP
+		-1,  // CTE
+		-1,  // Funcs
+		-1,  // FuncsP
+		-1,  // W
+		-1,  // WP
+		-1,  // VP
+		-1,  // FCall
 		-1,  // FCallP
 		-1,  // Z
 	},
 	gotoRow{ // S271
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -10619,47 +11163,10 @@ var gotoTab = gotoTable{
 		-1, // Z
 	},
 	gotoRow{ // S272
-		-1,  // S'
-		-1,  // Programa
-		-1,  // ProgramaP
-		-1,  // FP
-		-1,  // Vars
-		-1,  // VarsP
-		-1,  // X
-		-1,  // Y
-		292, // Type
-		-1,  // Body
-		-1,  // BodyP
-		-1,  // Statement
-		-1,  // Print
-		-1,  // PrintP
-		-1,  // PrintPP
-		-1,  // Assign
-		-1,  // Cycle
-		-1,  // Condition
-		-1,  // ConditionP
-		-1,  // Expresion
-		-1,  // EP
-		-1,  // Exp
-		-1,  // ExpP
-		-1,  // Termino
-		-1,  // TP
-		-1,  // Factor
-		-1,  // FactorP
-		-1,  // FactorPP
-		-1,  // CTE
-		-1,  // Funcs
-		-1,  // FuncsP
-		-1,  // W
-		-1,  // WP
-		-1,  // VP
-		-1,  // FCall
-		-1,  // FCallP
-		-1,  // Z
-	},
-	gotoRow{ // S273
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -10696,9 +11203,52 @@ var gotoTab = gotoTable{
 		-1, // FCallP
 		-1, // Z
 	},
+	gotoRow{ // S273
+		-1,  // S'
+		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
+		-1,  // ProgramaP
+		-1,  // FP
+		-1,  // Vars
+		-1,  // VarsP
+		-1,  // X
+		-1,  // Y
+		-1,  // Type
+		-1,  // Body
+		294, // BodyP
+		27,  // Statement
+		32,  // Print
+		-1,  // PrintP
+		-1,  // PrintPP
+		28,  // Assign
+		30,  // Cycle
+		29,  // Condition
+		-1,  // ConditionP
+		-1,  // Expresion
+		-1,  // EP
+		-1,  // Exp
+		-1,  // ExpP
+		-1,  // Termino
+		-1,  // TP
+		-1,  // Factor
+		-1,  // FactorP
+		-1,  // FactorPP
+		-1,  // CTE
+		-1,  // Funcs
+		-1,  // FuncsP
+		-1,  // W
+		-1,  // WP
+		-1,  // VP
+		31,  // FCall
+		-1,  // FCallP
+		-1,  // Z
+	},
 	gotoRow{ // S274
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -10736,47 +11286,51 @@ var gotoTab = gotoTable{
 		-1, // Z
 	},
 	gotoRow{ // S275
-		-1, // S'
-		-1, // Programa
-		-1, // ProgramaP
-		-1, // FP
-		-1, // Vars
-		-1, // VarsP
-		-1, // X
-		-1, // Y
-		-1, // Type
-		-1, // Body
-		-1, // BodyP
-		-1, // Statement
-		-1, // Print
-		-1, // PrintP
-		-1, // PrintPP
-		-1, // Assign
-		-1, // Cycle
-		-1, // Condition
-		-1, // ConditionP
-		-1, // Expresion
-		-1, // EP
-		-1, // Exp
-		-1, // ExpP
-		-1, // Termino
-		-1, // TP
-		-1, // Factor
-		-1, // FactorP
-		-1, // FactorPP
-		-1, // CTE
-		-1, // Funcs
-		-1, // FuncsP
-		-1, // W
-		-1, // WP
-		-1, // VP
-		-1, // FCall
-		-1, // FCallP
-		-1, // Z
+		-1,  // S'
+		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
+		-1,  // ProgramaP
+		-1,  // FP
+		-1,  // Vars
+		-1,  // VarsP
+		-1,  // X
+		-1,  // Y
+		295, // Type
+		-1,  // Body
+		-1,  // BodyP
+		-1,  // Statement
+		-1,  // Print
+		-1,  // PrintP
+		-1,  // PrintPP
+		-1,  // Assign
+		-1,  // Cycle
+		-1,  // Condition
+		-1,  // ConditionP
+		-1,  // Expresion
+		-1,  // EP
+		-1,  // Exp
+		-1,  // ExpP
+		-1,  // Termino
+		-1,  // TP
+		-1,  // Factor
+		-1,  // FactorP
+		-1,  // FactorPP
+		-1,  // CTE
+		-1,  // Funcs
+		-1,  // FuncsP
+		-1,  // W
+		-1,  // WP
+		-1,  // VP
+		-1,  // FCall
+		-1,  // FCallP
+		-1,  // Z
 	},
 	gotoRow{ // S276
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -10816,6 +11370,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S277
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -10855,6 +11411,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S278
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -10894,6 +11452,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S279
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -10933,6 +11493,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S280
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -10972,6 +11534,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S281
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -11011,6 +11575,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S282
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -11050,6 +11616,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S283
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -11089,6 +11657,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S284
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -11128,6 +11698,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S285
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -11167,6 +11739,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S286
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -11206,6 +11780,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S287
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -11245,6 +11821,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S288
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -11284,6 +11862,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S289
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -11323,6 +11903,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S290
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -11362,6 +11944,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S291
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -11401,6 +11985,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S292
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -11440,6 +12026,8 @@ var gotoTab = gotoTable{
 	gotoRow{ // S293
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -11477,47 +12065,51 @@ var gotoTab = gotoTable{
 		-1, // Z
 	},
 	gotoRow{ // S294
-		-1,  // S'
-		-1,  // Programa
-		-1,  // ProgramaP
-		-1,  // FP
-		-1,  // Vars
-		295, // VarsP
-		-1,  // X
-		296, // Y
-		-1,  // Type
-		-1,  // Body
-		-1,  // BodyP
-		-1,  // Statement
-		-1,  // Print
-		-1,  // PrintP
-		-1,  // PrintPP
-		-1,  // Assign
-		-1,  // Cycle
-		-1,  // Condition
-		-1,  // ConditionP
-		-1,  // Expresion
-		-1,  // EP
-		-1,  // Exp
-		-1,  // ExpP
-		-1,  // Termino
-		-1,  // TP
-		-1,  // Factor
-		-1,  // FactorP
-		-1,  // FactorPP
-		-1,  // CTE
-		-1,  // Funcs
-		-1,  // FuncsP
-		-1,  // W
-		-1,  // WP
-		-1,  // VP
-		-1,  // FCall
-		-1,  // FCallP
-		-1,  // Z
+		-1, // S'
+		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
+		-1, // ProgramaP
+		-1, // FP
+		-1, // Vars
+		-1, // VarsP
+		-1, // X
+		-1, // Y
+		-1, // Type
+		-1, // Body
+		-1, // BodyP
+		-1, // Statement
+		-1, // Print
+		-1, // PrintP
+		-1, // PrintPP
+		-1, // Assign
+		-1, // Cycle
+		-1, // Condition
+		-1, // ConditionP
+		-1, // Expresion
+		-1, // EP
+		-1, // Exp
+		-1, // ExpP
+		-1, // Termino
+		-1, // TP
+		-1, // Factor
+		-1, // FactorP
+		-1, // FactorPP
+		-1, // CTE
+		-1, // Funcs
+		-1, // FuncsP
+		-1, // W
+		-1, // WP
+		-1, // VP
+		-1, // FCall
+		-1, // FCallP
+		-1, // Z
 	},
 	gotoRow{ // S295
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars
@@ -11557,6 +12149,131 @@ var gotoTab = gotoTable{
 	gotoRow{ // S296
 		-1, // S'
 		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
+		-1, // ProgramaP
+		-1, // FP
+		-1, // Vars
+		-1, // VarsP
+		-1, // X
+		-1, // Y
+		-1, // Type
+		-1, // Body
+		-1, // BodyP
+		-1, // Statement
+		-1, // Print
+		-1, // PrintP
+		-1, // PrintPP
+		-1, // Assign
+		-1, // Cycle
+		-1, // Condition
+		-1, // ConditionP
+		-1, // Expresion
+		-1, // EP
+		-1, // Exp
+		-1, // ExpP
+		-1, // Termino
+		-1, // TP
+		-1, // Factor
+		-1, // FactorP
+		-1, // FactorPP
+		-1, // CTE
+		-1, // Funcs
+		-1, // FuncsP
+		-1, // W
+		-1, // WP
+		-1, // VP
+		-1, // FCall
+		-1, // FCallP
+		-1, // Z
+	},
+	gotoRow{ // S297
+		-1,  // S'
+		-1,  // Programa
+		-1,  // ProgramaHeader
+		-1,  // ProgramaMain
+		-1,  // ProgramaP
+		-1,  // FP
+		-1,  // Vars
+		298, // VarsP
+		-1,  // X
+		299, // Y
+		-1,  // Type
+		-1,  // Body
+		-1,  // BodyP
+		-1,  // Statement
+		-1,  // Print
+		-1,  // PrintP
+		-1,  // PrintPP
+		-1,  // Assign
+		-1,  // Cycle
+		-1,  // Condition
+		-1,  // ConditionP
+		-1,  // Expresion
+		-1,  // EP
+		-1,  // Exp
+		-1,  // ExpP
+		-1,  // Termino
+		-1,  // TP
+		-1,  // Factor
+		-1,  // FactorP
+		-1,  // FactorPP
+		-1,  // CTE
+		-1,  // Funcs
+		-1,  // FuncsP
+		-1,  // W
+		-1,  // WP
+		-1,  // VP
+		-1,  // FCall
+		-1,  // FCallP
+		-1,  // Z
+	},
+	gotoRow{ // S298
+		-1, // S'
+		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
+		-1, // ProgramaP
+		-1, // FP
+		-1, // Vars
+		-1, // VarsP
+		-1, // X
+		-1, // Y
+		-1, // Type
+		-1, // Body
+		-1, // BodyP
+		-1, // Statement
+		-1, // Print
+		-1, // PrintP
+		-1, // PrintPP
+		-1, // Assign
+		-1, // Cycle
+		-1, // Condition
+		-1, // ConditionP
+		-1, // Expresion
+		-1, // EP
+		-1, // Exp
+		-1, // ExpP
+		-1, // Termino
+		-1, // TP
+		-1, // Factor
+		-1, // FactorP
+		-1, // FactorPP
+		-1, // CTE
+		-1, // Funcs
+		-1, // FuncsP
+		-1, // W
+		-1, // WP
+		-1, // VP
+		-1, // FCall
+		-1, // FCallP
+		-1, // Z
+	},
+	gotoRow{ // S299
+		-1, // S'
+		-1, // Programa
+		-1, // ProgramaHeader
+		-1, // ProgramaMain
 		-1, // ProgramaP
 		-1, // FP
 		-1, // Vars

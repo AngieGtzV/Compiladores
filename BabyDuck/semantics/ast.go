@@ -3,7 +3,6 @@ package semantics
 import (
 	"errors"
 	"fmt"
-	"strings"
 )
 
 // Attrib es el tipo genérico usado por el parser
@@ -11,8 +10,9 @@ import (
 type Attrib interface{}
 
 type VarInfo struct {
-	Type  string
-	Scope string // global, local, param
+	Type    string
+	Scope   string // global, local, param
+	Address int
 }
 
 type FunctionInfo struct {
@@ -30,6 +30,8 @@ var (
 // ------------------- FUNCIONES PARA FUNCIONES -------------------
 
 func AddFunction(name string, returnType string) error {
+	//fmt.Println("DEBUG AddFunction - agregando función:", name)
+
 	if _, exists := functionDirectory[name]; exists {
 		return fmt.Errorf("funcion '%s' ya declarada", name)
 	}
@@ -43,6 +45,10 @@ func AddFunction(name string, returnType string) error {
 }
 
 func SetCurrentFunction(name string) error {
+	//fmt.Println("DEBUG SetCurrentFunction - currentFunction ahora es:", name)
+	if _, exists := functionDirectory[name]; !exists {
+		return fmt.Errorf("SetCurrentFunction: función '%s' no encontrada", name)
+	}
 	currentFunction = name
 	return nil
 }
@@ -54,11 +60,28 @@ func AddVariable(name string, typeAttrib Attrib) error {
 	if !ok {
 		return errors.New("AddVariable: typeAttrib no es un string")
 	}
-	f := functionDirectory[currentFunction]
+
+	f, ok := functionDirectory[currentFunction]
+	if !ok || f == nil {
+		return fmt.Errorf("AddVariable: función '%s' no encontrada", currentFunction)
+	}
 	if _, exists := f.Vars[name]; exists {
 		return fmt.Errorf("variable '%s' ya declarada en %s", name, currentFunction)
 	}
-	f.Vars[name] = VarInfo{Type: varType, Scope: "local"}
+
+	scope := "local"
+	if currentFunction == "program" || currentFunction == "main" {
+		scope = "global"
+	}
+
+	addr := Memory.Allocate(scope, varType)
+
+	f.Vars[name] = VarInfo{
+		Type:    varType,
+		Scope:   scope,
+		Address: addr,
+	}
+
 	return nil
 }
 
@@ -89,12 +112,6 @@ func LookupVariable(name string) (VarInfo, error) {
 }
 
 // ------------------- EXPRESIONES -------------------
-func GetLiteralType(value string) string {
-	if strings.Contains(value, ".") {
-		return "float"
-	}
-	return "int"
-}
 
 func ArithmeticResultType(leftType, rightType string) (string, error) {
 	if leftType == "float" || rightType == "float" {
@@ -222,7 +239,7 @@ func AppendParamList(newParam Attrib, rest Attrib) (Attrib, error) {
 	return params, nil
 }
 
-// ------------------- DEBUG: IMPRIMIR DIRECTORIOS -------------------
+// ------------ DEBUG: IMPRIMIR DIRECTORIOS y CUÁDRUPLOS -------------------
 
 func PrintSymbolTables() {
 	fmt.Println("========= Directorio de Funciones =========")
@@ -249,5 +266,12 @@ func PrintSymbolTables() {
 		}
 
 		fmt.Println("----------------------------------")
+	}
+}
+
+func PrintQuadruples() {
+	fmt.Println("=== CUÁDRUPLOS GENERADOS ===")
+	for i, q := range Quadruples {
+		fmt.Printf("%03d: (%d, %d, %d, %d)\n", i, q.Op, q.Left, q.Right, q.Result)
 	}
 }

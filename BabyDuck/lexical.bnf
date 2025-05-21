@@ -28,18 +28,18 @@ float: 'f' 'l' 'o' 'a' 't' ;
 id : _letter {_alpha} ;
 
 /* punctuation */
-plus : '+' ;
-minus : '-' ;
-mul : '*' ;
-div : '/' ;
+plus : '+' ; //1
+minus : '-' ;  //2
+mul : '*' ;  //3
+div : '/' ;  //4
+assign : '=' ; //5
 
-lt : '<' ;
-gt : '>' ;
-neq : '!' '=' ;
+lt : '<' ;  //6
+gt : '>' ;  //7
+neq : '!' '=' ;  //8
 
 lbrace : '{' ;
 rbrace : '}' ;
-assign : '=' ;
 lparen : '(' ;
 rparen : ')' ;
 lbracket : '[' ;
@@ -59,24 +59,39 @@ import (
 >>
 
 Programa
-  : program  id semicolon ProgramaP main Body end
+  : ProgramaHeader ProgramaP ProgramaMain end
+  ;
+
+ProgramaHeader
+  : program id semicolon
   <<
         func() (Attrib, error) {
-            tok, ok := X[1].(*token.Token)
-            if !ok {
-                return nil, fmt.Errorf("esperaba *token.Token en X[1], obtuve %T", X[1])
-            }
-            name := string(tok.Lit)
-
-            err := semantics.AddFunction(name, "program")
+            err := semantics.AddFunction("program", "void")
             if err != nil {
                 return nil, err
             }
-            err = semantics.SetCurrentFunction(name)
+            err = semantics.SetCurrentFunction("program")
             if err != nil {
                 return nil, err
             }
             return nil, nil
+        }()
+  >>
+  ;
+
+ProgramaMain
+    : main Body
+    <<
+        func() (Attrib, error) {
+            err := semantics.AddFunction("main", "void")
+            if err != nil {
+                return nil, fmt.Errorf("error al declarar main: %v", err)
+            }
+            err = semantics.SetCurrentFunction("main")
+            if err != nil {
+                return nil, err
+            }
+            return err, nil
         }()
     >>
     ;
@@ -187,7 +202,7 @@ PrintP
 
 PrintPP
     : empty
-    | PrintP
+    | comma PrintP
     ;
 
 Assign
@@ -198,13 +213,28 @@ Assign
             if !ok {
                 return nil, fmt.Errorf("assign: se esperaba *token.Token en X[0], obtuve %T", X[0])
             }
-            varInfo, err := semantics.LookupVariable(string(idTok.Lit))
+            varName := string(idTok.Lit)
+
+            // Obtener variable destino
+            varInfo, err := semantics.LookupVariable(varName)
             if err != nil {
                 return nil, err
             }
-            if !semantics.TypeCompatible(varInfo.Type, X[2]) {
-                return nil, fmt.Errorf("assign: tipos incompatibles en la asignación")
+
+            // Obtener resultado de Expresion
+            exprOp, ok := X[2].(semantics.Operand)
+            if !ok {
+                return nil, fmt.Errorf("assign: se esperaba Operand como resultado de Expresion")
             }
+
+            // Verificar tipos
+            if !semantics.TypeCompatible(varInfo.Type, exprOp.Type) {
+                return nil, fmt.Errorf("assign: tipos incompatibles '%s' y '%s'", varInfo.Type, exprOp.Type)
+            }
+
+            // Generar cuádruplo de asignación (op = 0)
+            semantics.AddQuadruple(0, exprOp.Addr, -1, varInfo.Address)
+
             return nil, nil
         }()
     >>
@@ -230,15 +260,8 @@ Expresion
             if $1 == nil {
                 return $0, nil
             }
-            leftType, ok1 := $0.(string)
-            rightType, ok2 := $1.(string)
-            if !ok1 || !ok2 {
-                return nil, fmt.Errorf("expresion: tipos inválidos")
-            }
-            if !semantics.TypeCompatible(leftType, rightType) {
-                return nil, fmt.Errorf("expresion: tipos incompatibles '%s' y '%s'", leftType, rightType)
-            }
-            return "int", nil // resultado de una comparación
+
+            return $1, nil
         }()
     >>
     ;
@@ -253,19 +276,77 @@ EP
     | gt Exp
     <<
         func() (Attrib, error) {
-            return $1, nil
+            semantics.OperatorStack = append(semantics.OperatorStack, 6) // >
+            
+            // Extraer operandos y tipos
+            right := semantics.PopOperand()
+            left := semantics.PopOperand()
+            rightType := semantics.PopType()
+            leftType := semantics.PopType()
+            op := semantics.PopOperator()
+            
+            if !semantics.TypeCompatible(leftType, rightType) {
+                return nil, fmt.Errorf("EP: tipos incompatibles '%s' y '%s'", leftType, rightType)
+            }
+
+            tempAddr := semantics.Memory.Allocate("temp", "bool")
+            temp := semantics.Operand{Addr: tempAddr, Type: "bool"}
+            semantics.AddQuadruple(op, left.Addr, right.Addr, tempAddr)
+
+            semantics.PushOperand(temp)
+            semantics.PushType("bool")
+
+            return temp, nil
         }()
     >>
     | lt Exp
     <<
         func() (Attrib, error) {
-            return $1, nil
+            semantics.OperatorStack = append(semantics.OperatorStack, 5) // <
+            
+            right := semantics.PopOperand()
+            left := semantics.PopOperand()
+            rightType := semantics.PopType()
+            leftType := semantics.PopType()
+            op := semantics.PopOperator()
+            
+            if !semantics.TypeCompatible(leftType, rightType) {
+                return nil, fmt.Errorf("EP: tipos incompatibles '%s' y '%s'", leftType, rightType)
+            }
+
+            tempAddr := semantics.Memory.Allocate("temp", "bool")
+            temp := semantics.Operand{Addr: tempAddr, Type: "bool"}
+            semantics.AddQuadruple(op, left.Addr, right.Addr, tempAddr)
+
+            semantics.PushOperand(temp)
+            semantics.PushType("bool")
+
+            return temp, nil
         }()
     >>
     | neq Exp
     <<
         func() (Attrib, error) {
-            return $1, nil
+            semantics.OperatorStack = append(semantics.OperatorStack, 7) // !=
+            
+            right := semantics.PopOperand()
+            left := semantics.PopOperand()
+            rightType := semantics.PopType()
+            leftType := semantics.PopType()
+            op := semantics.PopOperator()
+            
+            if !semantics.TypeCompatible(leftType, rightType) {
+                return nil, fmt.Errorf("EP: tipos incompatibles '%s' y '%s'", leftType, rightType)
+            }
+
+            tempAddr := semantics.Memory.Allocate("temp", "bool")
+            temp := semantics.Operand{Addr: tempAddr, Type: "bool"}
+            semantics.AddQuadruple(op, left.Addr, right.Addr, tempAddr)
+
+            semantics.PushOperand(temp)
+            semantics.PushType("bool")
+
+            return temp, nil
         }()
     >>
     ;
@@ -277,7 +358,7 @@ Exp
             if $1 == nil {
                 return $0, nil
             }
-            return semantics.ArithmeticResultType($0.(string), $1.(string))
+            return $1, nil
         }()
     >>
     ;
@@ -292,19 +373,74 @@ ExpP
     | plus Termino ExpP
     <<
         func() (Attrib, error) {
-            if $2 == nil {
-                return $1, nil
+            semantics.OperatorStack = append(semantics.OperatorStack, 1)
+            right := semantics.OperandStack[len(semantics.OperandStack)-1]
+            rightType := semantics.TypeStack[len(semantics.TypeStack)-1]
+            semantics.OperandStack = semantics.OperandStack[:len(semantics.OperandStack)-1]
+            semantics.TypeStack = semantics.TypeStack[:len(semantics.TypeStack)-1]
+
+            left := semantics.OperandStack[len(semantics.OperandStack)-1]
+            leftType := semantics.TypeStack[len(semantics.TypeStack)-1]
+            semantics.OperandStack = semantics.OperandStack[:len(semantics.OperandStack)-1]
+            semantics.TypeStack = semantics.TypeStack[:len(semantics.TypeStack)-1]
+
+            if !semantics.TypeCompatible(leftType, rightType) {
+                return nil, fmt.Errorf("ExpP: tipos incompatibles para suma: %s y %s", leftType, rightType)
             }
-            return semantics.ArithmeticResultType($1.(string), $2.(string))
+
+            op := semantics.OperatorStack[len(semantics.OperatorStack)-1]
+            semantics.OperatorStack = semantics.OperatorStack[:len(semantics.OperatorStack)-1]
+
+            resultType, err := semantics.ArithmeticResultType(leftType, rightType)
+            if err != nil {
+                return nil, err
+            }
+
+            resultAddr := semantics.Memory.Allocate("temp", resultType)
+
+            semantics.AddQuadruple(op, left.Addr, right.Addr, resultAddr)
+
+            semantics.OperandStack = append(semantics.OperandStack, semantics.Operand{Addr: resultAddr})
+            semantics.TypeStack = append(semantics.TypeStack, resultType)
+
+            return semantics.Operand{Addr: resultAddr, Type: resultType}, nil
         }()
     >>
     | minus Termino ExpP
     <<
         func() (Attrib, error) {
-            if $2 == nil {
-                return $1, nil
+            semantics.OperatorStack = append(semantics.OperatorStack, 2)
+
+            right := semantics.OperandStack[len(semantics.OperandStack)-1]
+            rightType := semantics.TypeStack[len(semantics.TypeStack)-1]
+            semantics.OperandStack = semantics.OperandStack[:len(semantics.OperandStack)-1]
+            semantics.TypeStack = semantics.TypeStack[:len(semantics.TypeStack)-1]
+
+            left := semantics.OperandStack[len(semantics.OperandStack)-1]
+            leftType := semantics.TypeStack[len(semantics.TypeStack)-1]
+            semantics.OperandStack = semantics.OperandStack[:len(semantics.OperandStack)-1]
+            semantics.TypeStack = semantics.TypeStack[:len(semantics.TypeStack)-1]
+
+            if !semantics.TypeCompatible(leftType, rightType) {
+                return nil, fmt.Errorf("ExpP: tipos incompatibles para resta: %s y %s", leftType, rightType)
             }
-            return semantics.ArithmeticResultType($1.(string), $2.(string))
+
+            op := semantics.OperatorStack[len(semantics.OperatorStack)-1]
+            semantics.OperatorStack = semantics.OperatorStack[:len(semantics.OperatorStack)-1]
+
+            resultType, err := semantics.ArithmeticResultType(leftType, rightType)
+            if err != nil {
+                return nil, err
+            }
+
+            resultAddr := semantics.Memory.Allocate("temp", resultType)
+
+            semantics.AddQuadruple(op, left.Addr, right.Addr, resultAddr)
+
+            semantics.OperandStack = append(semantics.OperandStack, semantics.Operand{Addr: resultAddr})
+            semantics.TypeStack = append(semantics.TypeStack, resultType)
+
+            return semantics.Operand{Addr: resultAddr, Type: resultType}, nil
         }()
     >>
     ;
@@ -316,7 +452,7 @@ Termino
             if $1 == nil {
                 return $0, nil
             }
-            return semantics.ArithmeticResultType($0.(string), $1.(string))
+           return $1, nil
         }()
     >>
     ;
@@ -331,19 +467,92 @@ TP
     | mul Factor TP
     <<
         func() (Attrib, error) {
+            semantics.OperatorStack = append(semantics.OperatorStack, 3)
             if $2 == nil {
                 return $1, nil
             }
-            return semantics.ArithmeticResultType($1.(string), $2.(string))
+            // Sacar operandos y tipos
+            right := semantics.OperandStack[len(semantics.OperandStack)-1]
+            semantics.OperandStack = semantics.OperandStack[:len(semantics.OperandStack)-1]
+            rightType := semantics.TypeStack[len(semantics.TypeStack)-1]
+            semantics.TypeStack = semantics.TypeStack[:len(semantics.TypeStack)-1]
+
+            left := semantics.OperandStack[len(semantics.OperandStack)-1]
+            semantics.OperandStack = semantics.OperandStack[:len(semantics.OperandStack)-1]
+            leftType := semantics.TypeStack[len(semantics.TypeStack)-1]
+            semantics.TypeStack = semantics.TypeStack[:len(semantics.TypeStack)-1]
+
+            // Verificar compatibilidad
+            if !semantics.TypeCompatible(leftType, rightType) {
+                return nil, fmt.Errorf("TP: tipos incompatibles '%s' y '%s'", leftType, rightType)
+            }
+
+            resultType, err := semantics.ArithmeticResultType(leftType, rightType)
+            if err != nil {
+                return nil, err
+            }
+
+            // Obtener operador
+            op := semantics.OperatorStack[len(semantics.OperatorStack)-1]
+            semantics.OperatorStack = semantics.OperatorStack[:len(semantics.OperatorStack)-1]
+
+            // Asignar dirección al resultado
+            resultAddr := semantics.Memory.Allocate("temp", resultType)
+
+            // Crear cuádruplo
+            semantics.AddQuadruple(op, left.Addr, right.Addr, resultAddr)
+
+            // Empujar nuevo resultado a los stacks
+            semantics.OperandStack = append(semantics.OperandStack, semantics.Operand{Addr: resultAddr})
+            semantics.TypeStack = append(semantics.TypeStack, resultType)
+
+            return semantics.Operand{Addr: resultAddr, Type: resultType}, nil
         }()
     >>
     | div Factor TP
     <<
         func() (Attrib, error) {
+            semantics.OperatorStack = append(semantics.OperatorStack, 4)
             if $2 == nil {
                 return $1, nil
             }
-            return semantics.ArithmeticResultType($1.(string), $2.(string))
+
+            // Sacar operandos y tipos
+            right := semantics.OperandStack[len(semantics.OperandStack)-1]
+            semantics.OperandStack = semantics.OperandStack[:len(semantics.OperandStack)-1]
+            rightType := semantics.TypeStack[len(semantics.TypeStack)-1]
+            semantics.TypeStack = semantics.TypeStack[:len(semantics.TypeStack)-1]
+
+            left := semantics.OperandStack[len(semantics.OperandStack)-1]
+            semantics.OperandStack = semantics.OperandStack[:len(semantics.OperandStack)-1]
+            leftType := semantics.TypeStack[len(semantics.TypeStack)-1]
+            semantics.TypeStack = semantics.TypeStack[:len(semantics.TypeStack)-1]
+
+            // Verificar compatibilidad
+            if !semantics.TypeCompatible(leftType, rightType) {
+                return nil, fmt.Errorf("TP: tipos incompatibles '%s' y '%s'", leftType, rightType)
+            }
+
+            resultType, err := semantics.ArithmeticResultType(leftType, rightType)
+            if err != nil {
+                return nil, err
+            }
+
+            // Obtener operador
+            op := semantics.OperatorStack[len(semantics.OperatorStack)-1]
+            semantics.OperatorStack = semantics.OperatorStack[:len(semantics.OperatorStack)-1]
+
+            // Asignar dirección al resultado
+            resultAddr := semantics.Memory.Allocate("temp", resultType)
+
+            // Crear cuádruplo
+            semantics.AddQuadruple(op, left.Addr, right.Addr, resultAddr)
+
+            // Empujar nuevo resultado a los stacks
+            semantics.OperandStack = append(semantics.OperandStack, semantics.Operand{Addr: resultAddr})
+            semantics.TypeStack = append(semantics.TypeStack, resultType)
+
+            return semantics.Operand{Addr: resultAddr, Type: resultType}, nil
         }()
     >>
     ;
@@ -358,8 +567,34 @@ Factor
     | FactorP FactorPP
     <<
         func() (Attrib, error) {
-            // Puedes ignorar el signo para efectos de tipo
-            return $1, nil
+            op, ok := $0.(int)
+            operand, ok2 := $1.(semantics.Operand)
+            if !ok2 {
+                return nil, fmt.Errorf("factor: operando inválido")
+            }
+
+            if !ok {
+                // No hubo + o -, simplemente devuelve el operando tal cual
+                return operand, nil
+            }
+
+            // Solo tiene sentido aplicar cuádruplo si fue '-'
+            if op == 2 { // negativo unario
+                resultAddr := semantics.Memory.Allocate("temp", operand.Type)
+                semantics.AddQuadruple(op, operand.Addr, -1, resultAddr)
+
+                newOperand := semantics.Operand{
+                    Addr: resultAddr,
+                    Type: operand.Type,
+                }
+                semantics.PushOperand(newOperand)
+
+                return newOperand, nil
+            }
+
+            // Si es un + unario, no hace nada
+            semantics.PushOperand(operand)
+            return operand, nil
         }()
     >>
     ;
@@ -374,13 +609,13 @@ FactorP
     | plus
     <<
         func() (Attrib, error) {
-            return nil, nil // signo no cambia tipo
+            return 1, nil
         }()
     >>
     | minus
     <<
         func() (Attrib, error) {
-            return nil, nil // signo no cambia tipo
+            return 2, nil
         }()
     >>
     ;
@@ -389,21 +624,36 @@ FactorPP
     : id 
     <<
         func() (Attrib, error) {
-            name, ok := $0.(string)
+            tok, ok := $0.(*token.Token)
             if !ok {
-                return nil, fmt.Errorf("FactorPP: id no es string")
+                return nil, fmt.Errorf("factorPP: id inválido")
             }
+            name := string(tok.Lit)
             v, err := semantics.LookupVariable(name)
             if err != nil {
                 return nil, err
             }
-            return v.Type, nil
+            op := semantics.Operand{
+                Type:  v.Type,
+                Addr:  v.Address,
+                Value: name,
+            }
+
+            semantics.PushOperand(op)
+
+            return op, nil
         }()
     >>
     | CTE
      <<
         func() (Attrib, error) {
-            return $0, nil // ya es el tipo ("int" o "float")
+            op, ok := $0.(semantics.Operand)
+            if !ok {
+                return nil, fmt.Errorf("factorPP: CTE no es Operand")
+            }
+            semantics.PushOperand(op)
+
+            return op, nil
         }()
     >>
     ;
@@ -417,7 +667,15 @@ CTE
                 return nil, fmt.Errorf("cte inválida (entero)")
             }
             lit := string(tok.Lit)
-            return semantics.GetLiteralType(lit), nil
+            typ := "int"
+
+            addr := semantics.ConstTab.GetOrAddConstant(lit, typ)
+
+            return semantics.Operand{
+                Type:  typ,
+                Value: lit,
+                Addr:  addr,
+            }, nil
         }()
     >>
     | nums period nums
@@ -429,7 +687,15 @@ CTE
                 return nil, fmt.Errorf("cte inválida (flotante)")
             }
             full := string(intTok.Lit) + "." + string(fracTok.Lit)
-            return semantics.GetLiteralType(full), nil
+            typ := "float"
+
+            addr := semantics.ConstTab.GetOrAddConstant(full, typ)
+
+            return semantics.Operand{
+                Type:  typ,
+                Value: full,
+                Addr:  addr,
+            }, nil
         }()
     >>
     ;

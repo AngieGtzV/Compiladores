@@ -3,6 +3,7 @@ package main
 import (
 	"BabyDuck/lexer"
 	"BabyDuck/parser"
+	"BabyDuck/semantics"
 	"testing"
 )
 
@@ -24,10 +25,10 @@ var testData = []*TI{
 	},
 	{
 		src: `
-			program test2;
+			program test;
 			var x: int;
 			main {
-				x = 10;
+				x = 10 + 2;
 			}
 			end
 		`,
@@ -35,10 +36,10 @@ var testData = []*TI{
 	},
 	{
 		src: `
-			program test3;
+			program test;
 			var x, y: float;
 			main {
-				x = 1.5 + 2.0;
+				x = 1.5 + y;
 			}
 			end
 		`,
@@ -46,7 +47,7 @@ var testData = []*TI{
 	},
 	/*{
 		src: `
-			program test4;
+			program test;
 			main {
 				print("Hola!");
 			}
@@ -103,7 +104,7 @@ var testData = []*TI{
 			end
 		`,
 		valid: true,
-	},
+	},*/
 	{
 		src: `
 			program test8;
@@ -111,7 +112,7 @@ var testData = []*TI{
 				{print("func");}
 			];
 			void second() [ var x: int;
-				{print("func");}
+				{x = 9;}
 			];
 			main {
 				foo();
@@ -120,7 +121,7 @@ var testData = []*TI{
 			end
 		`,
 		valid: true,
-	},*/
+	},
 
 	/*//Casos inválidos
 	{
@@ -239,11 +240,18 @@ var testData = []*TI{
 }
 
 func Test1(t *testing.T) {
+	mm := semantics.NewMemoryManager()
+	semantics.Memory = mm
+	semantics.ConstTab = semantics.NewConstTable(mm)
+
 	p := parser.NewParser()
 	pass := true
 	for _, ts := range testData {
+		semantics.InitGlobals()
 		s := lexer.NewLexer([]byte(ts.src))
+
 		_, err := p.Parse(s)
+		semantics.PrintQuadruples()
 
 		if (err == nil) != ts.valid {
 			pass = false
