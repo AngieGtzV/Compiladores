@@ -68,7 +68,7 @@ var testData = []*TI{
 				end
 			`,
 			valid: true,
-		},*/
+		},
 	{
 		src: `
 			program test;
@@ -77,14 +77,25 @@ var testData = []*TI{
 				if (x < 10) {
 					x = x + 1;
 				} else {
-					x = x - 1;
+					x = x - 2;
 				};
 			}
 			end
 		`,
 		valid: true,
 	},
-	/*{
+	{
+		src: `
+			program test;
+			main {
+				print("Si");
+				print("No");
+			}
+			end
+		`,
+		valid: true,
+	},*/
+	{
 		src: `
 			program test6;
 			main {
@@ -92,13 +103,13 @@ var testData = []*TI{
 					print("Si");
 				} else {
 					print("No");
-				}
+				};
 			}
 			end
 		`,
 		valid: true,
 	},
-	{
+	/*{
 		src: `
 			program test7;
 			main {

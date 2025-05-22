@@ -54,8 +54,9 @@ const (
 	TempBoolStart  = 7000
 
 	// Constantes
-	ConstIntStart   = 8000
-	ConstFloatStart = 9000
+	ConstIntStart    = 8000
+	ConstFloatStart  = 9000
+	ConstStringStart = 10000
 )
 
 // ------------------- FUNCIONES STACK  -------------------
@@ -111,6 +112,7 @@ type MemoryManager struct {
 	localInt, localFloat         int
 	tempInt, tempFloat, tempBool int
 	constInt, constFloat         int
+	constString                  int
 }
 
 func NewMemoryManager() *MemoryManager {
@@ -124,6 +126,7 @@ func NewMemoryManager() *MemoryManager {
 		tempBool:    TempBoolStart,
 		constInt:    ConstIntStart,
 		constFloat:  ConstFloatStart,
+		constString: ConstStringStart,
 	}
 }
 
@@ -172,6 +175,10 @@ func (mm *MemoryManager) Allocate(segment, typ string) int {
 			addr := mm.constFloat
 			mm.constFloat++
 			return addr
+		} else if typ == "string" {
+			addr := mm.constString
+			mm.constString++
+			return addr
 		}
 	}
 	panic(fmt.Sprintf("Allocate: segmento o tipo inválido (%s, %s)", segment, typ))
@@ -199,6 +206,10 @@ func (ct *ConstTable) GetOrAddConstant(lit string, typ string) int {
 	}
 	addr := ct.mm.Allocate("const", typ)
 	ct.table[lit] = addr
+	fmt.Println("=== Tabla de Constantes ===")
+	for lit, addr := range ct.table {
+		fmt.Printf("Constante: %q -> Dirección: %d\n", lit, addr)
+	}
 	return addr
 }
 

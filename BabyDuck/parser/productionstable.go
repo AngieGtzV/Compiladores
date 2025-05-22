@@ -376,33 +376,67 @@ var productionsTable = ProdTab{
 		},
 	},
 	ProdTabEntry{
-		String: `PrintP : string_literal PrintPP	<<  >>`,
+		String: `PrintP : string_literal PrintPP	<< func() (Attrib, error) {
+            tok, ok := X[0].(*token.Token)
+            if !ok {
+                return nil, fmt.Errorf("print: cte inválida (string)")
+            }
+            lit := string(tok.Lit)
+
+            addr := semantics.ConstTab.GetOrAddConstant(lit, "string")
+
+            // Generar cuádruplo de PRINT : 11
+            semantics.AddQuadruple(11, addr, -1, -1)
+
+            return nil, nil
+        }() >>`,
 		Id:         "PrintP",
 		NTType:     15,
 		Index:      25,
 		NumSymbols: 2,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
-			return X[0], nil
+			return func() (Attrib, error) {
+            tok, ok := X[0].(*token.Token)
+            if !ok {
+                return nil, fmt.Errorf("print: cte inválida (string)")
+            }
+            lit := string(tok.Lit)
+
+            addr := semantics.ConstTab.GetOrAddConstant(lit, "string")
+
+            // Generar cuádruplo de PRINT : 11
+            semantics.AddQuadruple(11, addr, -1, -1)
+
+            return nil, nil
+        }()
 		},
 	},
 	ProdTabEntry{
-		String: `PrintPP : empty	<<  >>`,
+		String: `PrintPP : empty	<< func() (Attrib, error) {
+            return nil, nil
+        }() >>`,
 		Id:         "PrintPP",
 		NTType:     16,
 		Index:      26,
 		NumSymbols: 0,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
-			return nil, nil
+			return func() (Attrib, error) {
+            return nil, nil
+        }()
 		},
 	},
 	ProdTabEntry{
-		String: `PrintPP : comma PrintP	<<  >>`,
+		String: `PrintPP : comma PrintP	<< func() (Attrib, error) {
+            return nil, nil
+        }() >>`,
 		Id:         "PrintPP",
 		NTType:     16,
 		Index:      27,
 		NumSymbols: 2,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
-			return X[0], nil
+			return func() (Attrib, error) {
+            return nil, nil
+        }()
 		},
 	},
 	ProdTabEntry{
@@ -597,8 +631,6 @@ var productionsTable = ProdTab{
 	},
 	ProdTabEntry{
 		String: `ConditionStart : if lparen Expresion rparen	<< func() (Attrib, error) {
-            fmt.Println("DEBUG ConditionStart")
-
             topType := semantics.PopType()
             if topType != "bool" {
                 return nil, fmt.Errorf("condición de 'if' no es booleana (tipo fue '%s')", topType)
@@ -618,8 +650,6 @@ var productionsTable = ProdTab{
 		NumSymbols: 4,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return func() (Attrib, error) {
-            fmt.Println("DEBUG ConditionStart")
-
             topType := semantics.PopType()
             if topType != "bool" {
                 return nil, fmt.Errorf("condición de 'if' no es booleana (tipo fue '%s')", topType)
@@ -637,8 +667,6 @@ var productionsTable = ProdTab{
 	},
 	ProdTabEntry{
 		String: `ConditionP : empty	<< func() (Attrib, error) {
-            fmt.Println("DEBUG ConditionP (sin else)")
-
             falseJump, err := semantics.PopJump()
             if err != nil {
                 return nil, err
@@ -653,8 +681,6 @@ var productionsTable = ProdTab{
 		NumSymbols: 0,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return func() (Attrib, error) {
-            fmt.Println("DEBUG ConditionP (sin else)")
-
             falseJump, err := semantics.PopJump()
             if err != nil {
                 return nil, err
@@ -667,8 +693,6 @@ var productionsTable = ProdTab{
 	},
 	ProdTabEntry{
 		String: `ConditionP : else Body	<< func() (Attrib, error) {
-            fmt.Println("DEBUG ConditionP (con else)")
-
             // 8 : GOTO que saltará después del else
             semantics.AddQuadruple(8, -1, -1, -1)
             endJump := len(semantics.Quadruples) - 1
@@ -691,8 +715,6 @@ var productionsTable = ProdTab{
 		NumSymbols: 2,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return func() (Attrib, error) {
-            fmt.Println("DEBUG ConditionP (con else)")
-
             // 8 : GOTO que saltará después del else
             semantics.AddQuadruple(8, -1, -1, -1)
             endJump := len(semantics.Quadruples) - 1

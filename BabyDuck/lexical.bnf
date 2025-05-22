@@ -198,11 +198,37 @@ Print
 
 PrintP
     : string_literal PrintPP
+    <<
+        func() (Attrib, error) {
+            tok, ok := $0.(*token.Token)
+            if !ok {
+                return nil, fmt.Errorf("print: cte inválida (string)")
+            }
+            lit := string(tok.Lit)
+
+            addr := semantics.ConstTab.GetOrAddConstant(lit, "string")
+
+            // Generar cuádruplo de PRINT : 11
+            semantics.AddQuadruple(11, addr, -1, -1)
+
+            return nil, nil
+        }()
+    >>
     ;
 
 PrintPP
     : empty
+     <<
+        func() (Attrib, error) {
+            return nil, nil
+        }()
+    >>
     | comma PrintP
+    <<
+        func() (Attrib, error) {
+            return nil, nil
+        }()
+    >>
     ;
 
 Assign
@@ -245,7 +271,7 @@ Cycle
     <<
         func() (Attrib, error) {
             if len(semantics.JumpStack) < 2 {
-                return nil, fmt.Errorf("Cycle: JumpStack no tiene suficientes elementos")
+                return nil, fmt.Errorf("cycle: JumpStack no tiene suficientes elementos")
             }
 
             end := len(semantics.Quadruples)
@@ -309,8 +335,6 @@ ConditionStart
     : if lparen Expresion rparen
     <<
         func() (Attrib, error) {
-            fmt.Println("DEBUG ConditionStart")
-
             topType := semantics.PopType()
             if topType != "bool" {
                 return nil, fmt.Errorf("condición de 'if' no es booleana (tipo fue '%s')", topType)
@@ -331,8 +355,6 @@ ConditionP
     : empty
     <<
         func() (Attrib, error) {
-            fmt.Println("DEBUG ConditionP (sin else)")
-
             falseJump, err := semantics.PopJump()
             if err != nil {
                 return nil, err
@@ -345,8 +367,6 @@ ConditionP
     | else Body
     <<
         func() (Attrib, error) {
-            fmt.Println("DEBUG ConditionP (con else)")
-
             // 8 : GOTO que saltará después del else
             semantics.AddQuadruple(8, -1, -1, -1)
             endJump := len(semantics.Quadruples) - 1
