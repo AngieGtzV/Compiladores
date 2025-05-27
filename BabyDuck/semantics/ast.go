@@ -74,7 +74,7 @@ func AddVariable(name string, typeAttrib Attrib) error {
 		scope = "global"
 	}
 
-	addr := Memory.Allocate(scope, varType)
+	addr := Memory.Direccionar(scope, varType)
 
 	f.Vars[name] = VarInfo{
 		Type:    varType,

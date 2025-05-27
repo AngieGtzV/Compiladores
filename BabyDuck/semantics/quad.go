@@ -1,9 +1,11 @@
 package semantics
 
 //"errors"
-import "fmt"
-
-//"strings"
+import (
+	"fmt"
+	"strconv"
+	"strings"
+)
 
 var (
 	FunctionDirectory map[string]*FunctionInfo
@@ -41,22 +43,22 @@ type Operand struct {
 
 const (
 	// Globales
-	GlobalIntStart   = 1000
-	GlobalFloatStart = 2000
+	GlobalIntInicio   = 1000
+	GlobalFloatInicio = 2000
 
 	// Locales
-	LocalIntStart   = 3000
-	LocalFloatStart = 4000
+	LocalIntInicio   = 3000
+	LocalFloatInicio = 4000
 
 	// Temporales
-	TempIntStart   = 5000
-	TempFloatStart = 6000
-	TempBoolStart  = 7000
+	TempIntInicio   = 5000
+	TempFloatInicio = 6000
+	TempBoolInicio  = 7000
 
 	// Constantes
-	ConstIntStart    = 8000
-	ConstFloatStart  = 9000
-	ConstStringStart = 10000
+	ConstIntInicio    = 8000
+	ConstFloatInicio  = 9000
+	ConstStringInicio = 10000
 )
 
 // ------------------- FUNCIONES STACK  -------------------
@@ -105,9 +107,9 @@ func PopJump() (int, error) {
 
 // ------------------- DIRECCIONES VIRTUALES -------------------
 
-var Memory = NewMemoryManager()
+var Memory = NewDirecVirtuales()
 
-type MemoryManager struct {
+type DirecVirtuales struct {
 	globalInt, globalFloat       int
 	localInt, localFloat         int
 	tempInt, tempFloat, tempBool int
@@ -115,22 +117,22 @@ type MemoryManager struct {
 	constString                  int
 }
 
-func NewMemoryManager() *MemoryManager {
-	return &MemoryManager{
-		globalInt:   GlobalIntStart,
-		globalFloat: GlobalFloatStart,
-		localInt:    LocalIntStart,
-		localFloat:  LocalFloatStart,
-		tempInt:     TempIntStart,
-		tempFloat:   TempFloatStart,
-		tempBool:    TempBoolStart,
-		constInt:    ConstIntStart,
-		constFloat:  ConstFloatStart,
-		constString: ConstStringStart,
+func NewDirecVirtuales() *DirecVirtuales {
+	return &DirecVirtuales{
+		globalInt:   GlobalIntInicio,
+		globalFloat: GlobalFloatInicio,
+		localInt:    LocalIntInicio,
+		localFloat:  LocalFloatInicio,
+		tempInt:     TempIntInicio,
+		tempFloat:   TempFloatInicio,
+		tempBool:    TempBoolInicio,
+		constInt:    ConstIntInicio,
+		constFloat:  ConstFloatInicio,
+		constString: ConstStringInicio,
 	}
 }
 
-func (mm *MemoryManager) Allocate(segment, typ string) int {
+func (mm *DirecVirtuales) Direccionar(segment, typ string) int {
 	switch segment {
 	case "global":
 		if typ == "int" {
@@ -181,7 +183,7 @@ func (mm *MemoryManager) Allocate(segment, typ string) int {
 			return addr
 		}
 	}
-	panic(fmt.Sprintf("Allocate: segmento o tipo inválido (%s, %s)", segment, typ))
+	panic(fmt.Sprintf("Direccionar: segmento o tipo inválido (%s, %s)", segment, typ))
 }
 
 // ------------------- Tabla de Constantes -------------------
@@ -190,10 +192,10 @@ var ConstTab *ConstTable
 
 type ConstTable struct {
 	table map[string]int
-	mm    *MemoryManager
+	mm    *DirecVirtuales
 }
 
-func NewConstTable(mm *MemoryManager) *ConstTable {
+func NewConstTable(mm *DirecVirtuales) *ConstTable {
 	return &ConstTable{
 		table: make(map[string]int),
 		mm:    mm,
@@ -204,13 +206,33 @@ func (ct *ConstTable) GetOrAddConstant(lit string, typ string) int {
 	if addr, ok := ct.table[lit]; ok {
 		return addr
 	}
-	addr := ct.mm.Allocate("const", typ)
+	addr := ct.mm.Direccionar("const", typ)
 	ct.table[lit] = addr
 	fmt.Println("=== Tabla de Constantes ===")
 	for lit, addr := range ct.table {
 		fmt.Printf("Constante: %q -> Dirección: %d\n", lit, addr)
 	}
 	return addr
+}
+
+// Devuelve un mapa que asocia direcciones virtuales con sus valores reales parseados
+func (ct *ConstTable) GetAddrValueMap() map[int]interface{} {
+	result := make(map[int]interface{})
+	for lit, addr := range ct.table {
+		// Determinar tipo del literal
+		if strings.HasPrefix(lit, "\"") { // string
+			result[addr] = strings.Trim(lit, "\"")
+		} else if strings.Contains(lit, ".") { // float
+			if f, err := strconv.ParseFloat(lit, 64); err == nil {
+				result[addr] = f
+			}
+		} else { // int
+			if i, err := strconv.Atoi(lit); err == nil {
+				result[addr] = i
+			}
+		}
+	}
+	return result
 }
 
 // ------------------------ CUÁDRUPLOS -------------------------

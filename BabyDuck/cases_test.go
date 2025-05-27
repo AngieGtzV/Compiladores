@@ -2,8 +2,10 @@ package main
 
 import (
 	"BabyDuck/lexer"
+	"BabyDuck/maquinavirtual"
 	"BabyDuck/parser"
 	"BabyDuck/semantics"
+	"fmt"
 	"testing"
 )
 
@@ -15,26 +17,27 @@ type TI struct {
 var testData = []*TI{
 	//Casos válidos simples
 	/*{
-			src: `
-				program test;
-				main {
-				}
-				end
-			`,
-			valid: true,
-		},
-		{
-			src: `
+		src: `
+			program test;
+			main {
+			}
+			end
+		`,
+		valid: true,
+	},*/
+	{
+		src: `
 				program test;
 				var x: int;
 				main {
-					x = 10 + 2;
+					x = 10 / 2;
+					print(x);
 				}
 				end
 			`,
-			valid: true,
-		},
-		{
+		valid: true,
+	},
+	/*{
 			src: `
 				program test;
 				var x, y: float;
@@ -94,7 +97,7 @@ var testData = []*TI{
 			end
 		`,
 		valid: true,
-	},*/
+	},
 	{
 		src: `
 			program test6;
@@ -109,7 +112,7 @@ var testData = []*TI{
 		`,
 		valid: true,
 	},
-	/*{
+	{
 		src: `
 			program test7;
 			main {
@@ -269,7 +272,7 @@ var testData = []*TI{
 }
 
 func Test1(t *testing.T) {
-	mm := semantics.NewMemoryManager()
+	mm := semantics.NewDirecVirtuales()
 	semantics.Memory = mm
 	semantics.ConstTab = semantics.NewConstTable(mm)
 
@@ -281,6 +284,10 @@ func Test1(t *testing.T) {
 
 		_, err := p.Parse(s)
 		semantics.PrintQuadruples()
+
+		fmt.Println("=== MÁQUINA VIRTUAL ===")
+		mv := maquinavirtual.NuevaMV(semantics.Quadruples, semantics.ConstTab.GetAddrValueMap())
+		mv.Run()
 
 		if (err == nil) != ts.valid {
 			pass = false

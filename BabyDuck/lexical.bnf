@@ -214,6 +214,18 @@ PrintP
             return nil, nil
         }()
     >>
+    | Expresion PrintPP
+    <<
+       func() (Attrib, error) {
+            expr, ok := $0.(semantics.Operand)
+            if !ok {
+                return nil, fmt.Errorf("print: expresión inválida")
+            }
+
+            semantics.AddQuadruple(11, expr.Addr, -1, -1)
+            return nil, nil
+        }() 
+    >>
     ;
 
 PrintPP
@@ -422,7 +434,7 @@ EP
                 return nil, fmt.Errorf("EP: tipos incompatibles '%s' y '%s'", leftType, rightType)
             }
 
-            tempAddr := semantics.Memory.Allocate("temp", "bool")
+            tempAddr := semantics.Memory.Direccionar("temp", "bool")
             temp := semantics.Operand{Addr: tempAddr, Type: "bool"}
             semantics.AddQuadruple(op, left.Addr, right.Addr, tempAddr)
 
@@ -447,7 +459,7 @@ EP
                 return nil, fmt.Errorf("EP: tipos incompatibles '%s' y '%s'", leftType, rightType)
             }
 
-            tempAddr := semantics.Memory.Allocate("temp", "bool")
+            tempAddr := semantics.Memory.Direccionar("temp", "bool")
             temp := semantics.Operand{Addr: tempAddr, Type: "bool"}
             semantics.AddQuadruple(op, left.Addr, right.Addr, tempAddr)
 
@@ -472,7 +484,7 @@ EP
                 return nil, fmt.Errorf("EP: tipos incompatibles '%s' y '%s'", leftType, rightType)
             }
 
-            tempAddr := semantics.Memory.Allocate("temp", "bool")
+            tempAddr := semantics.Memory.Direccionar("temp", "bool")
             temp := semantics.Operand{Addr: tempAddr, Type: "bool"}
             semantics.AddQuadruple(op, left.Addr, right.Addr, tempAddr)
 
@@ -529,7 +541,7 @@ ExpP
                 return nil, err
             }
 
-            resultAddr := semantics.Memory.Allocate("temp", resultType)
+            resultAddr := semantics.Memory.Direccionar("temp", resultType)
 
             semantics.AddQuadruple(op, left.Addr, right.Addr, resultAddr)
 
@@ -566,7 +578,7 @@ ExpP
                 return nil, err
             }
 
-            resultAddr := semantics.Memory.Allocate("temp", resultType)
+            resultAddr := semantics.Memory.Direccionar("temp", resultType)
 
             semantics.AddQuadruple(op, left.Addr, right.Addr, resultAddr)
 
@@ -601,9 +613,7 @@ TP
     <<
         func() (Attrib, error) {
             semantics.OperatorStack = append(semantics.OperatorStack, 3)
-            if $2 == nil {
-                return $1, nil
-            }
+
             // Sacar operandos y tipos
             right := semantics.OperandStack[len(semantics.OperandStack)-1]
             semantics.OperandStack = semantics.OperandStack[:len(semantics.OperandStack)-1]
@@ -617,7 +627,7 @@ TP
 
             // Verificar compatibilidad
             if !semantics.TypeCompatible(leftType, rightType) {
-                return nil, fmt.Errorf("TP: tipos incompatibles '%s' y '%s'", leftType, rightType)
+                return nil, fmt.Errorf("tp: mul tipos incompatibles '%s' y '%s'", leftType, rightType)
             }
 
             resultType, err := semantics.ArithmeticResultType(leftType, rightType)
@@ -630,7 +640,7 @@ TP
             semantics.OperatorStack = semantics.OperatorStack[:len(semantics.OperatorStack)-1]
 
             // Asignar dirección al resultado
-            resultAddr := semantics.Memory.Allocate("temp", resultType)
+            resultAddr := semantics.Memory.Direccionar("temp", resultType)
 
             // Crear cuádruplo
             semantics.AddQuadruple(op, left.Addr, right.Addr, resultAddr)
@@ -646,9 +656,6 @@ TP
     <<
         func() (Attrib, error) {
             semantics.OperatorStack = append(semantics.OperatorStack, 4)
-            if $2 == nil {
-                return $1, nil
-            }
 
             // Sacar operandos y tipos
             right := semantics.OperandStack[len(semantics.OperandStack)-1]
@@ -676,7 +683,7 @@ TP
             semantics.OperatorStack = semantics.OperatorStack[:len(semantics.OperatorStack)-1]
 
             // Asignar dirección al resultado
-            resultAddr := semantics.Memory.Allocate("temp", resultType)
+            resultAddr := semantics.Memory.Direccionar("temp", resultType)
 
             // Crear cuádruplo
             semantics.AddQuadruple(op, left.Addr, right.Addr, resultAddr)
@@ -713,7 +720,7 @@ Factor
 
             // Solo tiene sentido aplicar cuádruplo si fue '-'
             if op == 2 { // negativo unario
-                resultAddr := semantics.Memory.Allocate("temp", operand.Type)
+                resultAddr := semantics.Memory.Direccionar("temp", operand.Type)
                 semantics.AddQuadruple(op, operand.Addr, -1, resultAddr)
 
                 newOperand := semantics.Operand{
