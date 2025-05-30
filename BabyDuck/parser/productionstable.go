@@ -34,13 +34,30 @@ var productionsTable = ProdTab{
 		},
 	},
 	ProdTabEntry{
-		String: `Programa : program id semicolon ProgramaP main Body end	<< func() (Attrib, error) {
+		String: `Programa : ProgramaHeader ProgramaP ProgramaMain end	<< func() (Attrib, error) {
+            semantics.AddQuadruple(16, -1, -1, -1)
+            return nil, nil
+        }() >>`,
+		Id:         "Programa",
+		NTType:     1,
+		Index:      1,
+		NumSymbols: 4,
+		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
+			return func() (Attrib, error) {
+            semantics.AddQuadruple(16, -1, -1, -1)
+            return nil, nil
+        }()
+		},
+	},
+	ProdTabEntry{
+		String: `ProgramaHeader : program id semicolon	<< func() (Attrib, error) {
             tok, ok := X[1].(*token.Token)
             if !ok {
                 return nil, fmt.Errorf("esperaba *token.Token en X[1], obtuve %T", X[1])
             }
             name := string(tok.Lit)
 
+            semantics.ProgramName = name
             err := semantics.AddFunction(name, "program")
             if err != nil {
                 return nil, err
@@ -49,12 +66,14 @@ var productionsTable = ProdTab{
             if err != nil {
                 return nil, err
             }
+            semantics.AddQuadruple(8, -1, -1, -1) // Goto con destino pendiente
+            semantics.MainGotoIndex = len(semantics.Quadruples) - 1
             return nil, nil
         }() >>`,
-		Id:         "Programa",
-		NTType:     1,
-		Index:      1,
-		NumSymbols: 7,
+		Id:         "ProgramaHeader",
+		NTType:     2,
+		Index:      2,
+		NumSymbols: 3,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return func() (Attrib, error) {
             tok, ok := X[1].(*token.Token)
@@ -63,6 +82,7 @@ var productionsTable = ProdTab{
             }
             name := string(tok.Lit)
 
+            semantics.ProgramName = name
             err := semantics.AddFunction(name, "program")
             if err != nil {
                 return nil, err
@@ -71,6 +91,60 @@ var productionsTable = ProdTab{
             if err != nil {
                 return nil, err
             }
+            semantics.AddQuadruple(8, -1, -1, -1) // Goto con destino pendiente
+            semantics.MainGotoIndex = len(semantics.Quadruples) - 1
+            return nil, nil
+        }()
+		},
+	},
+	ProdTabEntry{
+		String: `ProgramaMain : main MainStart Body	<< func() (Attrib, error) {
+        return nil, nil; 
+         }() >>`,
+		Id:         "ProgramaMain",
+		NTType:     3,
+		Index:      3,
+		NumSymbols: 3,
+		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
+			return func() (Attrib, error) {
+        return nil, nil; 
+         }()
+		},
+	},
+	ProdTabEntry{
+		String: `MainStart : empty	<< func() (Attrib, error) {
+            err := semantics.AddFunction("main", "void")
+            if err != nil {
+                return nil, fmt.Errorf("Error al agregar main: %v", err)
+            }
+
+            err = semantics.SetCurrentFunction("main")
+            if err != nil {
+                return nil, fmt.Errorf("Error al setear main como función actual: %v", err)
+            }
+            semantics.Quadruples[semantics.MainGotoIndex].Result = len(semantics.Quadruples)
+
+            semantics.FunctionDirectory["main"].StartQuad = len(semantics.Quadruples)
+            return nil, nil
+        }() >>`,
+		Id:         "MainStart",
+		NTType:     4,
+		Index:      4,
+		NumSymbols: 0,
+		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
+			return func() (Attrib, error) {
+            err := semantics.AddFunction("main", "void")
+            if err != nil {
+                return nil, fmt.Errorf("Error al agregar main: %v", err)
+            }
+
+            err = semantics.SetCurrentFunction("main")
+            if err != nil {
+                return nil, fmt.Errorf("Error al setear main como función actual: %v", err)
+            }
+            semantics.Quadruples[semantics.MainGotoIndex].Result = len(semantics.Quadruples)
+
+            semantics.FunctionDirectory["main"].StartQuad = len(semantics.Quadruples)
             return nil, nil
         }()
 		},
@@ -78,8 +152,8 @@ var productionsTable = ProdTab{
 	ProdTabEntry{
 		String: `ProgramaP : Vars FP	<<  >>`,
 		Id:         "ProgramaP",
-		NTType:     2,
-		Index:      2,
+		NTType:     5,
+		Index:      5,
 		NumSymbols: 2,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return X[0], nil
@@ -88,8 +162,8 @@ var productionsTable = ProdTab{
 	ProdTabEntry{
 		String: `ProgramaP : FP	<<  >>`,
 		Id:         "ProgramaP",
-		NTType:     2,
-		Index:      3,
+		NTType:     5,
+		Index:      6,
 		NumSymbols: 1,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return X[0], nil
@@ -98,8 +172,8 @@ var productionsTable = ProdTab{
 	ProdTabEntry{
 		String: `FP : Funcs FP	<<  >>`,
 		Id:         "FP",
-		NTType:     3,
-		Index:      4,
+		NTType:     6,
+		Index:      7,
 		NumSymbols: 2,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return X[0], nil
@@ -108,8 +182,8 @@ var productionsTable = ProdTab{
 	ProdTabEntry{
 		String: `FP : empty	<<  >>`,
 		Id:         "FP",
-		NTType:     3,
-		Index:      5,
+		NTType:     6,
+		Index:      8,
 		NumSymbols: 0,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return nil, nil
@@ -118,8 +192,8 @@ var productionsTable = ProdTab{
 	ProdTabEntry{
 		String: `Vars : var VarsP	<<  >>`,
 		Id:         "Vars",
-		NTType:     4,
-		Index:      6,
+		NTType:     7,
+		Index:      9,
 		NumSymbols: 2,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return X[0], nil
@@ -147,8 +221,8 @@ var productionsTable = ProdTab{
             return nil, nil
         }() >>`,
 		Id:         "VarsP",
-		NTType:     5,
-		Index:      7,
+		NTType:     8,
+		Index:      10,
 		NumSymbols: 6,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return func() (Attrib, error) {
@@ -182,8 +256,8 @@ var productionsTable = ProdTab{
         return semantics.AppendID(string(idTok.Lit), X[2])
     }() >>`,
 		Id:         "X",
-		NTType:     6,
-		Index:      8,
+		NTType:     9,
+		Index:      11,
 		NumSymbols: 3,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return func() (Attrib, error) {
@@ -200,8 +274,8 @@ var productionsTable = ProdTab{
             return semantics.EmptyIDList()
         }() >>`,
 		Id:         "X",
-		NTType:     6,
-		Index:      9,
+		NTType:     9,
+		Index:      12,
 		NumSymbols: 0,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return func() (Attrib, error) {
@@ -212,8 +286,8 @@ var productionsTable = ProdTab{
 	ProdTabEntry{
 		String: `Y : VarsP	<<  >>`,
 		Id:         "Y",
-		NTType:     7,
-		Index:      10,
+		NTType:     10,
+		Index:      13,
 		NumSymbols: 1,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return X[0], nil
@@ -222,8 +296,8 @@ var productionsTable = ProdTab{
 	ProdTabEntry{
 		String: `Y : empty	<<  >>`,
 		Id:         "Y",
-		NTType:     7,
-		Index:      11,
+		NTType:     10,
+		Index:      14,
 		NumSymbols: 0,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return nil, nil
@@ -234,8 +308,8 @@ var productionsTable = ProdTab{
             return "int", nil
         }() >>`,
 		Id:         "Type",
-		NTType:     8,
-		Index:      12,
+		NTType:     11,
+		Index:      15,
 		NumSymbols: 1,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return func() (Attrib, error) {
@@ -248,8 +322,8 @@ var productionsTable = ProdTab{
             return "float", nil
         }() >>`,
 		Id:         "Type",
-		NTType:     8,
-		Index:      13,
+		NTType:     11,
+		Index:      16,
 		NumSymbols: 1,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return func() (Attrib, error) {
@@ -260,8 +334,8 @@ var productionsTable = ProdTab{
 	ProdTabEntry{
 		String: `Body : lbrace BodyP rbrace	<<  >>`,
 		Id:         "Body",
-		NTType:     9,
-		Index:      14,
+		NTType:     12,
+		Index:      17,
 		NumSymbols: 3,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return X[0], nil
@@ -270,8 +344,8 @@ var productionsTable = ProdTab{
 	ProdTabEntry{
 		String: `BodyP : empty	<<  >>`,
 		Id:         "BodyP",
-		NTType:     10,
-		Index:      15,
+		NTType:     13,
+		Index:      18,
 		NumSymbols: 0,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return nil, nil
@@ -280,8 +354,8 @@ var productionsTable = ProdTab{
 	ProdTabEntry{
 		String: `BodyP : Statement BodyP	<<  >>`,
 		Id:         "BodyP",
-		NTType:     10,
-		Index:      16,
+		NTType:     13,
+		Index:      19,
 		NumSymbols: 2,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return X[0], nil
@@ -290,8 +364,8 @@ var productionsTable = ProdTab{
 	ProdTabEntry{
 		String: `Statement : Assign	<<  >>`,
 		Id:         "Statement",
-		NTType:     11,
-		Index:      17,
+		NTType:     14,
+		Index:      20,
 		NumSymbols: 1,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return X[0], nil
@@ -300,8 +374,8 @@ var productionsTable = ProdTab{
 	ProdTabEntry{
 		String: `Statement : Condition	<<  >>`,
 		Id:         "Statement",
-		NTType:     11,
-		Index:      18,
+		NTType:     14,
+		Index:      21,
 		NumSymbols: 1,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return X[0], nil
@@ -310,8 +384,8 @@ var productionsTable = ProdTab{
 	ProdTabEntry{
 		String: `Statement : Cycle	<<  >>`,
 		Id:         "Statement",
-		NTType:     11,
-		Index:      19,
+		NTType:     14,
+		Index:      22,
 		NumSymbols: 1,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return X[0], nil
@@ -320,8 +394,8 @@ var productionsTable = ProdTab{
 	ProdTabEntry{
 		String: `Statement : FCall	<<  >>`,
 		Id:         "Statement",
-		NTType:     11,
-		Index:      20,
+		NTType:     14,
+		Index:      23,
 		NumSymbols: 1,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return X[0], nil
@@ -330,51 +404,121 @@ var productionsTable = ProdTab{
 	ProdTabEntry{
 		String: `Statement : Print	<<  >>`,
 		Id:         "Statement",
-		NTType:     11,
-		Index:      21,
-		NumSymbols: 1,
-		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
-			return X[0], nil
-		},
-	},
-	ProdTabEntry{
-		String: `Print : print lparen PrintP rparen semicolon	<<  >>`,
-		Id:         "Print",
-		NTType:     12,
-		Index:      22,
-		NumSymbols: 5,
-		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
-			return X[0], nil
-		},
-	},
-	ProdTabEntry{
-		String: `PrintP : string_literal PrintPP	<<  >>`,
-		Id:         "PrintP",
-		NTType:     13,
-		Index:      23,
-		NumSymbols: 2,
-		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
-			return X[0], nil
-		},
-	},
-	ProdTabEntry{
-		String: `PrintPP : empty	<<  >>`,
-		Id:         "PrintPP",
 		NTType:     14,
 		Index:      24,
-		NumSymbols: 0,
-		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
-			return nil, nil
-		},
-	},
-	ProdTabEntry{
-		String: `PrintPP : PrintP	<<  >>`,
-		Id:         "PrintPP",
-		NTType:     14,
-		Index:      25,
 		NumSymbols: 1,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return X[0], nil
+		},
+	},
+	ProdTabEntry{
+		String: `Print : print lparen PrintP rparen semicolon	<< func() (Attrib, error) {
+            for i := len(semantics.PrintArgs) - 1; i >= 0; i-- {
+                semantics.AddQuadruple(11, semantics.PrintArgs[i], -1, -1)
+            }
+            semantics.PrintArgs = []int{}
+            return nil, nil
+        }() >>`,
+		Id:         "Print",
+		NTType:     15,
+		Index:      25,
+		NumSymbols: 5,
+		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
+			return func() (Attrib, error) {
+            for i := len(semantics.PrintArgs) - 1; i >= 0; i-- {
+                semantics.AddQuadruple(11, semantics.PrintArgs[i], -1, -1)
+            }
+            semantics.PrintArgs = []int{}
+            return nil, nil
+        }()
+		},
+	},
+	ProdTabEntry{
+		String: `PrintP : string_literal PrintPP	<< func() (Attrib, error) {
+            tok, ok := X[0].(*token.Token)
+            if !ok {
+                return nil, fmt.Errorf("print: cte inválida (string)")
+            }
+            lit := string(tok.Lit)
+
+            addr := semantics.ConstTab.GetOrAddConstant(lit, "string")
+
+            semantics.PrintArgs = append(semantics.PrintArgs, addr)
+
+            return nil, nil
+        }() >>`,
+		Id:         "PrintP",
+		NTType:     16,
+		Index:      26,
+		NumSymbols: 2,
+		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
+			return func() (Attrib, error) {
+            tok, ok := X[0].(*token.Token)
+            if !ok {
+                return nil, fmt.Errorf("print: cte inválida (string)")
+            }
+            lit := string(tok.Lit)
+
+            addr := semantics.ConstTab.GetOrAddConstant(lit, "string")
+
+            semantics.PrintArgs = append(semantics.PrintArgs, addr)
+
+            return nil, nil
+        }()
+		},
+	},
+	ProdTabEntry{
+		String: `PrintP : Expresion PrintPP	<< func() (Attrib, error) {
+            expr, ok := X[0].(semantics.Operand)
+            if !ok {
+                return nil, fmt.Errorf("print: expresión inválida")
+            }
+
+            semantics.PrintArgs = append(semantics.PrintArgs, expr.Addr)
+            return nil, nil
+        }() >>`,
+		Id:         "PrintP",
+		NTType:     16,
+		Index:      27,
+		NumSymbols: 2,
+		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
+			return func() (Attrib, error) {
+            expr, ok := X[0].(semantics.Operand)
+            if !ok {
+                return nil, fmt.Errorf("print: expresión inválida")
+            }
+
+            semantics.PrintArgs = append(semantics.PrintArgs, expr.Addr)
+            return nil, nil
+        }()
+		},
+	},
+	ProdTabEntry{
+		String: `PrintPP : empty	<< func() (Attrib, error) {
+            return nil, nil
+        }() >>`,
+		Id:         "PrintPP",
+		NTType:     17,
+		Index:      28,
+		NumSymbols: 0,
+		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
+			return func() (Attrib, error) {
+            return nil, nil
+        }()
+		},
+	},
+	ProdTabEntry{
+		String: `PrintPP : comma PrintP	<< func() (Attrib, error) {
+            return nil, nil
+        }() >>`,
+		Id:         "PrintPP",
+		NTType:     17,
+		Index:      29,
+		NumSymbols: 2,
+		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
+			return func() (Attrib, error) {
+            return nil, nil
+        }()
 		},
 	},
 	ProdTabEntry{
@@ -383,18 +527,33 @@ var productionsTable = ProdTab{
             if !ok {
                 return nil, fmt.Errorf("assign: se esperaba *token.Token en X[0], obtuve %T", X[0])
             }
-            varInfo, err := semantics.LookupVariable(string(idTok.Lit))
+            varName := string(idTok.Lit)
+
+            // Obtener variable destino
+            varInfo, err := semantics.LookupVariable(varName)
             if err != nil {
                 return nil, err
             }
-            if !semantics.TypeCompatible(varInfo.Type, X[2]) {
-                return nil, fmt.Errorf("assign: tipos incompatibles en la asignación")
+
+            // Obtener resultado de Expresion
+            exprOp, ok := X[2].(semantics.Operand)
+            if !ok {
+                return nil, fmt.Errorf("assign: se esperaba Operand como resultado de Expresion")
             }
+
+            // Verificar tipos
+            if !semantics.TypeCompatible(varInfo.Type, exprOp.Type) {
+                return nil, fmt.Errorf("assign: tipos incompatibles '%s' y '%s'", varInfo.Type, exprOp.Type)
+            }
+
+            // Generar cuádruplo de asignación (op = 0)
+            semantics.AddQuadruple(0, exprOp.Addr, -1, varInfo.Address)
+
             return nil, nil
         }() >>`,
 		Id:         "Assign",
-		NTType:     15,
-		Index:      26,
+		NTType:     18,
+		Index:      30,
 		NumSymbols: 4,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return func() (Attrib, error) {
@@ -402,55 +561,276 @@ var productionsTable = ProdTab{
             if !ok {
                 return nil, fmt.Errorf("assign: se esperaba *token.Token en X[0], obtuve %T", X[0])
             }
-            varInfo, err := semantics.LookupVariable(string(idTok.Lit))
+            varName := string(idTok.Lit)
+
+            // Obtener variable destino
+            varInfo, err := semantics.LookupVariable(varName)
             if err != nil {
                 return nil, err
             }
-            if !semantics.TypeCompatible(varInfo.Type, X[2]) {
-                return nil, fmt.Errorf("assign: tipos incompatibles en la asignación")
+
+            // Obtener resultado de Expresion
+            exprOp, ok := X[2].(semantics.Operand)
+            if !ok {
+                return nil, fmt.Errorf("assign: se esperaba Operand como resultado de Expresion")
             }
+
+            // Verificar tipos
+            if !semantics.TypeCompatible(varInfo.Type, exprOp.Type) {
+                return nil, fmt.Errorf("assign: tipos incompatibles '%s' y '%s'", varInfo.Type, exprOp.Type)
+            }
+
+            // Generar cuádruplo de asignación (op = 0)
+            semantics.AddQuadruple(0, exprOp.Addr, -1, varInfo.Address)
+
             return nil, nil
         }()
 		},
 	},
 	ProdTabEntry{
-		String: `Cycle : while lparen Expresion rparen do Body semicolon	<<  >>`,
+		String: `Cycle : CycleStart do Body semicolon	<< func() (Attrib, error) {
+            if len(semantics.JumpStack) < 2 {
+                return nil, fmt.Errorf("cycle: jumpstack no tiene suficientes elementos")
+            }
+
+            // 5. Sacar posiciones: primero el falseJump, luego el inicio del ciclo
+            falseJump, err := semantics.PopJump()
+            if err != nil {
+                return nil, fmt.Errorf("cycle: error al hacer popjump (falseJump): %v", err)
+            }
+
+            loopStart, err := semantics.PopJump()
+            if err != nil {
+                return nil, fmt.Errorf("cycle: error al hacer popjump (loopStart): %v", err)
+            }
+
+            // GOTO al inicio del ciclo
+            semantics.AddQuadruple(8, -1, -1, loopStart)
+            semantics.Quadruples[falseJump].Result = len(semantics.Quadruples)
+
+            return nil, nil
+        }() >>`,
 		Id:         "Cycle",
-		NTType:     16,
-		Index:      27,
-		NumSymbols: 7,
+		NTType:     19,
+		Index:      31,
+		NumSymbols: 4,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
-			return X[0], nil
+			return func() (Attrib, error) {
+            if len(semantics.JumpStack) < 2 {
+                return nil, fmt.Errorf("cycle: jumpstack no tiene suficientes elementos")
+            }
+
+            // 5. Sacar posiciones: primero el falseJump, luego el inicio del ciclo
+            falseJump, err := semantics.PopJump()
+            if err != nil {
+                return nil, fmt.Errorf("cycle: error al hacer popjump (falseJump): %v", err)
+            }
+
+            loopStart, err := semantics.PopJump()
+            if err != nil {
+                return nil, fmt.Errorf("cycle: error al hacer popjump (loopStart): %v", err)
+            }
+
+            // GOTO al inicio del ciclo
+            semantics.AddQuadruple(8, -1, -1, loopStart)
+            semantics.Quadruples[falseJump].Result = len(semantics.Quadruples)
+
+            return nil, nil
+        }()
 		},
 	},
 	ProdTabEntry{
-		String: `Condition : if lparen Expresion rparen Body ConditionP	<<  >>`,
+		String: `CycleStart : WhileStart lparen Expresion rparen	<< func() (Attrib, error) {
+            // 2. Validar tipo
+            if len(semantics.TypeStack) == 0 {
+                return nil, fmt.Errorf("cycleStart: pila de tipos vacía")
+            }
+
+            condType := semantics.PopType()
+            if condType != "bool" {
+                return nil, fmt.Errorf("cycleStart: condición de while no es booleana, fue '%s'", condType)
+            }
+
+            cond := semantics.PopOperand()
+
+            // cuádruplo GOTOF
+            semantics.AddQuadruple(9, cond.Addr, -1, -1)
+
+            //posición del GOTOF
+            semantics.PushJump(len(semantics.Quadruples) - 1)
+
+            return nil, nil
+        }() >>`,
+		Id:         "CycleStart",
+		NTType:     20,
+		Index:      32,
+		NumSymbols: 4,
+		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
+			return func() (Attrib, error) {
+            // 2. Validar tipo
+            if len(semantics.TypeStack) == 0 {
+                return nil, fmt.Errorf("cycleStart: pila de tipos vacía")
+            }
+
+            condType := semantics.PopType()
+            if condType != "bool" {
+                return nil, fmt.Errorf("cycleStart: condición de while no es booleana, fue '%s'", condType)
+            }
+
+            cond := semantics.PopOperand()
+
+            // cuádruplo GOTOF
+            semantics.AddQuadruple(9, cond.Addr, -1, -1)
+
+            //posición del GOTOF
+            semantics.PushJump(len(semantics.Quadruples) - 1)
+
+            return nil, nil
+        }()
+		},
+	},
+	ProdTabEntry{
+		String: `WhileStart : while	<< func() (Attrib, error) {
+            // posición actual (inicio del ciclo)
+            pos := len(semantics.Quadruples)
+            semantics.PushJump(pos)
+            return nil, nil
+        }() >>`,
+		Id:         "WhileStart",
+		NTType:     21,
+		Index:      33,
+		NumSymbols: 1,
+		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
+			return func() (Attrib, error) {
+            // posición actual (inicio del ciclo)
+            pos := len(semantics.Quadruples)
+            semantics.PushJump(pos)
+            return nil, nil
+        }()
+		},
+	},
+	ProdTabEntry{
+		String: `Condition : ConditionStart Body ConditionP semicolon	<<  >>`,
 		Id:         "Condition",
-		NTType:     17,
-		Index:      28,
-		NumSymbols: 6,
+		NTType:     22,
+		Index:      34,
+		NumSymbols: 4,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return X[0], nil
 		},
 	},
 	ProdTabEntry{
-		String: `ConditionP : empty	<<  >>`,
+		String: `ConditionStart : if lparen Expresion rparen	<< func() (Attrib, error) {
+            topType := semantics.PopType()
+            if topType != "bool" {
+                return nil, fmt.Errorf("condición de 'if' no es booleana (tipo fue '%s')", topType)
+            }
+
+            condResult := semantics.PopOperand()
+
+            // 9 = GOTOF 
+            semantics.AddQuadruple(9, condResult.Addr, -1, -1)
+            semantics.PushJump(len(semantics.Quadruples) - 1)
+
+            return nil, nil
+        }() >>`,
+		Id:         "ConditionStart",
+		NTType:     23,
+		Index:      35,
+		NumSymbols: 4,
+		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
+			return func() (Attrib, error) {
+            topType := semantics.PopType()
+            if topType != "bool" {
+                return nil, fmt.Errorf("condición de 'if' no es booleana (tipo fue '%s')", topType)
+            }
+
+            condResult := semantics.PopOperand()
+
+            // 9 = GOTOF 
+            semantics.AddQuadruple(9, condResult.Addr, -1, -1)
+            semantics.PushJump(len(semantics.Quadruples) - 1)
+
+            return nil, nil
+        }()
+		},
+	},
+	ProdTabEntry{
+		String: `ConditionP : ElseJump Body SetEndJump	<<  >>`,
 		Id:         "ConditionP",
-		NTType:     18,
-		Index:      29,
+		NTType:     24,
+		Index:      36,
+		NumSymbols: 3,
+		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
+			return X[0], nil
+		},
+	},
+	ProdTabEntry{
+		String: `ElseJump : else	<< func() (Attrib, error) {
+        semantics.AddQuadruple(8, -1, -1, -1)
+        endJump := len(semantics.Quadruples) - 1
+
+        // Pop del GOTOF (condición falsa)
+        falseJump, err := semantics.PopJump()
+        if err != nil {
+            return nil, err
+        }
+
+        semantics.Quadruples[falseJump].Result = len(semantics.Quadruples)
+
+        // GOTO para actualizar al final
+        semantics.PushJump(endJump)
+        return nil, nil
+    }() >>`,
+		Id:         "ElseJump",
+		NTType:     25,
+		Index:      37,
+		NumSymbols: 1,
+		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
+			return func() (Attrib, error) {
+        semantics.AddQuadruple(8, -1, -1, -1)
+        endJump := len(semantics.Quadruples) - 1
+
+        // Pop del GOTOF (condición falsa)
+        falseJump, err := semantics.PopJump()
+        if err != nil {
+            return nil, err
+        }
+
+        semantics.Quadruples[falseJump].Result = len(semantics.Quadruples)
+
+        // GOTO para actualizar al final
+        semantics.PushJump(endJump)
+        return nil, nil
+    }()
+		},
+	},
+	ProdTabEntry{
+		String: `SetEndJump : empty	<< func() (Attrib, error) {
+        endJump, err := semantics.PopJump()
+        if err != nil {
+            return nil, err
+        }
+
+        // Actualizar el GOTO del then para que salte después del else
+        semantics.Quadruples[endJump].Result = len(semantics.Quadruples)
+        return nil, nil
+    }() >>`,
+		Id:         "SetEndJump",
+		NTType:     26,
+		Index:      38,
 		NumSymbols: 0,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
-			return nil, nil
-		},
-	},
-	ProdTabEntry{
-		String: `ConditionP : else Body	<<  >>`,
-		Id:         "ConditionP",
-		NTType:     18,
-		Index:      30,
-		NumSymbols: 2,
-		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
-			return X[0], nil
+			return func() (Attrib, error) {
+        endJump, err := semantics.PopJump()
+        if err != nil {
+            return nil, err
+        }
+
+        // Actualizar el GOTO del then para que salte después del else
+        semantics.Quadruples[endJump].Result = len(semantics.Quadruples)
+        return nil, nil
+    }()
 		},
 	},
 	ProdTabEntry{
@@ -458,34 +838,20 @@ var productionsTable = ProdTab{
             if X[1] == nil {
                 return X[0], nil
             }
-            leftType, ok1 := X[0].(string)
-            rightType, ok2 := X[1].(string)
-            if !ok1 || !ok2 {
-                return nil, fmt.Errorf("expresion: tipos inválidos")
-            }
-            if !semantics.TypeCompatible(leftType, rightType) {
-                return nil, fmt.Errorf("expresion: tipos incompatibles '%s' y '%s'", leftType, rightType)
-            }
-            return "int", nil // resultado de una comparación
+
+            return X[1], nil
         }() >>`,
 		Id:         "Expresion",
-		NTType:     19,
-		Index:      31,
+		NTType:     27,
+		Index:      39,
 		NumSymbols: 2,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return func() (Attrib, error) {
             if X[1] == nil {
                 return X[0], nil
             }
-            leftType, ok1 := X[0].(string)
-            rightType, ok2 := X[1].(string)
-            if !ok1 || !ok2 {
-                return nil, fmt.Errorf("expresion: tipos inválidos")
-            }
-            if !semantics.TypeCompatible(leftType, rightType) {
-                return nil, fmt.Errorf("expresion: tipos incompatibles '%s' y '%s'", leftType, rightType)
-            }
-            return "int", nil // resultado de una comparación
+
+            return X[1], nil
         }()
 		},
 	},
@@ -494,8 +860,8 @@ var productionsTable = ProdTab{
             return nil, nil
         }() >>`,
 		Id:         "EP",
-		NTType:     20,
-		Index:      32,
+		NTType:     28,
+		Index:      40,
 		NumSymbols: 0,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return func() (Attrib, error) {
@@ -505,43 +871,159 @@ var productionsTable = ProdTab{
 	},
 	ProdTabEntry{
 		String: `EP : gt Exp	<< func() (Attrib, error) {
-            return X[1], nil
+            semantics.OperatorStack = append(semantics.OperatorStack, 6) // >
+            
+            // Extraer operandos y tipos
+            right := semantics.PopOperand()
+            left := semantics.PopOperand()
+            rightType := semantics.PopType()
+            leftType := semantics.PopType()
+            op := semantics.PopOperator()
+            
+            if !semantics.TypeCompatible(leftType, rightType) {
+                return nil, fmt.Errorf("EP: tipos incompatibles '%s' y '%s'", leftType, rightType)
+            }
+
+            tempAddr := semantics.Memory.Direccionar("temp", "bool")
+            temp := semantics.Operand{Addr: tempAddr, Type: "bool"}
+            semantics.AddQuadruple(op, left.Addr, right.Addr, tempAddr)
+
+            semantics.PushOperand(temp)
+            semantics.PushType("bool")
+
+            return temp, nil
         }() >>`,
 		Id:         "EP",
-		NTType:     20,
-		Index:      33,
+		NTType:     28,
+		Index:      41,
 		NumSymbols: 2,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return func() (Attrib, error) {
-            return X[1], nil
+            semantics.OperatorStack = append(semantics.OperatorStack, 6) // >
+            
+            // Extraer operandos y tipos
+            right := semantics.PopOperand()
+            left := semantics.PopOperand()
+            rightType := semantics.PopType()
+            leftType := semantics.PopType()
+            op := semantics.PopOperator()
+            
+            if !semantics.TypeCompatible(leftType, rightType) {
+                return nil, fmt.Errorf("EP: tipos incompatibles '%s' y '%s'", leftType, rightType)
+            }
+
+            tempAddr := semantics.Memory.Direccionar("temp", "bool")
+            temp := semantics.Operand{Addr: tempAddr, Type: "bool"}
+            semantics.AddQuadruple(op, left.Addr, right.Addr, tempAddr)
+
+            semantics.PushOperand(temp)
+            semantics.PushType("bool")
+
+            return temp, nil
         }()
 		},
 	},
 	ProdTabEntry{
 		String: `EP : lt Exp	<< func() (Attrib, error) {
-            return X[1], nil
+            semantics.OperatorStack = append(semantics.OperatorStack, 5) // <
+            
+            right := semantics.PopOperand()
+            left := semantics.PopOperand()
+            rightType := semantics.PopType()
+            leftType := semantics.PopType()
+            op := semantics.PopOperator()
+            
+            if !semantics.TypeCompatible(leftType, rightType) {
+                return nil, fmt.Errorf("EP: tipos incompatibles '%s' y '%s'", leftType, rightType)
+            }
+
+            tempAddr := semantics.Memory.Direccionar("temp", "bool")
+            temp := semantics.Operand{Addr: tempAddr, Type: "bool"}
+            semantics.AddQuadruple(op, left.Addr, right.Addr, tempAddr)
+
+            semantics.PushOperand(temp)
+            semantics.PushType("bool")
+
+            return temp, nil
         }() >>`,
 		Id:         "EP",
-		NTType:     20,
-		Index:      34,
+		NTType:     28,
+		Index:      42,
 		NumSymbols: 2,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return func() (Attrib, error) {
-            return X[1], nil
+            semantics.OperatorStack = append(semantics.OperatorStack, 5) // <
+            
+            right := semantics.PopOperand()
+            left := semantics.PopOperand()
+            rightType := semantics.PopType()
+            leftType := semantics.PopType()
+            op := semantics.PopOperator()
+            
+            if !semantics.TypeCompatible(leftType, rightType) {
+                return nil, fmt.Errorf("EP: tipos incompatibles '%s' y '%s'", leftType, rightType)
+            }
+
+            tempAddr := semantics.Memory.Direccionar("temp", "bool")
+            temp := semantics.Operand{Addr: tempAddr, Type: "bool"}
+            semantics.AddQuadruple(op, left.Addr, right.Addr, tempAddr)
+
+            semantics.PushOperand(temp)
+            semantics.PushType("bool")
+
+            return temp, nil
         }()
 		},
 	},
 	ProdTabEntry{
 		String: `EP : neq Exp	<< func() (Attrib, error) {
-            return X[1], nil
+            semantics.OperatorStack = append(semantics.OperatorStack, 7) // !=
+            
+            right := semantics.PopOperand()
+            left := semantics.PopOperand()
+            rightType := semantics.PopType()
+            leftType := semantics.PopType()
+            op := semantics.PopOperator()
+            
+            if !semantics.TypeCompatible(leftType, rightType) {
+                return nil, fmt.Errorf("EP: tipos incompatibles '%s' y '%s'", leftType, rightType)
+            }
+
+            tempAddr := semantics.Memory.Direccionar("temp", "bool")
+            temp := semantics.Operand{Addr: tempAddr, Type: "bool"}
+            semantics.AddQuadruple(op, left.Addr, right.Addr, tempAddr)
+
+            semantics.PushOperand(temp)
+            semantics.PushType("bool")
+
+            return temp, nil
         }() >>`,
 		Id:         "EP",
-		NTType:     20,
-		Index:      35,
+		NTType:     28,
+		Index:      43,
 		NumSymbols: 2,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return func() (Attrib, error) {
-            return X[1], nil
+            semantics.OperatorStack = append(semantics.OperatorStack, 7) // !=
+            
+            right := semantics.PopOperand()
+            left := semantics.PopOperand()
+            rightType := semantics.PopType()
+            leftType := semantics.PopType()
+            op := semantics.PopOperator()
+            
+            if !semantics.TypeCompatible(leftType, rightType) {
+                return nil, fmt.Errorf("EP: tipos incompatibles '%s' y '%s'", leftType, rightType)
+            }
+
+            tempAddr := semantics.Memory.Direccionar("temp", "bool")
+            temp := semantics.Operand{Addr: tempAddr, Type: "bool"}
+            semantics.AddQuadruple(op, left.Addr, right.Addr, tempAddr)
+
+            semantics.PushOperand(temp)
+            semantics.PushType("bool")
+
+            return temp, nil
         }()
 		},
 	},
@@ -550,18 +1032,18 @@ var productionsTable = ProdTab{
             if X[1] == nil {
                 return X[0], nil
             }
-            return semantics.ArithmeticResultType(X[0].(string), X[1].(string))
+            return X[1], nil
         }() >>`,
 		Id:         "Exp",
-		NTType:     21,
-		Index:      36,
+		NTType:     29,
+		Index:      44,
 		NumSymbols: 2,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return func() (Attrib, error) {
             if X[1] == nil {
                 return X[0], nil
             }
-            return semantics.ArithmeticResultType(X[0].(string), X[1].(string))
+            return X[1], nil
         }()
 		},
 	},
@@ -570,8 +1052,8 @@ var productionsTable = ProdTab{
             return nil, nil
         }() >>`,
 		Id:         "ExpP",
-		NTType:     22,
-		Index:      37,
+		NTType:     30,
+		Index:      45,
 		NumSymbols: 0,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return func() (Attrib, error) {
@@ -581,41 +1063,151 @@ var productionsTable = ProdTab{
 	},
 	ProdTabEntry{
 		String: `ExpP : plus Termino ExpP	<< func() (Attrib, error) {
-            if X[2] == nil {
-                return X[1], nil
+            semantics.OperatorStack = append(semantics.OperatorStack, 1)
+            right := semantics.OperandStack[len(semantics.OperandStack)-1]
+            rightType := semantics.TypeStack[len(semantics.TypeStack)-1]
+            semantics.OperandStack = semantics.OperandStack[:len(semantics.OperandStack)-1]
+            semantics.TypeStack = semantics.TypeStack[:len(semantics.TypeStack)-1]
+
+            left := semantics.OperandStack[len(semantics.OperandStack)-1]
+            leftType := semantics.TypeStack[len(semantics.TypeStack)-1]
+            semantics.OperandStack = semantics.OperandStack[:len(semantics.OperandStack)-1]
+            semantics.TypeStack = semantics.TypeStack[:len(semantics.TypeStack)-1]
+
+            if !semantics.TypeCompatible(leftType, rightType) {
+                return nil, fmt.Errorf("ExpP: tipos incompatibles para suma: %s y %s", leftType, rightType)
             }
-            return semantics.ArithmeticResultType(X[1].(string), X[2].(string))
+
+            op := semantics.OperatorStack[len(semantics.OperatorStack)-1]
+            semantics.OperatorStack = semantics.OperatorStack[:len(semantics.OperatorStack)-1]
+
+            resultType, err := semantics.ArithmeticResultType(leftType, rightType)
+            if err != nil {
+                return nil, err
+            }
+
+            resultAddr := semantics.Memory.Direccionar("temp", resultType)
+
+            semantics.AddQuadruple(op, left.Addr, right.Addr, resultAddr)
+
+            semantics.OperandStack = append(semantics.OperandStack, semantics.Operand{Addr: resultAddr})
+            semantics.TypeStack = append(semantics.TypeStack, resultType)
+
+            return semantics.Operand{Addr: resultAddr, Type: resultType}, nil
         }() >>`,
 		Id:         "ExpP",
-		NTType:     22,
-		Index:      38,
+		NTType:     30,
+		Index:      46,
 		NumSymbols: 3,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return func() (Attrib, error) {
-            if X[2] == nil {
-                return X[1], nil
+            semantics.OperatorStack = append(semantics.OperatorStack, 1)
+            right := semantics.OperandStack[len(semantics.OperandStack)-1]
+            rightType := semantics.TypeStack[len(semantics.TypeStack)-1]
+            semantics.OperandStack = semantics.OperandStack[:len(semantics.OperandStack)-1]
+            semantics.TypeStack = semantics.TypeStack[:len(semantics.TypeStack)-1]
+
+            left := semantics.OperandStack[len(semantics.OperandStack)-1]
+            leftType := semantics.TypeStack[len(semantics.TypeStack)-1]
+            semantics.OperandStack = semantics.OperandStack[:len(semantics.OperandStack)-1]
+            semantics.TypeStack = semantics.TypeStack[:len(semantics.TypeStack)-1]
+
+            if !semantics.TypeCompatible(leftType, rightType) {
+                return nil, fmt.Errorf("ExpP: tipos incompatibles para suma: %s y %s", leftType, rightType)
             }
-            return semantics.ArithmeticResultType(X[1].(string), X[2].(string))
+
+            op := semantics.OperatorStack[len(semantics.OperatorStack)-1]
+            semantics.OperatorStack = semantics.OperatorStack[:len(semantics.OperatorStack)-1]
+
+            resultType, err := semantics.ArithmeticResultType(leftType, rightType)
+            if err != nil {
+                return nil, err
+            }
+
+            resultAddr := semantics.Memory.Direccionar("temp", resultType)
+
+            semantics.AddQuadruple(op, left.Addr, right.Addr, resultAddr)
+
+            semantics.OperandStack = append(semantics.OperandStack, semantics.Operand{Addr: resultAddr})
+            semantics.TypeStack = append(semantics.TypeStack, resultType)
+
+            return semantics.Operand{Addr: resultAddr, Type: resultType}, nil
         }()
 		},
 	},
 	ProdTabEntry{
 		String: `ExpP : minus Termino ExpP	<< func() (Attrib, error) {
-            if X[2] == nil {
-                return X[1], nil
+            semantics.OperatorStack = append(semantics.OperatorStack, 2)
+
+            right := semantics.OperandStack[len(semantics.OperandStack)-1]
+            rightType := semantics.TypeStack[len(semantics.TypeStack)-1]
+            semantics.OperandStack = semantics.OperandStack[:len(semantics.OperandStack)-1]
+            semantics.TypeStack = semantics.TypeStack[:len(semantics.TypeStack)-1]
+
+            left := semantics.OperandStack[len(semantics.OperandStack)-1]
+            leftType := semantics.TypeStack[len(semantics.TypeStack)-1]
+            semantics.OperandStack = semantics.OperandStack[:len(semantics.OperandStack)-1]
+            semantics.TypeStack = semantics.TypeStack[:len(semantics.TypeStack)-1]
+
+            if !semantics.TypeCompatible(leftType, rightType) {
+                return nil, fmt.Errorf("ExpP: tipos incompatibles para resta: %s y %s", leftType, rightType)
             }
-            return semantics.ArithmeticResultType(X[1].(string), X[2].(string))
+
+            op := semantics.OperatorStack[len(semantics.OperatorStack)-1]
+            semantics.OperatorStack = semantics.OperatorStack[:len(semantics.OperatorStack)-1]
+
+            resultType, err := semantics.ArithmeticResultType(leftType, rightType)
+            if err != nil {
+                return nil, err
+            }
+
+            resultAddr := semantics.Memory.Direccionar("temp", resultType)
+
+            semantics.AddQuadruple(op, left.Addr, right.Addr, resultAddr)
+
+            semantics.OperandStack = append(semantics.OperandStack, semantics.Operand{Addr: resultAddr})
+            semantics.TypeStack = append(semantics.TypeStack, resultType)
+
+            return semantics.Operand{Addr: resultAddr, Type: resultType}, nil
         }() >>`,
 		Id:         "ExpP",
-		NTType:     22,
-		Index:      39,
+		NTType:     30,
+		Index:      47,
 		NumSymbols: 3,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return func() (Attrib, error) {
-            if X[2] == nil {
-                return X[1], nil
+            semantics.OperatorStack = append(semantics.OperatorStack, 2)
+
+            right := semantics.OperandStack[len(semantics.OperandStack)-1]
+            rightType := semantics.TypeStack[len(semantics.TypeStack)-1]
+            semantics.OperandStack = semantics.OperandStack[:len(semantics.OperandStack)-1]
+            semantics.TypeStack = semantics.TypeStack[:len(semantics.TypeStack)-1]
+
+            left := semantics.OperandStack[len(semantics.OperandStack)-1]
+            leftType := semantics.TypeStack[len(semantics.TypeStack)-1]
+            semantics.OperandStack = semantics.OperandStack[:len(semantics.OperandStack)-1]
+            semantics.TypeStack = semantics.TypeStack[:len(semantics.TypeStack)-1]
+
+            if !semantics.TypeCompatible(leftType, rightType) {
+                return nil, fmt.Errorf("ExpP: tipos incompatibles para resta: %s y %s", leftType, rightType)
             }
-            return semantics.ArithmeticResultType(X[1].(string), X[2].(string))
+
+            op := semantics.OperatorStack[len(semantics.OperatorStack)-1]
+            semantics.OperatorStack = semantics.OperatorStack[:len(semantics.OperatorStack)-1]
+
+            resultType, err := semantics.ArithmeticResultType(leftType, rightType)
+            if err != nil {
+                return nil, err
+            }
+
+            resultAddr := semantics.Memory.Direccionar("temp", resultType)
+
+            semantics.AddQuadruple(op, left.Addr, right.Addr, resultAddr)
+
+            semantics.OperandStack = append(semantics.OperandStack, semantics.Operand{Addr: resultAddr})
+            semantics.TypeStack = append(semantics.TypeStack, resultType)
+
+            return semantics.Operand{Addr: resultAddr, Type: resultType}, nil
         }()
 		},
 	},
@@ -624,18 +1216,18 @@ var productionsTable = ProdTab{
             if X[1] == nil {
                 return X[0], nil
             }
-            return semantics.ArithmeticResultType(X[0].(string), X[1].(string))
+           return X[1], nil
         }() >>`,
 		Id:         "Termino",
-		NTType:     23,
-		Index:      40,
+		NTType:     31,
+		Index:      48,
 		NumSymbols: 2,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return func() (Attrib, error) {
             if X[1] == nil {
                 return X[0], nil
             }
-            return semantics.ArithmeticResultType(X[0].(string), X[1].(string))
+           return X[1], nil
         }()
 		},
 	},
@@ -644,8 +1236,8 @@ var productionsTable = ProdTab{
             return nil, nil
         }() >>`,
 		Id:         "TP",
-		NTType:     24,
-		Index:      41,
+		NTType:     32,
+		Index:      49,
 		NumSymbols: 0,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return func() (Attrib, error) {
@@ -655,41 +1247,177 @@ var productionsTable = ProdTab{
 	},
 	ProdTabEntry{
 		String: `TP : mul Factor TP	<< func() (Attrib, error) {
-            if X[2] == nil {
-                return X[1], nil
+            semantics.OperatorStack = append(semantics.OperatorStack, 3)
+
+            // Sacar operandos y tipos
+            right := semantics.OperandStack[len(semantics.OperandStack)-1]
+            semantics.OperandStack = semantics.OperandStack[:len(semantics.OperandStack)-1]
+            rightType := semantics.TypeStack[len(semantics.TypeStack)-1]
+            semantics.TypeStack = semantics.TypeStack[:len(semantics.TypeStack)-1]
+
+            left := semantics.OperandStack[len(semantics.OperandStack)-1]
+            semantics.OperandStack = semantics.OperandStack[:len(semantics.OperandStack)-1]
+            leftType := semantics.TypeStack[len(semantics.TypeStack)-1]
+            semantics.TypeStack = semantics.TypeStack[:len(semantics.TypeStack)-1]
+
+            // Verificar compatibilidad
+            if !semantics.TypeCompatible(leftType, rightType) {
+                return nil, fmt.Errorf("tp: mul tipos incompatibles '%s' y '%s'", leftType, rightType)
             }
-            return semantics.ArithmeticResultType(X[1].(string), X[2].(string))
+
+            resultType, err := semantics.ArithmeticResultType(leftType, rightType)
+            if err != nil {
+                return nil, err
+            }
+
+            // Obtener operador
+            op := semantics.OperatorStack[len(semantics.OperatorStack)-1]
+            semantics.OperatorStack = semantics.OperatorStack[:len(semantics.OperatorStack)-1]
+
+            // Asignar dirección al resultado
+            resultAddr := semantics.Memory.Direccionar("temp", resultType)
+
+            // Crear cuádruplo
+            semantics.AddQuadruple(op, left.Addr, right.Addr, resultAddr)
+
+            // Empujar nuevo resultado a los stacks
+            semantics.OperandStack = append(semantics.OperandStack, semantics.Operand{Addr: resultAddr})
+            semantics.TypeStack = append(semantics.TypeStack, resultType)
+
+            return semantics.Operand{Addr: resultAddr, Type: resultType}, nil
         }() >>`,
 		Id:         "TP",
-		NTType:     24,
-		Index:      42,
+		NTType:     32,
+		Index:      50,
 		NumSymbols: 3,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return func() (Attrib, error) {
-            if X[2] == nil {
-                return X[1], nil
+            semantics.OperatorStack = append(semantics.OperatorStack, 3)
+
+            // Sacar operandos y tipos
+            right := semantics.OperandStack[len(semantics.OperandStack)-1]
+            semantics.OperandStack = semantics.OperandStack[:len(semantics.OperandStack)-1]
+            rightType := semantics.TypeStack[len(semantics.TypeStack)-1]
+            semantics.TypeStack = semantics.TypeStack[:len(semantics.TypeStack)-1]
+
+            left := semantics.OperandStack[len(semantics.OperandStack)-1]
+            semantics.OperandStack = semantics.OperandStack[:len(semantics.OperandStack)-1]
+            leftType := semantics.TypeStack[len(semantics.TypeStack)-1]
+            semantics.TypeStack = semantics.TypeStack[:len(semantics.TypeStack)-1]
+
+            // Verificar compatibilidad
+            if !semantics.TypeCompatible(leftType, rightType) {
+                return nil, fmt.Errorf("tp: mul tipos incompatibles '%s' y '%s'", leftType, rightType)
             }
-            return semantics.ArithmeticResultType(X[1].(string), X[2].(string))
+
+            resultType, err := semantics.ArithmeticResultType(leftType, rightType)
+            if err != nil {
+                return nil, err
+            }
+
+            // Obtener operador
+            op := semantics.OperatorStack[len(semantics.OperatorStack)-1]
+            semantics.OperatorStack = semantics.OperatorStack[:len(semantics.OperatorStack)-1]
+
+            // Asignar dirección al resultado
+            resultAddr := semantics.Memory.Direccionar("temp", resultType)
+
+            // Crear cuádruplo
+            semantics.AddQuadruple(op, left.Addr, right.Addr, resultAddr)
+
+            // Empujar nuevo resultado a los stacks
+            semantics.OperandStack = append(semantics.OperandStack, semantics.Operand{Addr: resultAddr})
+            semantics.TypeStack = append(semantics.TypeStack, resultType)
+
+            return semantics.Operand{Addr: resultAddr, Type: resultType}, nil
         }()
 		},
 	},
 	ProdTabEntry{
 		String: `TP : div Factor TP	<< func() (Attrib, error) {
-            if X[2] == nil {
-                return X[1], nil
+            semantics.OperatorStack = append(semantics.OperatorStack, 4)
+
+            // Sacar operandos y tipos
+            right := semantics.OperandStack[len(semantics.OperandStack)-1]
+            semantics.OperandStack = semantics.OperandStack[:len(semantics.OperandStack)-1]
+            rightType := semantics.TypeStack[len(semantics.TypeStack)-1]
+            semantics.TypeStack = semantics.TypeStack[:len(semantics.TypeStack)-1]
+
+            left := semantics.OperandStack[len(semantics.OperandStack)-1]
+            semantics.OperandStack = semantics.OperandStack[:len(semantics.OperandStack)-1]
+            leftType := semantics.TypeStack[len(semantics.TypeStack)-1]
+            semantics.TypeStack = semantics.TypeStack[:len(semantics.TypeStack)-1]
+
+            // Verificar compatibilidad
+            if !semantics.TypeCompatible(leftType, rightType) {
+                return nil, fmt.Errorf("TP: tipos incompatibles '%s' y '%s'", leftType, rightType)
             }
-            return semantics.ArithmeticResultType(X[1].(string), X[2].(string))
+
+            resultType, err := semantics.ArithmeticResultType(leftType, rightType)
+            if err != nil {
+                return nil, err
+            }
+
+            // Obtener operador
+            op := semantics.OperatorStack[len(semantics.OperatorStack)-1]
+            semantics.OperatorStack = semantics.OperatorStack[:len(semantics.OperatorStack)-1]
+
+            // Asignar dirección al resultado
+            resultAddr := semantics.Memory.Direccionar("temp", resultType)
+
+            // Crear cuádruplo
+            semantics.AddQuadruple(op, left.Addr, right.Addr, resultAddr)
+
+            // Empujar nuevo resultado a los stacks
+            semantics.OperandStack = append(semantics.OperandStack, semantics.Operand{Addr: resultAddr})
+            semantics.TypeStack = append(semantics.TypeStack, resultType)
+
+            return semantics.Operand{Addr: resultAddr, Type: resultType}, nil
         }() >>`,
 		Id:         "TP",
-		NTType:     24,
-		Index:      43,
+		NTType:     32,
+		Index:      51,
 		NumSymbols: 3,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return func() (Attrib, error) {
-            if X[2] == nil {
-                return X[1], nil
+            semantics.OperatorStack = append(semantics.OperatorStack, 4)
+
+            // Sacar operandos y tipos
+            right := semantics.OperandStack[len(semantics.OperandStack)-1]
+            semantics.OperandStack = semantics.OperandStack[:len(semantics.OperandStack)-1]
+            rightType := semantics.TypeStack[len(semantics.TypeStack)-1]
+            semantics.TypeStack = semantics.TypeStack[:len(semantics.TypeStack)-1]
+
+            left := semantics.OperandStack[len(semantics.OperandStack)-1]
+            semantics.OperandStack = semantics.OperandStack[:len(semantics.OperandStack)-1]
+            leftType := semantics.TypeStack[len(semantics.TypeStack)-1]
+            semantics.TypeStack = semantics.TypeStack[:len(semantics.TypeStack)-1]
+
+            // Verificar compatibilidad
+            if !semantics.TypeCompatible(leftType, rightType) {
+                return nil, fmt.Errorf("TP: tipos incompatibles '%s' y '%s'", leftType, rightType)
             }
-            return semantics.ArithmeticResultType(X[1].(string), X[2].(string))
+
+            resultType, err := semantics.ArithmeticResultType(leftType, rightType)
+            if err != nil {
+                return nil, err
+            }
+
+            // Obtener operador
+            op := semantics.OperatorStack[len(semantics.OperatorStack)-1]
+            semantics.OperatorStack = semantics.OperatorStack[:len(semantics.OperatorStack)-1]
+
+            // Asignar dirección al resultado
+            resultAddr := semantics.Memory.Direccionar("temp", resultType)
+
+            // Crear cuádruplo
+            semantics.AddQuadruple(op, left.Addr, right.Addr, resultAddr)
+
+            // Empujar nuevo resultado a los stacks
+            semantics.OperandStack = append(semantics.OperandStack, semantics.Operand{Addr: resultAddr})
+            semantics.TypeStack = append(semantics.TypeStack, resultType)
+
+            return semantics.Operand{Addr: resultAddr, Type: resultType}, nil
         }()
 		},
 	},
@@ -698,8 +1426,8 @@ var productionsTable = ProdTab{
             return X[1], nil
         }() >>`,
 		Id:         "Factor",
-		NTType:     25,
-		Index:      44,
+		NTType:     33,
+		Index:      52,
 		NumSymbols: 3,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return func() (Attrib, error) {
@@ -709,17 +1437,69 @@ var productionsTable = ProdTab{
 	},
 	ProdTabEntry{
 		String: `Factor : FactorP FactorPP	<< func() (Attrib, error) {
-            // Puedes ignorar el signo para efectos de tipo
-            return X[1], nil
+            op, ok := X[0].(int)
+            operand, ok2 := X[1].(semantics.Operand)
+            if !ok2 {
+                return nil, fmt.Errorf("factor: operando inválido")
+            }
+
+            if !ok {
+                // No hubo + o -, simplemente devuelve el operando tal cual
+                return operand, nil
+            }
+
+            // Solo tiene sentido aplicar cuádruplo si fue '-'
+            if op == 2 { // negativo unario
+                resultAddr := semantics.Memory.Direccionar("temp", operand.Type)
+                semantics.AddQuadruple(op, operand.Addr, -1, resultAddr)
+
+                newOperand := semantics.Operand{
+                    Addr: resultAddr,
+                    Type: operand.Type,
+                }
+                semantics.PushOperand(newOperand)
+
+                return newOperand, nil
+            }
+
+            // Si es un + unario, no hace nada
+            semantics.PushOperand(operand)
+            return operand, nil
         }() >>`,
 		Id:         "Factor",
-		NTType:     25,
-		Index:      45,
+		NTType:     33,
+		Index:      53,
 		NumSymbols: 2,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return func() (Attrib, error) {
-            // Puedes ignorar el signo para efectos de tipo
-            return X[1], nil
+            op, ok := X[0].(int)
+            operand, ok2 := X[1].(semantics.Operand)
+            if !ok2 {
+                return nil, fmt.Errorf("factor: operando inválido")
+            }
+
+            if !ok {
+                // No hubo + o -, simplemente devuelve el operando tal cual
+                return operand, nil
+            }
+
+            // Solo tiene sentido aplicar cuádruplo si fue '-'
+            if op == 2 { // negativo unario
+                resultAddr := semantics.Memory.Direccionar("temp", operand.Type)
+                semantics.AddQuadruple(op, operand.Addr, -1, resultAddr)
+
+                newOperand := semantics.Operand{
+                    Addr: resultAddr,
+                    Type: operand.Type,
+                }
+                semantics.PushOperand(newOperand)
+
+                return newOperand, nil
+            }
+
+            // Si es un + unario, no hace nada
+            semantics.PushOperand(operand)
+            return operand, nil
         }()
 		},
 	},
@@ -728,8 +1508,8 @@ var productionsTable = ProdTab{
             return nil, nil
         }() >>`,
 		Id:         "FactorP",
-		NTType:     26,
-		Index:      46,
+		NTType:     34,
+		Index:      54,
 		NumSymbols: 0,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return func() (Attrib, error) {
@@ -739,73 +1519,103 @@ var productionsTable = ProdTab{
 	},
 	ProdTabEntry{
 		String: `FactorP : plus	<< func() (Attrib, error) {
-            return nil, nil // signo no cambia tipo
+            return 1, nil
         }() >>`,
 		Id:         "FactorP",
-		NTType:     26,
-		Index:      47,
+		NTType:     34,
+		Index:      55,
 		NumSymbols: 1,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return func() (Attrib, error) {
-            return nil, nil // signo no cambia tipo
+            return 1, nil
         }()
 		},
 	},
 	ProdTabEntry{
 		String: `FactorP : minus	<< func() (Attrib, error) {
-            return nil, nil // signo no cambia tipo
+            return 2, nil
         }() >>`,
 		Id:         "FactorP",
-		NTType:     26,
-		Index:      48,
+		NTType:     34,
+		Index:      56,
 		NumSymbols: 1,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return func() (Attrib, error) {
-            return nil, nil // signo no cambia tipo
+            return 2, nil
         }()
 		},
 	},
 	ProdTabEntry{
 		String: `FactorPP : id	<< func() (Attrib, error) {
-            name, ok := X[0].(string)
+            tok, ok := X[0].(*token.Token)
             if !ok {
-                return nil, fmt.Errorf("FactorPP: id no es string")
+                return nil, fmt.Errorf("factorPP: id inválido")
             }
+            name := string(tok.Lit)
             v, err := semantics.LookupVariable(name)
             if err != nil {
                 return nil, err
             }
-            return v.Type, nil
+            op := semantics.Operand{
+                Type:  v.Type,
+                Addr:  v.Address,
+                Value: name,
+            }
+
+            semantics.PushOperand(op)
+
+            return op, nil
         }() >>`,
 		Id:         "FactorPP",
-		NTType:     27,
-		Index:      49,
+		NTType:     35,
+		Index:      57,
 		NumSymbols: 1,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return func() (Attrib, error) {
-            name, ok := X[0].(string)
+            tok, ok := X[0].(*token.Token)
             if !ok {
-                return nil, fmt.Errorf("FactorPP: id no es string")
+                return nil, fmt.Errorf("factorPP: id inválido")
             }
+            name := string(tok.Lit)
             v, err := semantics.LookupVariable(name)
             if err != nil {
                 return nil, err
             }
-            return v.Type, nil
+            op := semantics.Operand{
+                Type:  v.Type,
+                Addr:  v.Address,
+                Value: name,
+            }
+
+            semantics.PushOperand(op)
+
+            return op, nil
         }()
 		},
 	},
 	ProdTabEntry{
 		String: `FactorPP : CTE	<< func() (Attrib, error) {
-            return X[0], nil // ya es el tipo ("int" o "float")
+            op, ok := X[0].(semantics.Operand)
+            if !ok {
+                return nil, fmt.Errorf("factorPP: CTE no es Operand")
+            }
+            semantics.PushOperand(op)
+
+            return op, nil
         }() >>`,
 		Id:         "FactorPP",
-		NTType:     27,
-		Index:      50,
+		NTType:     35,
+		Index:      58,
 		NumSymbols: 1,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return func() (Attrib, error) {
-            return X[0], nil // ya es el tipo ("int" o "float")
+            op, ok := X[0].(semantics.Operand)
+            if !ok {
+                return nil, fmt.Errorf("factorPP: CTE no es Operand")
+            }
+            semantics.PushOperand(op)
+
+            return op, nil
         }()
 		},
 	},
@@ -816,11 +1626,19 @@ var productionsTable = ProdTab{
                 return nil, fmt.Errorf("cte inválida (entero)")
             }
             lit := string(tok.Lit)
-            return semantics.GetLiteralType(lit), nil
+            typ := "int"
+
+            addr := semantics.ConstTab.GetOrAddConstant(lit, typ)
+
+            return semantics.Operand{
+                Type:  typ,
+                Value: lit,
+                Addr:  addr,
+            }, nil
         }() >>`,
 		Id:         "CTE",
-		NTType:     28,
-		Index:      51,
+		NTType:     36,
+		Index:      59,
 		NumSymbols: 1,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return func() (Attrib, error) {
@@ -829,7 +1647,15 @@ var productionsTable = ProdTab{
                 return nil, fmt.Errorf("cte inválida (entero)")
             }
             lit := string(tok.Lit)
-            return semantics.GetLiteralType(lit), nil
+            typ := "int"
+
+            addr := semantics.ConstTab.GetOrAddConstant(lit, typ)
+
+            return semantics.Operand{
+                Type:  typ,
+                Value: lit,
+                Addr:  addr,
+            }, nil
         }()
 		},
 	},
@@ -841,11 +1667,19 @@ var productionsTable = ProdTab{
                 return nil, fmt.Errorf("cte inválida (flotante)")
             }
             full := string(intTok.Lit) + "." + string(fracTok.Lit)
-            return semantics.GetLiteralType(full), nil
+            typ := "float"
+
+            addr := semantics.ConstTab.GetOrAddConstant(full, typ)
+
+            return semantics.Operand{
+                Type:  typ,
+                Value: full,
+                Addr:  addr,
+            }, nil
         }() >>`,
 		Id:         "CTE",
-		NTType:     28,
-		Index:      52,
+		NTType:     36,
+		Index:      60,
 		NumSymbols: 3,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return func() (Attrib, error) {
@@ -855,12 +1689,48 @@ var productionsTable = ProdTab{
                 return nil, fmt.Errorf("cte inválida (flotante)")
             }
             full := string(intTok.Lit) + "." + string(fracTok.Lit)
-            return semantics.GetLiteralType(full), nil
+            typ := "float"
+
+            addr := semantics.ConstTab.GetOrAddConstant(full, typ)
+
+            return semantics.Operand{
+                Type:  typ,
+                Value: full,
+                Addr:  addr,
+            }, nil
         }()
 		},
 	},
 	ProdTabEntry{
-		String: `Funcs : void id lparen FuncsP rparen lbracket VP Body rbracket semicolon	<< func() (Attrib, error) {
+		String: `Funcs : FuncsHeader lbracket VarsFuncs Body rbracket semicolon	<< func() (Attrib, error) {
+            //Generar cuádruplo ENDFUNC
+            semantics.AddQuadruple(15, -1, -1, -1)
+
+            //Guardar el número de variables temporales usadas
+            semantics.FunctionDirectory[semantics.CurrentFunction].TempCount = semantics.GetTempCount()
+
+            //Limpiar tabla de variables locales
+            return nil, nil
+        }() >>`,
+		Id:         "Funcs",
+		NTType:     37,
+		Index:      61,
+		NumSymbols: 6,
+		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
+			return func() (Attrib, error) {
+            //Generar cuádruplo ENDFUNC
+            semantics.AddQuadruple(15, -1, -1, -1)
+
+            //Guardar el número de variables temporales usadas
+            semantics.FunctionDirectory[semantics.CurrentFunction].TempCount = semantics.GetTempCount()
+
+            //Limpiar tabla de variables locales
+            return nil, nil
+        }()
+		},
+	},
+	ProdTabEntry{
+		String: `FuncsHeader : void id lparen FuncsParameter rparen	<< func() (Attrib, error) {
             tok, ok := X[1].(*token.Token)
             if !ok {
                 return nil, fmt.Errorf("esperaba *token.Token en X[1], obtuve %T", X[1])
@@ -871,12 +1741,13 @@ var productionsTable = ProdTab{
                 return nil, err
             }
             semantics.SetCurrentFunction(name) // Cambia el contexto a la función
+            semantics.FunctionDirectory[name].StartQuad = len(semantics.Quadruples)
             return nil, nil
         }() >>`,
-		Id:         "Funcs",
-		NTType:     29,
-		Index:      53,
-		NumSymbols: 10,
+		Id:         "FuncsHeader",
+		NTType:     38,
+		Index:      62,
+		NumSymbols: 5,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return func() (Attrib, error) {
             tok, ok := X[1].(*token.Token)
@@ -889,17 +1760,18 @@ var productionsTable = ProdTab{
                 return nil, err
             }
             semantics.SetCurrentFunction(name) // Cambia el contexto a la función
+            semantics.FunctionDirectory[name].StartQuad = len(semantics.Quadruples)
             return nil, nil
         }()
 		},
 	},
 	ProdTabEntry{
-		String: `FuncsP : empty	<< func() (Attrib, error) {
+		String: `FuncsParameter : empty	<< func() (Attrib, error) {
         return nil, nil // no hay parámetros
         }() >>`,
-		Id:         "FuncsP",
-		NTType:     30,
-		Index:      54,
+		Id:         "FuncsParameter",
+		NTType:     39,
+		Index:      63,
 		NumSymbols: 0,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return func() (Attrib, error) {
@@ -908,16 +1780,16 @@ var productionsTable = ProdTab{
 		},
 	},
 	ProdTabEntry{
-		String: `FuncsP : WP	<< func() (Attrib, error) {
-            return nil, nil // parámetros ya se agregan en WP
+		String: `FuncsParameter : WP	<< func() (Attrib, error) {
+            return nil, nil
         }() >>`,
-		Id:         "FuncsP",
-		NTType:     30,
-		Index:      55,
+		Id:         "FuncsParameter",
+		NTType:     39,
+		Index:      64,
 		NumSymbols: 1,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return func() (Attrib, error) {
-            return nil, nil // parámetros ya se agregan en WP
+            return nil, nil
         }()
 		},
 	},
@@ -926,8 +1798,8 @@ var productionsTable = ProdTab{
         return nil, nil
       }() >>`,
 		Id:         "W",
-		NTType:     31,
-		Index:      56,
+		NTType:     40,
+		Index:      65,
 		NumSymbols: 0,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return func() (Attrib, error) {
@@ -937,15 +1809,15 @@ var productionsTable = ProdTab{
 	},
 	ProdTabEntry{
 		String: `W : comma WP	<< func() (Attrib, error) {
-            return nil, nil // ya agregados en WP
+            return nil, nil 
         }() >>`,
 		Id:         "W",
-		NTType:     31,
-		Index:      57,
+		NTType:     40,
+		Index:      66,
 		NumSymbols: 2,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return func() (Attrib, error) {
-            return nil, nil // ya agregados en WP
+            return nil, nil 
         }()
 		},
 	},
@@ -962,8 +1834,8 @@ var productionsTable = ProdTab{
         return semantics.AddParameter(string(idTok.Lit), typeStr), nil
     }() >>`,
 		Id:         "WP",
-		NTType:     32,
-		Index:      58,
+		NTType:     41,
+		Index:      67,
 		NumSymbols: 4,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return func() (Attrib, error) {
@@ -980,44 +1852,104 @@ var productionsTable = ProdTab{
 		},
 	},
 	ProdTabEntry{
-		String: `VP : empty	<<  >>`,
-		Id:         "VP",
-		NTType:     33,
-		Index:      59,
+		String: `VarsFuncs : empty	<<  >>`,
+		Id:         "VarsFuncs",
+		NTType:     42,
+		Index:      68,
 		NumSymbols: 0,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return nil, nil
 		},
 	},
 	ProdTabEntry{
-		String: `VP : Vars	<<  >>`,
-		Id:         "VP",
-		NTType:     33,
-		Index:      60,
+		String: `VarsFuncs : Vars	<<  >>`,
+		Id:         "VarsFuncs",
+		NTType:     42,
+		Index:      69,
 		NumSymbols: 1,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return X[0], nil
 		},
 	},
 	ProdTabEntry{
-		String: `FCall : id lparen FCallP rparen semicolon	<< func() (Attrib, error) {
+		String: `FCall : FCallID lparen FCallP rparen semicolon	<< func() (Attrib, error) {
+            name, ok := X[0].(string)
+            if !ok {
+                return nil, fmt.Errorf("fCall: se esperaba string como nombre de función, obtuve %T", X[0])
+            }
+
+            err := semantics.ValidateFunctionCall(name, X[2])
+            if err != nil {
+                return nil, err
+            }
+
+            // Generar cuádruplo GOSUB (13)
+            semantics.AddQuadruple(13, -1, -1, name)
+
+            semantics.CurrentCall = ""
+
+            return nil, nil
+        }() >>`,
+		Id:         "FCall",
+		NTType:     43,
+		Index:      70,
+		NumSymbols: 5,
+		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
+			return func() (Attrib, error) {
+            name, ok := X[0].(string)
+            if !ok {
+                return nil, fmt.Errorf("fCall: se esperaba string como nombre de función, obtuve %T", X[0])
+            }
+
+            err := semantics.ValidateFunctionCall(name, X[2])
+            if err != nil {
+                return nil, err
+            }
+
+            // Generar cuádruplo GOSUB (13)
+            semantics.AddQuadruple(13, -1, -1, name)
+
+            semantics.CurrentCall = ""
+
+            return nil, nil
+        }()
+		},
+	},
+	ProdTabEntry{
+		String: `FCallID : id	<< func() (Attrib, error) {
             idTok, ok := X[0].(*token.Token)
             if !ok {
                 return nil, fmt.Errorf("fCall: se esperaba *token.Token en X[0], obtuve %T", X[0])
             }
-            return semantics.ValidateFunctionCall(string(idTok.Lit), X[2]), nil
+            name := string(idTok.Lit)
+            // ERA = 14
+            semantics.AddQuadruple(14, -1, -1, name)
+
+            semantics.FunctionDirectory[name].ParamCount = 0
+
+            semantics.CurrentCall = name
+
+            return name, nil
         }() >>`,
-		Id:         "FCall",
-		NTType:     34,
-		Index:      61,
-		NumSymbols: 5,
+		Id:         "FCallID",
+		NTType:     44,
+		Index:      71,
+		NumSymbols: 1,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return func() (Attrib, error) {
             idTok, ok := X[0].(*token.Token)
             if !ok {
                 return nil, fmt.Errorf("fCall: se esperaba *token.Token en X[0], obtuve %T", X[0])
             }
-            return semantics.ValidateFunctionCall(string(idTok.Lit), X[2]), nil
+            name := string(idTok.Lit)
+            // ERA = 14
+            semantics.AddQuadruple(14, -1, -1, name)
+
+            semantics.FunctionDirectory[name].ParamCount = 0
+
+            semantics.CurrentCall = name
+
+            return name, nil
         }()
 		},
 	},
@@ -1026,8 +1958,8 @@ var productionsTable = ProdTab{
             return semantics.EmptyArgList()
         }() >>`,
 		Id:         "FCallP",
-		NTType:     35,
-		Index:      62,
+		NTType:     45,
+		Index:      72,
 		NumSymbols: 0,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return func() (Attrib, error) {
@@ -1036,16 +1968,16 @@ var productionsTable = ProdTab{
 		},
 	},
 	ProdTabEntry{
-		String: `FCallP : Expresion Z	<< func() (Attrib, error) {
-            return semantics.BuildArgList(X[0], X[1])
+		String: `FCallP : ZParameters	<< func() (Attrib, error) {
+            return X[0], nil
         }() >>`,
 		Id:         "FCallP",
-		NTType:     35,
-		Index:      63,
-		NumSymbols: 2,
+		NTType:     45,
+		Index:      73,
+		NumSymbols: 1,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return func() (Attrib, error) {
-            return semantics.BuildArgList(X[0], X[1])
+            return X[0], nil
         }()
 		},
 	},
@@ -1054,8 +1986,8 @@ var productionsTable = ProdTab{
             return semantics.EmptyArgList()
         }() >>`,
 		Id:         "Z",
-		NTType:     36,
-		Index:      64,
+		NTType:     46,
+		Index:      74,
 		NumSymbols: 0,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return func() (Attrib, error) {
@@ -1064,13 +1996,27 @@ var productionsTable = ProdTab{
 		},
 	},
 	ProdTabEntry{
-		String: `Z : comma Expresion Z	<< func() (Attrib, error) {
-            return semantics.AppendArg(X[1], X[2])
+		String: `Z : comma ZParameters	<< func() (Attrib, error) {
+            return X[1], nil
         }() >>`,
 		Id:         "Z",
-		NTType:     36,
-		Index:      65,
-		NumSymbols: 3,
+		NTType:     46,
+		Index:      75,
+		NumSymbols: 2,
+		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
+			return func() (Attrib, error) {
+            return X[1], nil
+        }()
+		},
+	},
+	ProdTabEntry{
+		String: `ZParameters : Expresion Z	<< func() (Attrib, error) {
+            return semantics.AppendArg(X[1], X[2])
+        }() >>`,
+		Id:         "ZParameters",
+		NTType:     47,
+		Index:      76,
+		NumSymbols: 2,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return func() (Attrib, error) {
             return semantics.AppendArg(X[1], X[2])

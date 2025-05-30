@@ -2,7 +2,10 @@ package main
 
 import (
 	"BabyDuck/lexer"
+	"BabyDuck/maquinavirtual"
 	"BabyDuck/parser"
+	"BabyDuck/semantics"
+	"fmt"
 	"testing"
 )
 
@@ -24,101 +27,161 @@ var testData = []*TI{
 	},
 	{
 		src: `
-			program test2;
-			var x: int;
-			main {
-				x = 10;
-			}
-			end
-		`,
+				program test;
+				var x: int;
+				main {
+					x = 10 / 2;
+					print(x);
+				}
+				end
+			`,
 		valid: true,
 	},
 	{
 		src: `
-			program test3;
-			var x, y: float;
-			main {
-				x = 1.5 + 2.0;
-			}
-			end
-		`,
+				program test;
+				var x, y: float;
+				main {
+					y = 3.7;
+					x = 1.5 + y;
+				}
+				end
+			`,
+		valid: true,
+	},
+	{
+		src: `
+				program test;
+				var x: int;
+				main {
+					x = 6;
+					while (x < 10) do
+	    				{x = x + 1;}
+						;
+				}
+				end
+			`,
+		valid: true,
+	},
+	{
+		src: `
+				program test5;
+				var x: int;
+				main {
+					x = 6;
+					print("Hola","mundo");
+				}
+				end
+			`,
+		valid: true,
+	},
+	{
+		src: `
+				program test;
+				var x: int;
+				main {
+					x = 7;
+					if (x < 10) {
+						x = x + 1;
+						print(x);
+					} else {
+						x = x - 2;
+						print(x);
+					};
+				}
+				end
+			`,
+		valid: true,
+	},
+
+	{
+		src: `
+							program test6;
+							main {
+								if (1 < 2) {
+									print("Si");
+								} else {
+									print("No");
+								};
+							}
+							end
+						`,
+		valid: true,
+	},
+	{
+		src: `program withCycle;
+	         var i: int;
+	         main {
+	            i = 0;
+	            while (i < 10/5) do {
+	               print(i);
+	               i = i + 1;
+	            };
+	         }
+	         end`,
+
+		valid: true,
+	},
+	{
+		src: `
+							program test8;
+							void foo() [ var x: int;
+								{print("func");}
+							];
+							main {
+								foo();
+							}
+							end
+						`,
+		valid: true,
+	},
+	{
+		src: `
+						program test8;
+						void foo() [ var x: int;
+							{print("func");}
+						];
+						void second() [ var x: int;
+							{x = 9;}
+						];
+						main {
+							foo();
+							second();
+						}
+						end
+					`,
 		valid: true,
 	},
 	/*{
 		src: `
-			program test4;
-			main {
-				print("Hola!");
-			}
-			end
-		`,
-		valid: true,
-	},
-	{
-		src: `
-			program test5;
-			main {
-				print("Hola");
-				print("Mundo");
-			}
-			end
-		`,
-		valid: true,
-	},
-	{
-		src: `
-			program test6;
-			main {
-				if (1 < 2) {
-					print("Si");
-				} else {
-					print("No");
+				program Recursion;
+
+				var n, result: int;
+
+				void factorial(x: int) [
+					var temp: int;
+					{
+						if (x < 1) {
+							if (x > -1) {
+								result = 1;
+							};
+						} else {
+							n = x - 1;
+							factorial(n);
+							result = result * x;
+						};
+					}
+				];
+
+				main {
+					n = 5;
+					result = 1;
+					factorial(n);
+					print("El factorial es:", result);
 				}
-			}
-			end
-		`,
-		valid: true,
-	},
-	{
-		src: `
-			program test7;
-			main {
-				while (1 < 2) do {
-					print("loop");
-				};
-			}
-			end
-		`,
-		valid: true,
-	},
-	{
-		src: `
-			program test8;
-			void foo() [ var x: int;
-				{print("func");}
-			];
-			main {
-				foo();
-			}
-			end
-		`,
-		valid: true,
-	},
-	{
-		src: `
-			program test8;
-			void foo() [ var x: int;
-				{print("func");}
-			];
-			void second() [ var x: int;
-				{print("func");}
-			];
-			main {
-				foo();
-				second();
-			}
-			end
-		`,
+
+				end
+				`,
 		valid: true,
 	},*/
 
@@ -239,11 +302,29 @@ var testData = []*TI{
 }
 
 func Test1(t *testing.T) {
+	mm := semantics.NewDirecVirtuales()
+	semantics.Memory = mm
+	semantics.ConstTab = semantics.NewConstTable(mm)
+
 	p := parser.NewParser()
 	pass := true
 	for _, ts := range testData {
+		semantics.InitGlobals()
 		s := lexer.NewLexer([]byte(ts.src))
+
 		_, err := p.Parse(s)
+		semantics.PrintQuadruples()
+
+		fmt.Println("=== FunctionDirectory ===")
+		for name := range semantics.FunctionDirectory {
+			fmt.Println("FuncDir contiene:", name)
+		}
+
+		fmt.Println("=== MÁQUINA VIRTUAL ===")
+		mv := maquinavirtual.NuevaMV(semantics.Quadruples, semantics.ConstTab.GetAddrValueMap(), semantics.FunctionDirectory)
+		mv.Run()
+
+		fmt.Println("|=============================|")
 
 		if (err == nil) != ts.valid {
 			pass = false
