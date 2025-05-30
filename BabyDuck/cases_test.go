@@ -138,13 +138,15 @@ var testData = []*TI{
 	{
 		src: `
 						program test8;
+						var y: int;
 						void foo() [ var x: int;
-							{print("func");}
+							{print("func", y);}
 						];
 						void second() [ var x: int;
 							{x = 9;}
 						];
 						main {
+							y = 10;
 							foo();
 							second();
 						}
@@ -152,38 +154,36 @@ var testData = []*TI{
 					`,
 		valid: true,
 	},
-	/*{
-		src: `
-				program Recursion;
+	{
+		src: `program testFibonacci;
+		var n, resultado: int;
 
-				var n, result: int;
+		void fibonacciIter(num: int)
+		[
+			var a, b, i, temp: int;
+			{
+				a = 0;
+				b = 1;
+				i = 0;
+				while (i < num) do {
+					temp = b;
+					b = a + b;
+					a = temp;
+					i = i + 1;
+				};
+				resultado = a;
+			}
+		];
 
-				void factorial(x: int) [
-					var temp: int;
-					{
-						if (x < 1) {
-							if (x > -1) {
-								result = 1;
-							};
-						} else {
-							n = x - 1;
-							factorial(n);
-							result = result * x;
-						};
-					}
-				];
-
-				main {
-					n = 5;
-					result = 1;
-					factorial(n);
-					print("El factorial es:", result);
-				}
-
-				end
-				`,
+		main {
+			n = 10;
+			resultado = 0;
+			fibonacciIter(n);
+			print("Fibonacci de", n, "es", resultado);
+		}
+	end`,
 		valid: true,
-	},*/
+	},
 
 	/*//Casos inválidos
 	{

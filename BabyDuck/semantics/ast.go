@@ -214,32 +214,34 @@ func EmptyArgList() (Attrib, error) {
 	return []string{}, nil
 }
 
-func AppendArg(argType Attrib, rest Attrib) (Attrib, error) {
-	typeStr, ok := argType.(string)
+func AppendArg(argAttrib Attrib, rest Attrib) (Attrib, error) {
+	// argAttrib es de tipo Operand
+	arg, ok := argAttrib.(Operand)
 	if !ok {
-		return nil, errors.New("AppendArg: argType no es string")
+		return nil, errors.New("AppendArg: argAttrib no es Operand")
 	}
-	args := []string{typeStr}
+
+	args := []string{arg.Type}
 	if r, ok := rest.([]string); ok {
 		args = append(args, r...)
 	}
 
 	// Sacar argumento de PilaO
-	arg := PopOperand()
-	argTypeFromStack := PopType()
+	operand := PopOperand()
+	operandType := PopType()
 
-	if argTypeFromStack != typeStr {
-		return nil, fmt.Errorf("AppendArg: tipo en stack '%s' no coincide con '%s'", argTypeFromStack, typeStr)
+	if operandType != arg.Type {
+		return nil, fmt.Errorf("AppendArg: tipo en stack '%s' no coincide con '%s'", operandType, arg.Type)
 	}
 
 	// Obtener función actual
 	callFunc := CurrentCall
 	paramIndex := FunctionDirectory[callFunc].ParamCount
-	paramName := fmt.Sprintf("param%d", paramIndex+1) // empieza desde 1
+	paramName := fmt.Sprintf("param%d", paramIndex+1)
 
-	AddQuadruple(12, arg.Addr, -1, paramName)
+	AddQuadruple(12, operand.Addr, -1, paramName)
 
-	FunctionDirectory[callFunc].ParamCount++ // para el siguiente argumento
+	FunctionDirectory[callFunc].ParamCount++
 
 	return args, nil
 }

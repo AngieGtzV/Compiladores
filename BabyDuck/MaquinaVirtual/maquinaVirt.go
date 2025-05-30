@@ -53,77 +53,77 @@ func (mv *MaquinaVirt) Run() error {
 
 		switch quad.Op {
 		case 0:
-			val := mv.getValue(quad.Left)
-			mv.setValue(quad.Result.(int), val)
+			val := mv.obtenerValor(quad.Left)
+			mv.guardarValor(quad.Result.(int), val)
 		case 1: // +
-			left := mv.getValue(quad.Left)
-			right := mv.getValue(quad.Right)
+			left := mv.obtenerValor(quad.Left)
+			right := mv.obtenerValor(quad.Right)
 			if _, esFloatL := left.(float64); esFloatL || esFloat(right) {
 				result := aFloat(left) + aFloat(right)
-				mv.setValue(quad.Result.(int), result)
+				mv.guardarValor(quad.Result.(int), result)
 			} else {
 				result := left.(int) + right.(int)
-				mv.setValue(quad.Result.(int), result)
+				mv.guardarValor(quad.Result.(int), result)
 			}
 		case 2: // -
-			left := mv.getValue(quad.Left)
-			right := mv.getValue(quad.Right)
+			left := mv.obtenerValor(quad.Left)
+			right := mv.obtenerValor(quad.Right)
 			if _, esFloatL := left.(float64); esFloatL || esFloat(right) {
 				result := aFloat(left) - aFloat(right)
-				mv.setValue(quad.Result.(int), result)
+				mv.guardarValor(quad.Result.(int), result)
 			} else {
 				result := left.(int) - right.(int)
-				mv.setValue(quad.Result.(int), result)
+				mv.guardarValor(quad.Result.(int), result)
 			}
 		case 3: // *
-			left := mv.getValue(quad.Left)
-			right := mv.getValue(quad.Right)
+			left := mv.obtenerValor(quad.Left)
+			right := mv.obtenerValor(quad.Right)
 			if _, esFloatL := left.(float64); esFloatL || esFloat(right) {
 				result := aFloat(left) * aFloat(right)
-				mv.setValue(quad.Result.(int), result)
+				mv.guardarValor(quad.Result.(int), result)
 			} else {
 				result := left.(int) * right.(int)
-				mv.setValue(quad.Result.(int), result)
+				mv.guardarValor(quad.Result.(int), result)
 			}
 		case 4: // /
-			left := mv.getValue(quad.Left)
-			right := mv.getValue(quad.Right)
+			left := mv.obtenerValor(quad.Left)
+			right := mv.obtenerValor(quad.Right)
 			if _, esFloatL := left.(float64); esFloatL || esFloat(right) {
 				result := aFloat(left) / aFloat(right)
-				mv.setValue(quad.Result.(int), result)
+				mv.guardarValor(quad.Result.(int), result)
 			} else {
 				result := left.(int) / right.(int)
-				mv.setValue(quad.Result.(int), result)
+				mv.guardarValor(quad.Result.(int), result)
 			}
 		case 5: // <
-			left := mv.getValue(quad.Left)
-			right := mv.getValue(quad.Right)
+			left := mv.obtenerValor(quad.Left)
+			right := mv.obtenerValor(quad.Right)
 			if esFloat(left) || esFloat(right) {
 				result := aFloat(left) < aFloat(right)
-				mv.setValue(quad.Result.(int), result)
+				mv.guardarValor(quad.Result.(int), result)
 			} else {
 				result := left.(int) < right.(int)
-				mv.setValue(quad.Result.(int), result)
+				mv.guardarValor(quad.Result.(int), result)
 			}
 		case 6: // >
-			left := mv.getValue(quad.Left)
-			right := mv.getValue(quad.Right)
+			left := mv.obtenerValor(quad.Left)
+			right := mv.obtenerValor(quad.Right)
 			if esFloat(left) || esFloat(right) {
 				result := aFloat(left) > aFloat(right)
-				mv.setValue(quad.Result.(int), result)
+				mv.guardarValor(quad.Result.(int), result)
 			} else {
 				result := left.(int) > right.(int)
-				mv.setValue(quad.Result.(int), result)
+				mv.guardarValor(quad.Result.(int), result)
 			}
 		case 7: // !=
-			left := mv.getValue(quad.Left)
-			right := mv.getValue(quad.Right)
-			mv.setValue(quad.Result.(int), left != right)
+			left := mv.obtenerValor(quad.Left)
+			right := mv.obtenerValor(quad.Right)
+			mv.guardarValor(quad.Result.(int), left != right)
 		case 8: // Goto
 			mv.IP = quad.Result.(int)
 			continue
 		case 9: // GotoF
-			cond := mv.getValue(quad.Left)
+			cond := mv.obtenerValor(quad.Left)
 			if b, ok := cond.(bool); ok && !b {
 				mv.IP = quad.Result.(int)
 				continue
@@ -133,34 +133,41 @@ func (mv *MaquinaVirt) Run() error {
 		case 11: // Print
 			arg := quad.Left
 			if arg != -1 {
-				val := mv.getValue(arg)
+				val := mv.obtenerValor(arg)
 				fmt.Println(val)
 			} else {
 				fmt.Println("WARNING: Cuádruplo PRINT con argumento -1")
 			}
 		case 12: //param
-			val := mv.getValue(quad.Left)
+			val := mv.obtenerValor(quad.Left)
 			mv.ParamQueue = append(mv.ParamQueue, val)
 		case 13: // gosub
 			mv.ReturnStack = append(mv.ReturnStack, mv.IP+1)
-
-			baseAddr := quad.Left
-
-			for i, val := range mv.ParamQueue {
-				mv.Memory[baseAddr+i] = val
-			}
-			mv.ParamQueue = []interface{}{}
 
 			funcName, ok := quad.Result.(string)
 			if !ok {
 				panic("GOSUB esperaba nombre de función string en Result")
 			}
+
 			funcInfo, exists := mv.FuncDir[funcName]
 			if !exists {
 				panic(fmt.Sprintf("Función '%s' no encontrada en FuncDir", funcName))
 			}
+
+			if len(funcInfo.Params) != len(mv.ParamQueue) {
+				panic(fmt.Sprintf("Cantidad de parámetros no coincide para función '%s'", funcName))
+			}
+
+			// Asignar cada valor de parámetro a su dirección correspondiente
+			for i, val := range mv.ParamQueue {
+				paramAddr := funcInfo.Params[i].Address
+				mv.Memory[paramAddr] = val
+			}
+
+			mv.ParamQueue = []interface{}{}
 			mv.IP = funcInfo.StartQuad
 			continue
+
 		case 14: // ERA
 			mv.EraTemp = make(map[int]interface{})
 			mv.ParamQueue = []interface{}{}
@@ -180,7 +187,7 @@ func (mv *MaquinaVirt) Run() error {
 	return nil
 }
 
-func (mv *MaquinaVirt) getValue(addr int) interface{} {
+func (mv *MaquinaVirt) obtenerValor(addr int) interface{} {
 	val, ok := mv.Memory[addr]
 	if !ok {
 		panic(fmt.Sprintf("Memoria no inicializada en %d", addr))
@@ -188,6 +195,6 @@ func (mv *MaquinaVirt) getValue(addr int) interface{} {
 	return val
 }
 
-func (mv *MaquinaVirt) setValue(addr int, val interface{}) {
+func (mv *MaquinaVirt) guardarValor(addr int, val interface{}) {
 	mv.Memory[addr] = val
 }
