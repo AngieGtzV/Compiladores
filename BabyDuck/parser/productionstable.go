@@ -2011,7 +2011,7 @@ var productionsTable = ProdTab{
 	},
 	ProdTabEntry{
 		String: `ZParameters : Expresion Z	<< func() (Attrib, error) {
-            return semantics.AppendArg(X[1], X[2])
+            return semantics.AppendArg(X[0], X[1])
         }() >>`,
 		Id:         "ZParameters",
 		NTType:     47,
@@ -2019,7 +2019,7 @@ var productionsTable = ProdTab{
 		NumSymbols: 2,
 		ReduceFunc: func(X []Attrib, C interface{}) (Attrib, error) {
 			return func() (Attrib, error) {
-            return semantics.AppendArg(X[1], X[2])
+            return semantics.AppendArg(X[0], X[1])
         }()
 		},
 	},
