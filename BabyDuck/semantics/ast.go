@@ -19,12 +19,20 @@ type FunctionInfo struct {
 	ReturnType string
 	Params     []VarInfo
 	Vars       map[string]VarInfo
+
+	ParamCount int
+	VarCount   int
+	TempCount  int
+	StartQuad  int
 }
 
 var (
-	functionDirectory = make(map[string]*FunctionInfo)
-	currentFunction   = ""
+	FunctionDirectory = make(map[string]*FunctionInfo)
+	CurrentFunction   = ""
+	CurrentCall       = ""
 	tempParams        []VarInfo
+	ProgramName       = ""
+	PrintArgs         []int
 )
 
 // ------------------- FUNCIONES PARA FUNCIONES -------------------
@@ -32,13 +40,18 @@ var (
 func AddFunction(name string, returnType string) error {
 	//fmt.Println("DEBUG AddFunction - agregando función:", name)
 
-	if _, exists := functionDirectory[name]; exists {
+	if _, exists := FunctionDirectory[name]; exists {
 		return fmt.Errorf("funcion '%s' ya declarada", name)
 	}
-	functionDirectory[name] = &FunctionInfo{
+
+	FunctionDirectory[name] = &FunctionInfo{
 		ReturnType: returnType,
 		Params:     tempParams,
 		Vars:       make(map[string]VarInfo),
+		ParamCount: len(tempParams),
+		VarCount:   0,
+		TempCount:  0,
+		StartQuad:  0,
 	}
 	tempParams = []VarInfo{}
 	return nil
@@ -46,10 +59,10 @@ func AddFunction(name string, returnType string) error {
 
 func SetCurrentFunction(name string) error {
 	//fmt.Println("DEBUG SetCurrentFunction - currentFunction ahora es:", name)
-	if _, exists := functionDirectory[name]; !exists {
+	if _, exists := FunctionDirectory[name]; !exists {
 		return fmt.Errorf("SetCurrentFunction: función '%s' no encontrada", name)
 	}
-	currentFunction = name
+	CurrentFunction = name
 	return nil
 }
 
@@ -61,16 +74,16 @@ func AddVariable(name string, typeAttrib Attrib) error {
 		return errors.New("AddVariable: typeAttrib no es un string")
 	}
 
-	f, ok := functionDirectory[currentFunction]
+	f, ok := FunctionDirectory[CurrentFunction]
 	if !ok || f == nil {
-		return fmt.Errorf("AddVariable: función '%s' no encontrada", currentFunction)
+		return fmt.Errorf("AddVariable: función '%s' no encontrada", CurrentFunction)
 	}
 	if _, exists := f.Vars[name]; exists {
-		return fmt.Errorf("variable '%s' ya declarada en %s", name, currentFunction)
+		return fmt.Errorf("variable '%s' ya declarada en %s", name, CurrentFunction)
 	}
 
 	scope := "local"
-	if currentFunction == "program" || currentFunction == "main" {
+	if FunctionDirectory[CurrentFunction].ReturnType == "program" {
 		scope = "global"
 	}
 
@@ -82,28 +95,43 @@ func AddVariable(name string, typeAttrib Attrib) error {
 		Address: addr,
 	}
 
+	if scope == "local" {
+		f.VarCount++
+	}
+
 	return nil
 }
 
 func AddParameter(name string, paramType string) error {
-	f := functionDirectory[currentFunction]
+	f := FunctionDirectory[CurrentFunction]
 	if _, exists := f.Vars[name]; exists {
 		return fmt.Errorf("parametro '%s' ya declarado", name)
 	}
-	param := VarInfo{Type: paramType, Scope: "param"}
+	address := Memory.Direccionar("local", paramType)
+
+	param := VarInfo{
+		Type:    paramType,
+		Scope:   "param",
+		Address: address,
+	}
+
+	// Guardar en lista de parámetros y también en tabla de variables
 	f.Params = append(f.Params, param)
 	f.Vars[name] = param
+
+	// También agregarlo a los parámetros temporales (por si aún no se ha llamado AddFunction)
 	tempParams = append(tempParams, param)
+
 	return nil
 }
 
 func LookupVariable(name string) (VarInfo, error) {
-	if f, ok := functionDirectory[currentFunction]; ok {
+	if f, ok := FunctionDirectory[CurrentFunction]; ok {
 		if v, ok := f.Vars[name]; ok {
 			return v, nil
 		}
 	}
-	if f, ok := functionDirectory["program"]; ok {
+	if f, ok := FunctionDirectory[ProgramName]; ok {
 		if v, ok := f.Vars[name]; ok {
 			return v, nil
 		}
@@ -141,7 +169,7 @@ func ValidateFunctionCall(name string, argsAttrib Attrib) error {
 	if !ok {
 		return errors.New("ValidateFunctionCall: argsAttrib no es []string")
 	}
-	f, exists := functionDirectory[name]
+	f, exists := FunctionDirectory[name]
 	if !exists {
 		return fmt.Errorf("funcion '%s' no declarada", name)
 	}
@@ -186,18 +214,6 @@ func EmptyArgList() (Attrib, error) {
 	return []string{}, nil
 }
 
-func BuildArgList(argType Attrib, rest Attrib) (Attrib, error) {
-	typeStr, ok := argType.(string)
-	if !ok {
-		return nil, errors.New("BuildArgList: argType no es string")
-	}
-	args := []string{typeStr}
-	if r, ok := rest.([]string); ok {
-		args = append(args, r...)
-	}
-	return args, nil
-}
-
 func AppendArg(argType Attrib, rest Attrib) (Attrib, error) {
 	typeStr, ok := argType.(string)
 	if !ok {
@@ -207,71 +223,32 @@ func AppendArg(argType Attrib, rest Attrib) (Attrib, error) {
 	if r, ok := rest.([]string); ok {
 		args = append(args, r...)
 	}
+
+	// Sacar argumento de PilaO
+	arg := PopOperand()
+	argTypeFromStack := PopType()
+
+	if argTypeFromStack != typeStr {
+		return nil, fmt.Errorf("AppendArg: tipo en stack '%s' no coincide con '%s'", argTypeFromStack, typeStr)
+	}
+
+	// Obtener función actual
+	callFunc := CurrentCall
+	paramIndex := FunctionDirectory[callFunc].ParamCount
+	paramName := fmt.Sprintf("param%d", paramIndex+1) // empieza desde 1
+
+	AddQuadruple(12, arg.Addr, -1, paramName)
+
+	FunctionDirectory[callFunc].ParamCount++ // para el siguiente argumento
+
 	return args, nil
 }
 
-// Construir lista de parámetros desde WP
-func BuildParamList(id string, typeAttrib Attrib, rest Attrib) (Attrib, error) {
-	typ, ok := typeAttrib.(string)
-	if !ok {
-		return nil, errors.New("BuildParamList: typeAttrib no es string")
-	}
-
-	params := []VarInfo{{Type: typ, Scope: "param"}}
-
-	if r, ok := rest.([]VarInfo); ok {
-		params = append(params, r...)
-	}
-
-	return params, nil
-}
-
-// Agregar más parámetros a la lista
-func AppendParamList(newParam Attrib, rest Attrib) (Attrib, error) {
-	param, ok := newParam.(VarInfo)
-	if !ok {
-		return nil, errors.New("AppendParamList: param no es VarInfo")
-	}
-	params := []VarInfo{param}
-	if r, ok := rest.([]VarInfo); ok {
-		params = append(params, r...)
-	}
-	return params, nil
-}
-
-// ------------ DEBUG: IMPRIMIR DIRECTORIOS y CUÁDRUPLOS -------------------
-
-func PrintSymbolTables() {
-	fmt.Println("========= Directorio de Funciones =========")
-	for name, info := range functionDirectory {
-		fmt.Printf("Función: %s\n", name)
-		fmt.Printf("  Tipo de retorno: %s\n", info.ReturnType)
-
-		if len(info.Params) > 0 {
-			fmt.Println("  Parámetros:")
-			for i, param := range info.Params {
-				fmt.Printf("    [%d] Nombre: (en Vars) / Tipo: %s / Scope: %s\n", i+1, param.Type, param.Scope)
-			}
-		} else {
-			fmt.Println("  Parámetros: ninguno")
-		}
-
-		if len(info.Vars) > 0 {
-			fmt.Println("  Variables:")
-			for varName, varInfo := range info.Vars {
-				fmt.Printf("    %s: Tipo: %s / Scope: %s\n", varName, varInfo.Type, varInfo.Scope)
-			}
-		} else {
-			fmt.Println("  Variables: ninguna")
-		}
-
-		fmt.Println("----------------------------------")
-	}
-}
+// ------------ DEBUG: IMPRIMIR CUÁDRUPLOS -------------------
 
 func PrintQuadruples() {
 	fmt.Println("=== CUÁDRUPLOS GENERADOS ===")
 	for i, q := range Quadruples {
-		fmt.Printf("%03d: (%d, %d, %d, %d)\n", i, q.Op, q.Left, q.Right, q.Result)
+		fmt.Printf("%03d: (%d, %d, %d, %v)\n", i, q.Op, q.Left, q.Right, q.Result)
 	}
 }

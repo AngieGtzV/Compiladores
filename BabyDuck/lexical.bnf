@@ -60,41 +60,70 @@ import (
 
 Programa
   : ProgramaHeader ProgramaP ProgramaMain end
+    <<
+        func() (Attrib, error) {
+            semantics.AddQuadruple(16, -1, -1, -1)
+            return nil, nil
+        }()
+    >>
   ;
 
 ProgramaHeader
   : program id semicolon
   <<
         func() (Attrib, error) {
-            err := semantics.AddFunction("program", "void")
+            tok, ok := X[1].(*token.Token)
+            if !ok {
+                return nil, fmt.Errorf("esperaba *token.Token en X[1], obtuve %T", X[1])
+            }
+            name := string(tok.Lit)
+
+            semantics.ProgramName = name
+            err := semantics.AddFunction(name, "program")
             if err != nil {
                 return nil, err
             }
-            err = semantics.SetCurrentFunction("program")
+            err = semantics.SetCurrentFunction(name)
             if err != nil {
                 return nil, err
             }
+            semantics.AddQuadruple(8, -1, -1, -1) // Goto con destino pendiente
+            semantics.MainGotoIndex = len(semantics.Quadruples) - 1
             return nil, nil
         }()
   >>
   ;
 
 ProgramaMain
-    : main Body
+    : main MainStart Body
+    << func() (Attrib, error) {
+        return nil, nil; 
+         }()
+         >>
+    ;
+
+MainStart
+    : empty
     <<
         func() (Attrib, error) {
             err := semantics.AddFunction("main", "void")
             if err != nil {
-                return nil, fmt.Errorf("error al declarar main: %v", err)
+                return nil, fmt.Errorf("Error al agregar main: %v", err)
             }
+
             err = semantics.SetCurrentFunction("main")
             if err != nil {
-                return nil, err
+                return nil, fmt.Errorf("Error al setear main como función actual: %v", err)
             }
-            return err, nil
+            semantics.Quadruples[semantics.MainGotoIndex].Result = len(semantics.Quadruples)
+
+            semantics.FunctionDirectory["main"].StartQuad = len(semantics.Quadruples)
+            return nil, nil
         }()
     >>
     ;
+
+
 
 ProgramaP
     : Vars FP
@@ -194,6 +223,15 @@ Statement
 
 Print
     : print lparen PrintP rparen semicolon
+    <<
+        func() (Attrib, error) {
+            for i := len(semantics.PrintArgs) - 1; i >= 0; i-- {
+                semantics.AddQuadruple(11, semantics.PrintArgs[i], -1, -1)
+            }
+            semantics.PrintArgs = []int{}
+            return nil, nil
+        }()
+    >>
     ;
 
 PrintP
@@ -208,8 +246,7 @@ PrintP
 
             addr := semantics.ConstTab.GetOrAddConstant(lit, "string")
 
-            // Generar cuádruplo de PRINT : 11
-            semantics.AddQuadruple(11, addr, -1, -1)
+            semantics.PrintArgs = append(semantics.PrintArgs, addr)
 
             return nil, nil
         }()
@@ -222,7 +259,7 @@ PrintP
                 return nil, fmt.Errorf("print: expresión inválida")
             }
 
-            semantics.AddQuadruple(11, expr.Addr, -1, -1)
+            semantics.PrintArgs = append(semantics.PrintArgs, expr.Addr)
             return nil, nil
         }() 
     >>
@@ -283,22 +320,23 @@ Cycle
     <<
         func() (Attrib, error) {
             if len(semantics.JumpStack) < 2 {
-                return nil, fmt.Errorf("cycle: JumpStack no tiene suficientes elementos")
+                return nil, fmt.Errorf("cycle: jumpstack no tiene suficientes elementos")
             }
 
-            end := len(semantics.Quadruples)
+            // 5. Sacar posiciones: primero el falseJump, luego el inicio del ciclo
             falseJump, err := semantics.PopJump()
             if err != nil {
-                return nil, fmt.Errorf("cycle: error al hacer PopJump (falseJump): %v", err)
+                return nil, fmt.Errorf("cycle: error al hacer popjump (falseJump): %v", err)
             }
-            ret, err := semantics.PopJump()
+
+            loopStart, err := semantics.PopJump()
             if err != nil {
-                return nil, fmt.Errorf("cycle: error al hacer PopJump (ret): %v", err)
+                return nil, fmt.Errorf("cycle: error al hacer popjump (loopStart): %v", err)
             }
 
-            semantics.AddQuadruple(8, -1, -1, ret)
-
-            semantics.Quadruples[falseJump].Result = end
+            // GOTO al inicio del ciclo
+            semantics.AddQuadruple(8, -1, -1, loopStart)
+            semantics.Quadruples[falseJump].Result = len(semantics.Quadruples)
 
             return nil, nil
         }()
@@ -306,34 +344,39 @@ Cycle
     ;
 
 CycleStart
-    : while lparen Expresion rparen
+    : WhileStart lparen Expresion rparen
     <<
         func() (Attrib, error) {
-            pos := len(semantics.Quadruples)
-            semantics.PushJump(pos)
-
+            // 2. Validar tipo
             if len(semantics.TypeStack) == 0 {
                 return nil, fmt.Errorf("cycleStart: pila de tipos vacía")
             }
 
             condType := semantics.PopType()
             if condType != "bool" {
-                return nil, fmt.Errorf("expresión de while no es booleana (tipo fue '%s')", condType)
+                return nil, fmt.Errorf("cycleStart: condición de while no es booleana, fue '%s'", condType)
             }
 
             cond := semantics.PopOperand()
 
-            // 9 : GotoF (salto si condición es falsa)
-            quad := semantics.Quadruple{
-                Op:   9,
-                Left: cond.Addr,
-                Right: -1,
-                Result:  -1, // lo rellenaremos en Cycle
-            }
-            semantics.Quadruples = append(semantics.Quadruples, quad)
+            // cuádruplo GOTOF
+            semantics.AddQuadruple(9, cond.Addr, -1, -1)
 
+            //posición del GOTOF
             semantics.PushJump(len(semantics.Quadruples) - 1)
 
+            return nil, nil
+        }()
+    >>
+    ;
+
+WhileStart
+    : while 
+    <<
+        func() (Attrib, error) {
+            // posición actual (inicio del ciclo)
+            pos := len(semantics.Quadruples)
+            semantics.PushJump(pos)
             return nil, nil
         }()
     >>
@@ -354,7 +397,7 @@ ConditionStart
 
             condResult := semantics.PopOperand()
 
-            // 9 : GOTOF 
+            // 9 = GOTOF 
             semantics.AddQuadruple(9, condResult.Addr, -1, -1)
             semantics.PushJump(len(semantics.Quadruples) - 1)
 
@@ -364,39 +407,47 @@ ConditionStart
     ;
 
 ConditionP
-    : empty
-    <<
-        func() (Attrib, error) {
-            falseJump, err := semantics.PopJump()
-            if err != nil {
-                return nil, err
-            }
+  : ElseJump Body SetEndJump
+  ;
 
-            semantics.Quadruples[falseJump].Result = len(semantics.Quadruples)
-            return nil, nil
-        }()
-    >>
-    | else Body
-    <<
-        func() (Attrib, error) {
-            // 8 : GOTO que saltará después del else
-            semantics.AddQuadruple(8, -1, -1, -1)
-            endJump := len(semantics.Quadruples) - 1
+ElseJump
+  : else
+  <<
+    func() (Attrib, error) {
+        semantics.AddQuadruple(8, -1, -1, -1)
+        endJump := len(semantics.Quadruples) - 1
 
-            // 8 : GOTOF del if (al inicio del else)
-            falseJump, err := semantics.PopJump()
-            if err != nil {
-                return nil, err
-            }
-            semantics.Quadruples[falseJump].Result = falseJump + 1
+        // Pop del GOTOF (condición falsa)
+        falseJump, err := semantics.PopJump()
+        if err != nil {
+            return nil, err
+        }
 
-            // 8 : GOTO (al final del else)
-            semantics.Quadruples[endJump].Result = len(semantics.Quadruples)
+        semantics.Quadruples[falseJump].Result = len(semantics.Quadruples)
 
-            return nil, nil
-        }()
-    >>
-    ;
+        // GOTO para actualizar al final
+        semantics.PushJump(endJump)
+        return nil, nil
+    }()
+  >>
+  ;
+
+SetEndJump
+  : empty
+  <<
+    func() (Attrib, error) {
+        endJump, err := semantics.PopJump()
+        if err != nil {
+            return nil, err
+        }
+
+        // Actualizar el GOTO del then para que salte después del else
+        semantics.Quadruples[endJump].Result = len(semantics.Quadruples)
+        return nil, nil
+    }()
+  >>
+  ;
+
 
 Expresion
     : Exp EP
@@ -841,7 +892,23 @@ CTE
     ;
 
 Funcs
-    : void id lparen FuncsP rparen lbracket VP Body rbracket semicolon
+    : FuncsHeader lbracket VarsFuncs Body rbracket semicolon
+    <<
+        func() (Attrib, error) {
+            //Generar cuádruplo ENDFUNC
+            semantics.AddQuadruple(15, -1, -1, -1)
+
+            //Guardar el número de variables temporales usadas
+            semantics.FunctionDirectory[semantics.CurrentFunction].TempCount = semantics.GetTempCount()
+
+            //Limpiar tabla de variables locales
+            return nil, nil
+        }()
+    >>
+    ;
+
+FuncsHeader
+    : void id lparen FuncsParameter rparen
     <<
         func() (Attrib, error) {
             tok, ok := X[1].(*token.Token)
@@ -854,12 +921,13 @@ Funcs
                 return nil, err
             }
             semantics.SetCurrentFunction(name) // Cambia el contexto a la función
+            semantics.FunctionDirectory[name].StartQuad = len(semantics.Quadruples)
             return nil, nil
         }()
   >>
     ;
 
-FuncsP
+FuncsParameter
     : empty
     <<
       func() (Attrib, error) {
@@ -869,7 +937,7 @@ FuncsP
     | WP
     <<
         func() (Attrib, error) {
-            return nil, nil // parámetros ya se agregan en WP
+            return nil, nil
         }()
         >>
     ;
@@ -884,7 +952,7 @@ W
     | comma WP
     <<
         func() (Attrib, error) {
-            return nil, nil // ya agregados en WP
+            return nil, nil 
         }()
         >>
     ;
@@ -906,20 +974,52 @@ WP
   >>
     ;
 
-VP
+VarsFuncs
     : empty
     | Vars
     ;
 
-FCall
-    : id lparen FCallP rparen semicolon
+FCall 
+    : FCallID lparen FCallP rparen semicolon
+    <<
+        func() (Attrib, error) {
+            name, ok := $0.(string)
+            if !ok {
+                return nil, fmt.Errorf("fCall: se esperaba string como nombre de función, obtuve %T", $0)
+            }
+
+            err := semantics.ValidateFunctionCall(name, $2)
+            if err != nil {
+                return nil, err
+            }
+
+            // Generar cuádruplo GOSUB (13)
+            semantics.AddQuadruple(13, -1, -1, name)
+
+            semantics.CurrentCall = ""
+
+            return nil, nil
+        }()
+    >>
+    ;
+
+FCallID
+    : id
      <<
         func() (Attrib, error) {
             idTok, ok := X[0].(*token.Token)
             if !ok {
                 return nil, fmt.Errorf("fCall: se esperaba *token.Token en X[0], obtuve %T", X[0])
             }
-            return semantics.ValidateFunctionCall(string(idTok.Lit), X[2]), nil
+            name := string(idTok.Lit)
+            // ERA = 14
+            semantics.AddQuadruple(14, -1, -1, name)
+
+            semantics.FunctionDirectory[name].ParamCount = 0
+
+            semantics.CurrentCall = name
+
+            return name, nil
         }()
     >>
     ;
@@ -931,10 +1031,10 @@ FCallP
             return semantics.EmptyArgList()
         }()
     >>
-    | Expresion Z
+    | ZParameters
     <<
         func() (Attrib, error) {
-            return semantics.BuildArgList($0, $1)
+            return $0, nil
         }()
     >>
     ;
@@ -946,10 +1046,20 @@ Z
             return semantics.EmptyArgList()
         }()
     >>
-    | comma Expresion Z
+    | comma ZParameters
+    <<
+        func() (Attrib, error) {
+            return $1, nil
+        }()
+    >>
+    ;
+
+ZParameters
+    : Expresion Z
     <<
         func() (Attrib, error) {
             return semantics.AppendArg($1, $2)
         }()
     >>
     ;
+

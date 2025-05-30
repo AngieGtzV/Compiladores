@@ -8,20 +8,20 @@ import (
 )
 
 var (
-	FunctionDirectory map[string]*FunctionInfo
-	CurrentFunction   string
-	OperandStack      []Operand
-	OperatorStack     []int
-	TypeStack         []string
-	Quadruples        []Quadruple
-	JumpStack         []int
+	OperandStack  []Operand
+	OperatorStack []int
+	TypeStack     []string
+	Quadruples    []Quadruple
+	QuadCont      int = 0
+	JumpStack     []int
+	MainGotoIndex int
 )
 
 type Quadruple struct {
 	Op     int
 	Left   int
 	Right  int
-	Result int
+	Result interface{}
 }
 
 func InitGlobals() {
@@ -29,10 +29,15 @@ func InitGlobals() {
 	OperatorStack = []int{}
 	TypeStack = []string{}
 	Quadruples = []Quadruple{}
+	JumpStack = []int{}
+	QuadCont = 0
+	MainGotoIndex = 0
 
-	functionDirectory = make(map[string]*FunctionInfo)
-	currentFunction = ""
+	FunctionDirectory = make(map[string]*FunctionInfo)
+	CurrentFunction = ""
 	tempParams = []VarInfo{}
+	Memory = NewDirecVirtuales()
+	PrintArgs = []int{}
 }
 
 type Operand struct {
@@ -208,10 +213,6 @@ func (ct *ConstTable) GetOrAddConstant(lit string, typ string) int {
 	}
 	addr := ct.mm.Direccionar("const", typ)
 	ct.table[lit] = addr
-	fmt.Println("=== Tabla de Constantes ===")
-	for lit, addr := range ct.table {
-		fmt.Printf("Constante: %q -> Dirección: %d\n", lit, addr)
-	}
 	return addr
 }
 
@@ -237,11 +238,26 @@ func (ct *ConstTable) GetAddrValueMap() map[int]interface{} {
 
 // ------------------------ CUÁDRUPLOS -------------------------
 
-func AddQuadruple(op int, left int, right int, result int) {
+func AddQuadruple(op int, left int, right int, result Attrib) {
 	Quadruples = append(Quadruples, Quadruple{
 		Op:     op,
 		Left:   left,
 		Right:  right,
 		Result: result,
 	})
+	QuadCont++
+}
+
+// ------------------- MANEJO DE TEMPORALES -------------------------
+
+func GetTempCount() int {
+	return (Memory.tempInt - TempIntInicio) +
+		(Memory.tempFloat - TempFloatInicio) +
+		(Memory.tempBool - TempBoolInicio)
+}
+
+func ResetTemporales() {
+	Memory.tempInt = TempIntInicio
+	Memory.tempFloat = TempFloatInicio
+	Memory.tempBool = TempBoolInicio
 }

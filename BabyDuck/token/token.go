@@ -169,9 +169,9 @@ var TokMap = TokenMap{
 		"div",
 		"nums",
 		"period",
-		"void",
 		"lbracket",
 		"rbracket",
+		"void",
 	},
 
 	idMap: map[string]Type{
@@ -208,8 +208,8 @@ var TokMap = TokenMap{
 		"div":            30,
 		"nums":           31,
 		"period":         32,
-		"void":           33,
-		"lbracket":       34,
-		"rbracket":       35,
+		"lbracket":       33,
+		"rbracket":       34,
+		"void":           35,
 	},
 }
