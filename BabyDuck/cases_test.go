@@ -96,16 +96,16 @@ var testData = []*TI{
 
 	{
 		src: `
-							program test6;
-							main {
-								if (1 < 2) {
-									print("Si");
-								} else {
-									print("No");
-								};
-							}
-							end
-						`,
+			program test6;
+			main {
+				if (1 < 2) {
+					print("Si");
+				} else {
+					print("No");
+				};
+			}
+			end
+		`,
 		valid: true,
 	},
 	{
@@ -124,30 +124,31 @@ var testData = []*TI{
 	},
 	{
 		src: `
-							program test8;
-							void foo() [ var x: int;
-								{print("func");}
-							];
-							main {
-								foo();
-							}
-							end
-						`,
+			program test8;
+			void funcion() [ var x: int;
+				{print("func");}
+			];
+			main {
+				funcion();
+			}
+			end
+		`,
 		valid: true,
 	},
 	{
 		src: `
 						program test8;
 						var y: int;
-						void foo() [ var x: int;
+						void funcion() [ var x: int;
 							{print("func", y);}
 						];
 						void second() [ var x: int;
-							{x = 9;}
+							{funcion(); 
+							x = 9;}
 						];
 						main {
 							y = 10;
-							foo();
+							
 							second();
 						}
 						end
@@ -158,7 +159,7 @@ var testData = []*TI{
 		src: `program testFibonacci;
 		var n, resultado: int;
 
-		void fibonacciIter(num: int)
+		void fib(num: int)
 		[
 			var a, b, i, temp: int;
 			{
@@ -178,8 +179,8 @@ var testData = []*TI{
 		main {
 			n = 10;
 			resultado = 0;
-			fibonacciIter(n);
-			print("Fibonacci de", n, "es", resultado);
+			fib(n);
+			print("Resultado de Fibonacci", n, "es:", resultado);
 		}
 	end`,
 		valid: true,
