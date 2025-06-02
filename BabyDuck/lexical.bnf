@@ -408,6 +408,7 @@ ConditionStart
 
 ConditionP
   : ElseJump Body SetEndJump
+  | empty
   ;
 
 ElseJump
